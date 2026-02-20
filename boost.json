@@ -1,0 +1,14 @@
+{
+    "agents": [
+        "claude_code",
+        "gemini"
+    ],
+    "guidelines": false,
+    "herd_mcp": false,
+    "mcp": true,
+    "nightwatch_mcp": false,
+    "sail": false,
+    "skills": [
+        "pest-testing"
+    ]
+}
