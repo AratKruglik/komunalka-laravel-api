@@ -22,6 +22,10 @@ RUN \
         pngquant \
         gifsicle \
         libavif \
+        imagemagick \
+        imagemagick-dev \
+        libheif \
+        libheif-dev \
         supervisor \
         linux-headers \
         build-base \
@@ -48,8 +52,8 @@ RUN \
         exif \
         sockets \
         pcntl && \
-    pecl install redis && \
-    docker-php-ext-enable redis
+    pecl install redis imagick && \
+    docker-php-ext-enable redis imagick
 
 # Configure PHP settings
 RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/memory-limit.ini
