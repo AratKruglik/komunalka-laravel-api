@@ -66,7 +66,7 @@ docker compose exec app composer require spatie/laravel-pdf
 
 ---
 
-## Фаза 1: Shared Module — базові entities та seeders
+## ~~Фаза 1: Shared Module — базові entities та seeders~~ DONE
 
 ### 1.1 Створення модуля
 
@@ -76,78 +76,78 @@ docker compose exec app php artisan module:make Shared
 
 ### 1.2 Моделі
 
-- [ ] `UtilityType` — id, slug, display_name, unit, description, is_active, created_at, updated_at
+- [x] `UtilityType` — id, slug, display_name, unit, description, is_active, created_at, updated_at
   - Зв'язки: hasMany(Meter), hasMany(Tariff), hasMany(ServiceProvider)
   - Scope: `active()`
-- [ ] `Currency` — id, code, name, symbol, created_at, updated_at
+- [x] `Currency` — id, code, name, symbol, created_at, updated_at
   - Зв'язки: hasMany(Tariff)
-- [ ] `ServiceCategory` — id, name, created_at, updated_at
+- [x] `ServiceCategory` — id, name, created_at, updated_at
   - Зв'язки: belongsToMany(Address)
-- [ ] `ServiceCounter` — id, address_id, service_category_id, serial_number, service_counter_measurement_id, created_at, updated_at
-- [ ] `ServiceCounterMeasurement` — id, name, measurement, created_at, updated_at
-- [ ] `ServiceCounterValue` — id, service_counter_id, value (float), created_at, updated_at
-- [ ] `AddressesServiceCategory` (pivot model)
+- [x] `ServiceCounter` — id, address_id, service_category_id, serial_number, service_counter_measurement_id, created_at, updated_at
+- [x] `ServiceCounterMeasurement` — id, name, measurement, created_at, updated_at
+- [x] `ServiceCounterValue` — id, service_counter_id, value (float), created_at, updated_at
+- [x] `AddressesServiceCategory` (pivot model)
 
 ### 1.3 Міграції
 
-- [ ] `create_utility_types_table` — з seed data (6 типів)
-- [ ] `create_currencies_table`
-- [ ] `create_service_categories_table`
-- [ ] `create_service_counter_measurements_table`
-- [ ] `create_service_counters_table`
-- [ ] `create_service_counter_values_table`
-- [ ] `create_address_service_category_table`
+- [x] `create_utility_types_table` — з seed data (6 типів)
+- [x] `create_currencies_table`
+- [x] `create_service_categories_table`
+- [x] `create_service_counter_measurements_table`
+- [x] `create_service_counters_table`
+- [x] `create_service_counter_values_table`
+- [x] `create_address_service_category_table`
 
 ### 1.4 Seeders
 
-- [ ] `UtilityTypeSeeder` — electricity, gas, cold-water, hot-water, heating, sewage
-- [ ] `CurrencySeeder` — UAH (₴) як мінімум
+- [x] `UtilityTypeSeeder` — electricity, gas, cold-water, hot-water, heating, sewage
+- [x] `CurrencySeeder` — UAH (₴) як мінімум
 
 ### 1.5 Factories
 
-- [ ] Factories для кожної моделі
+- [x] Factories для кожної моделі
 
 ### 1.5a Repositories
 
-- [ ] `CurrencyRepositoryInterface` — all, find, create, update, delete
-- [ ] `CurrencyRepository` (extends EloquentRepository)
-- [ ] `UtilityTypeRepositoryInterface` — all, findBySlug, getActive
-- [ ] `UtilityTypeRepository` (extends EloquentRepository)
-- [ ] Bind interfaces в `SharedServiceProvider`
+- [x] `CurrencyRepositoryInterface` — all, find, create, update, delete
+- [x] `CurrencyRepository` (extends EloquentRepository)
+- [x] `UtilityTypeRepositoryInterface` — all, findBySlug, getActive
+- [x] `UtilityTypeRepository` (extends EloquentRepository)
+- [x] Bind interfaces в `SharedServiceProvider`
 
 ### 1.5b DTOs
 
-- [ ] `CreateCurrencyData` — code, name, symbol (readonly, fromRequest)
-- [ ] `UpdateCurrencyData` — code, name, symbol (readonly, fromRequest)
+- [x] `CreateCurrencyData` — code, name, symbol (readonly, fromRequest)
+- [x] `UpdateCurrencyData` — code, name, symbol (readonly, fromRequest)
 
 ### 1.6 Actions (CRUD для Currency)
 
-- [ ] `GetAllCurrencies` — список всіх валют
-- [ ] `GetCurrency` — отримання за ID
-- [ ] `CreateCurrency` — створення
-- [ ] `UpdateCurrency` — оновлення
-- [ ] `DeleteCurrency` — видалення
+- [x] `GetAllCurrencies` — список всіх валют
+- [x] `GetCurrency` — отримання за ID
+- [x] `CreateCurrency` — створення
+- [x] `UpdateCurrency` — оновлення
+- [x] `DeleteCurrency` — видалення
 
 ### 1.7 Actions (Read-only для UtilityType)
 
-- [ ] `GetActiveUtilityTypes` — список активних
-- [ ] `GetUtilityType` — отримання за ID
+- [x] `GetActiveUtilityTypes` — список активних
+- [x] `GetUtilityType` — отримання за ID
 
 ### 1.8 HTTP Layer
 
-- [ ] `CurrencyController` — CRUD (public, no auth)
-- [ ] `UtilityTypeController` — GET only (public)
-- [ ] Form Requests: `StoreCurrencyRequest`, `UpdateCurrencyRequest`
-- [ ] API Resources: `CurrencyResource`, `UtilityTypeResource`
-- [ ] Routes: `api/v1/currency/*`, `api/v1/utility-types/*`
+- [x] `CurrencyController` — CRUD (public, no auth)
+- [x] `UtilityTypeController` — GET only (public)
+- [x] Form Requests: `StoreCurrencyRequest`, `UpdateCurrencyRequest`
+- [x] API Resources: `CurrencyResource`, `UtilityTypeResource`
+- [x] Routes: `api/v1/currencies/*`, `api/v1/utility-types/*`
 
 ### 1.9 Tests
 
-- [ ] Feature tests: Currency CRUD endpoints
-- [ ] Feature tests: UtilityType GET endpoints
-- [ ] Unit tests: Actions
+- [x] Feature tests: Currency CRUD endpoints
+- [x] Feature tests: UtilityType GET endpoints
+- [x] Unit tests: Actions
 
-**Deliverable:** Currency та UtilityType ендпоінти працюють, seed data доступна.
+**Deliverable:** ~~Currency та UtilityType ендпоінти працюють, seed data доступна.~~ DONE
 
 ---
 
