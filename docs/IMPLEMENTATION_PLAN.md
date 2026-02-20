@@ -6,7 +6,7 @@
 
 ---
 
-## Фаза 0: Підготовка інфраструктури
+## ~~Фаза 0: Підготовка інфраструктури~~ DONE
 
 ### 0.1 Встановлення пакетів
 
@@ -22,39 +22,39 @@ docker compose exec app composer require spatie/laravel-pdf
 
 ### 0.2 Конфігурація nwidart/laravel-modules
 
-- [ ] Опублікувати конфігурацію: `vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"`
-- [ ] Оновити `composer.json` — додати `"Modules\\": "Modules/"` до PSR-4 autoload
-- [ ] Оновити `phpunit.xml` — додати `Modules/*/tests/Feature` та `Modules/*/tests/Unit`
-- [ ] Налаштувати generator paths в `config/modules.php` для DDD структури
+- [x] Опублікувати конфігурацію: `vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"`
+- [x] Оновити `composer.json` — додати `"Modules\\": "Modules/"` до PSR-4 autoload
+- [x] Оновити `phpunit.xml` — додати `Modules/*/tests/Feature` та `Modules/*/tests/Unit`
+- [x] Налаштувати generator paths в `config/modules.php` для DDD структури
 
 ### 0.2a Конфігурація spatie/laravel-medialibrary
 
-- [ ] Опублікувати міграцію: `vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-migrations"`
-- [ ] Опублікувати конфігурацію: `vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-config"`
-- [ ] Налаштувати disk, max_file_size, queue в `config/media-library.php`
-- [ ] Запустити міграцію для створення `media` таблиці
+- [x] Опублікувати міграцію: `vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-migrations"`
+- [x] Опублікувати конфігурацію: `vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-config"`
+- [x] Налаштувати disk, max_file_size, queue в `config/media-library.php`
+- [x] Запустити міграцію для створення `media` таблиці
 
 ### 0.2b Base Repository та DTO інфраструктура
 
-- [ ] Створити `app/Repositories/Contracts/RepositoryInterface.php` — base interface (all, find, findOrFail, create, update, delete, paginate)
-- [ ] Створити `app/Repositories/EloquentRepository.php` — base Eloquent implementation
+- [x] Створити `app/Repositories/Contracts/RepositoryInterface.php` — base interface (all, find, findOrFail, create, update, delete, paginate)
+- [x] Створити `app/Repositories/EloquentRepository.php` — base Eloquent implementation
 - [ ] Документація: конвенція іменування DTO (`*Data.php`), Repository (`*Repository.php`, `*RepositoryInterface.php`)
 
 ### 0.3 Конфігурація JWT
 
-- [ ] Опублікувати конфігурацію: `vendor:publish --provider="PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider"`
-- [ ] Згенерувати секрет: `php artisan jwt:secret`
-- [ ] Налаштувати claims, TTL, refresh TTL в `config/jwt.php`
+- [x] Опублікувати конфігурацію: `vendor:publish --provider="PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider"`
+- [x] Згенерувати секрет: `php artisan jwt:secret`
+- [x] Налаштувати claims, TTL, refresh TTL в `config/jwt.php`
 
 ### 0.4 Конфігурація Socialite
 
-- [ ] Додати Google та GitHub credentials до `.env`
-- [ ] Налаштувати providers в `config/services.php`
+- [x] Додати Google та GitHub credentials до `.env`
+- [x] Налаштувати providers в `config/services.php`
 
 ### 0.5 Docker — imagick extension (для spatie/laravel-medialibrary HEIC підтримки)
 
-- [ ] Додати `php-imagick` та `libheif` до Dockerfile
-- [ ] Перебілдити контейнери
+- [x] Додати `php-imagick` та `libheif` до Dockerfile
+- [x] Перебілдити контейнери
 
 ### 0.6 Структура каталогу docs/
 
@@ -62,7 +62,7 @@ docker compose exec app composer require spatie/laravel-pdf
 - [x] ADR.md
 - [x] IMPLEMENTATION_PLAN.md
 
-**Deliverable:** Всі пакети встановлені, конфігурації опубліковані, Docker оновлений.
+**Deliverable:** ~~Всі пакети встановлені, конфігурації опубліковані, Docker оновлений.~~ DONE
 
 ---
 
