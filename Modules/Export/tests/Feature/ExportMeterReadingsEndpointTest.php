@@ -10,7 +10,6 @@ use Modules\Meter\Models\MeterReading;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function () {
-    $this->url = '/api/v1/export/meter-readings';
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
@@ -33,7 +32,7 @@ describe('POST /api/v1/export/meter-readings (CSV)', function () {
         ]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -62,7 +61,7 @@ describe('POST /api/v1/export/meter-readings (CSV)', function () {
         ]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -110,7 +109,7 @@ describe('POST /api/v1/export/meter-readings (CSV)', function () {
         ]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -150,7 +149,7 @@ describe('POST /api/v1/export/meter-readings (CSV)', function () {
         ]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey(), $secondAddress->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -185,7 +184,7 @@ describe('POST /api/v1/export/meter-readings (PDF)', function () {
         ]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -204,7 +203,7 @@ describe('POST /api/v1/export/meter-readings (authorization)', function () {
         $otherAddress = Address::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$otherAddress->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -217,7 +216,7 @@ describe('POST /api/v1/export/meter-readings (authorization)', function () {
         $otherAddress = Address::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey(), $otherAddress->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -227,7 +226,7 @@ describe('POST /api/v1/export/meter-readings (authorization)', function () {
     });
 
     it('returns 401 for unauthenticated requests', function () {
-        $this->postJson($this->url, [
+        $this->postJson(route('api.export.meter-readings'), [
             'address_ids' => [$this->address->getKey()],
             'from_date' => '2026-01-01',
             'to_date' => '2026-01-31',
@@ -239,7 +238,7 @@ describe('POST /api/v1/export/meter-readings (authorization)', function () {
 describe('POST /api/v1/export/meter-readings (validation)', function () {
     it('requires address_ids', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
                 'format' => 'csv',
@@ -250,7 +249,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('requires address_ids to be a non-empty array', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -262,7 +261,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('requires from_date', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'to_date' => '2026-01-31',
                 'format' => 'csv',
@@ -273,7 +272,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('requires to_date', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'format' => 'csv',
@@ -284,7 +283,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('requires format', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -295,7 +294,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('rejects invalid format', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -307,7 +306,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('rejects from_date after to_date', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => '2026-02-01',
                 'to_date' => '2026-01-01',
@@ -319,7 +318,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('rejects non-existent address_ids', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [999999],
                 'from_date' => '2026-01-01',
                 'to_date' => '2026-01-31',
@@ -331,7 +330,7 @@ describe('POST /api/v1/export/meter-readings (validation)', function () {
 
     it('rejects invalid date format', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->url, [
+            ->postJson(route('api.export.meter-readings'), [
                 'address_ids' => [$this->address->getKey()],
                 'from_date' => 'not-a-date',
                 'to_date' => '2026-01-31',

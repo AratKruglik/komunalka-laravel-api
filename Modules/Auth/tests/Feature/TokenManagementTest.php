@@ -10,7 +10,7 @@ describe('POST /api/v1/auth/refresh-token', function () {
         $user = User::factory()->create();
         $refreshToken = RefreshToken::factory()->create(['user_id' => $user->getKey()]);
 
-        $this->postJson('/api/v1/auth/refresh-token', [
+        $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => $refreshToken->token,
         ])
             ->assertSuccessful()
@@ -29,7 +29,7 @@ describe('POST /api/v1/auth/refresh-token', function () {
         $user = User::factory()->create();
         $refreshToken = RefreshToken::factory()->create(['user_id' => $user->getKey()]);
 
-        $this->postJson('/api/v1/auth/refresh-token', [
+        $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => $refreshToken->token,
         ])->assertSuccessful();
 
@@ -42,7 +42,7 @@ describe('POST /api/v1/auth/refresh-token', function () {
         $user = User::factory()->create();
         $refreshToken = RefreshToken::factory()->create(['user_id' => $user->getKey()]);
 
-        $response = $this->postJson('/api/v1/auth/refresh-token', [
+        $response = $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => $refreshToken->token,
         ])->assertSuccessful();
 
@@ -57,7 +57,7 @@ describe('POST /api/v1/auth/refresh-token', function () {
         $user = User::factory()->create();
         $refreshToken = RefreshToken::factory()->used()->create(['user_id' => $user->getKey()]);
 
-        $this->postJson('/api/v1/auth/refresh-token', [
+        $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => $refreshToken->token,
         ])->assertUnprocessable()
             ->assertJsonValidationErrors('refresh_token');
@@ -67,7 +67,7 @@ describe('POST /api/v1/auth/refresh-token', function () {
         $user = User::factory()->create();
         $refreshToken = RefreshToken::factory()->revoked()->create(['user_id' => $user->getKey()]);
 
-        $this->postJson('/api/v1/auth/refresh-token', [
+        $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => $refreshToken->token,
         ])->assertUnprocessable()
             ->assertJsonValidationErrors('refresh_token');
@@ -77,14 +77,14 @@ describe('POST /api/v1/auth/refresh-token', function () {
         $user = User::factory()->create();
         $refreshToken = RefreshToken::factory()->expired()->create(['user_id' => $user->getKey()]);
 
-        $this->postJson('/api/v1/auth/refresh-token', [
+        $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => $refreshToken->token,
         ])->assertUnprocessable()
             ->assertJsonValidationErrors('refresh_token');
     });
 
     it('fails with invalid refresh token', function () {
-        $this->postJson('/api/v1/auth/refresh-token', [
+        $this->postJson(route('api.auth.refresh-token'), [
             'refresh_token' => 'nonexistent-token',
         ])->assertUnprocessable()
             ->assertJsonValidationErrors('refresh_token');
@@ -97,7 +97,7 @@ describe('POST /api/v1/auth/revoke-token', function () {
         $refreshToken = RefreshToken::factory()->create(['user_id' => $user->getKey()]);
 
         $this->actingAs($user, 'api')
-            ->postJson('/api/v1/auth/revoke-token', [
+            ->postJson(route('api.auth.revoke-token'), [
                 'refresh_token' => $refreshToken->token,
             ])->assertSuccessful()
             ->assertJsonPath('message', 'Token revoked successfully.');
@@ -108,7 +108,7 @@ describe('POST /api/v1/auth/revoke-token', function () {
     });
 
     it('requires authentication', function () {
-        $this->postJson('/api/v1/auth/revoke-token', [
+        $this->postJson(route('api.auth.revoke-token'), [
             'refresh_token' => 'some-token',
         ])->assertUnauthorized();
     });
@@ -119,14 +119,14 @@ describe('GET /api/v1/auth/validate-token', function () {
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api')
-            ->getJson('/api/v1/auth/validate-token')
+            ->getJson(route('api.auth.validate-token'))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $user->getKey())
             ->assertJsonPath('data.email', $user->email);
     });
 
     it('returns 401 for missing token', function () {
-        $this->getJson('/api/v1/auth/validate-token')
+        $this->getJson(route('api.auth.validate-token'))
             ->assertUnauthorized();
     });
 
@@ -134,7 +134,7 @@ describe('GET /api/v1/auth/validate-token', function () {
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api')
-            ->getJson('/api/v1/auth/validate-token')
+            ->getJson(route('api.auth.validate-token'))
             ->assertSuccessful()
             ->assertJsonStructure([
                 'data' => [

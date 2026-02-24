@@ -9,7 +9,7 @@ describe('Rate limiting', function () {
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api')
-            ->getJson('/api/v1/utility-types')
+            ->getJson(route('api.utility-types.index'))
             ->assertSuccessful();
     });
 
@@ -18,11 +18,11 @@ describe('Rate limiting', function () {
 
         for ($i = 0; $i < 60; $i++) {
             $this->actingAs($user, 'api')
-                ->getJson('/api/v1/utility-types');
+                ->getJson(route('api.utility-types.index'));
         }
 
         $this->actingAs($user, 'api')
-            ->getJson('/api/v1/utility-types')
+            ->getJson(route('api.utility-types.index'))
             ->assertStatus(429)
             ->assertJson([
                 'statusCode' => 429,
@@ -32,13 +32,13 @@ describe('Rate limiting', function () {
 
     it('returns 429 when auth rate limit is exceeded', function () {
         for ($i = 0; $i < 10; $i++) {
-            $this->postJson('/api/v1/auth/login', [
+            $this->postJson(route('api.auth.login'), [
                 'email' => 'test@example.com',
                 'password' => 'password',
             ]);
         }
 
-        $this->postJson('/api/v1/auth/login', [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'test@example.com',
             'password' => 'password',
         ])

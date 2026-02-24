@@ -21,7 +21,7 @@ describe('Exception handling', function () {
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api')
-            ->getJson('/api/v1/address/99999')
+            ->getJson(route('api.address.show', 99999))
             ->assertNotFound()
             ->assertJsonStructure([
                 'statusCode',
@@ -38,7 +38,7 @@ describe('Exception handling', function () {
     });
 
     it('returns PRD format for 401', function () {
-        $this->getJson('/api/v1/address')
+        $this->getJson(route('api.address.index'))
             ->assertUnauthorized()
             ->assertJsonStructure([
                 'statusCode',

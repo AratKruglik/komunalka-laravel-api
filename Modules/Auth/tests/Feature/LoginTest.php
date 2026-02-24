@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 use Modules\Auth\Models\User;
 
-beforeEach(function () {
-    $this->baseUrl = '/api/v1/auth/login';
-});
-
 describe('POST /api/v1/auth/login', function () {
     it('logs in with valid credentials', function () {
         User::factory()->create([
@@ -15,7 +11,7 @@ describe('POST /api/v1/auth/login', function () {
             'password' => 'password123',
         ]);
 
-        $this->postJson($this->baseUrl, [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'john@example.com',
             'password' => 'password123',
         ])->assertSuccessful();
@@ -27,7 +23,7 @@ describe('POST /api/v1/auth/login', function () {
             'password' => 'password123',
         ]);
 
-        $this->postJson($this->baseUrl, [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'john@example.com',
             'password' => 'password123',
         ])
@@ -50,7 +46,7 @@ describe('POST /api/v1/auth/login', function () {
             'password' => 'password123',
         ]);
 
-        $this->postJson($this->baseUrl, [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'john@example.com',
             'password' => 'wrong-password',
         ])->assertUnprocessable()
@@ -58,7 +54,7 @@ describe('POST /api/v1/auth/login', function () {
     });
 
     it('fails with non-existent email', function () {
-        $this->postJson($this->baseUrl, [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'nobody@example.com',
             'password' => 'password123',
         ])->assertUnprocessable()
@@ -70,7 +66,7 @@ describe('POST /api/v1/auth/login', function () {
             'email' => 'oauth@example.com',
         ]);
 
-        $this->postJson($this->baseUrl, [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'oauth@example.com',
             'password' => 'password123',
         ])->assertUnprocessable()
@@ -84,7 +80,7 @@ describe('POST /api/v1/auth/login', function () {
             'last_login_at' => null,
         ]);
 
-        $this->postJson($this->baseUrl, [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'john@example.com',
             'password' => 'password123',
         ])->assertSuccessful();

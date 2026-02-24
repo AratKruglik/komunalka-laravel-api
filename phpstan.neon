@@ -1,0 +1,21 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+parameters:
+    paths:
+        - app/
+        - Modules/
+    level: 5
+    excludePaths:
+        - Modules/Address/database
+        - Modules/Address/tests
+        - Modules/Auth/database
+        - Modules/Auth/tests
+        - Modules/Billing/database
+        - Modules/Billing/tests
+        - Modules/Export/tests
+        - Modules/Meter/database
+        - Modules/Meter/tests
+        - Modules/Shared/database
+        - Modules/Shared/tests
+        - tests

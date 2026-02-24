@@ -45,7 +45,7 @@ describe('GET /api/v1/auth/oauth/{provider}/authorize', function () {
     it('returns authorization URL for google', function () {
         mockSocialiteDriver('google');
 
-        $this->getJson('/api/v1/auth/oauth/google/authorize')
+        $this->getJson(route('api.auth.oauth.authorize', ['provider' => 'google']))
             ->assertSuccessful()
             ->assertJsonStructure(['url', 'state']);
     });
@@ -53,7 +53,7 @@ describe('GET /api/v1/auth/oauth/{provider}/authorize', function () {
     it('returns authorization URL for github', function () {
         mockSocialiteDriver('github');
 
-        $this->getJson('/api/v1/auth/oauth/github/authorize')
+        $this->getJson(route('api.auth.oauth.authorize', ['provider' => 'github']))
             ->assertSuccessful()
             ->assertJsonStructure(['url', 'state']);
     });
@@ -61,7 +61,7 @@ describe('GET /api/v1/auth/oauth/{provider}/authorize', function () {
     it('fails with invalid provider', function () {
         $this->withoutExceptionHandling();
 
-        $this->getJson('/api/v1/auth/oauth/invalid/authorize');
+        $this->getJson(route('api.auth.oauth.authorize', ['provider' => 'invalid']));
     })->throws(ValueError::class);
 });
 
@@ -77,7 +77,7 @@ describe('POST /api/v1/auth/oauth/login', function () {
             'email' => 'existing@example.com',
         ]);
 
-        $this->postJson('/api/v1/auth/oauth/login', [
+        $this->postJson(route('api.auth.oauth.login'), [
             'provider' => 'google',
             'token' => 'valid-oauth-token',
         ])
@@ -97,7 +97,7 @@ describe('POST /api/v1/auth/oauth/login', function () {
     it('creates new user from OAuth if not exists', function () {
         mockSocialiteDriver('google', ['email' => 'new-oauth@example.com']);
 
-        $this->postJson('/api/v1/auth/oauth/login', [
+        $this->postJson(route('api.auth.oauth.login'), [
             'provider' => 'google',
             'token' => 'valid-oauth-token',
         ])->assertSuccessful();
@@ -121,7 +121,7 @@ describe('POST /api/v1/auth/oauth/login', function () {
             'email' => 'local@example.com',
         ]);
 
-        $this->postJson('/api/v1/auth/oauth/login', [
+        $this->postJson(route('api.auth.oauth.login'), [
             'provider' => 'google',
             'token' => 'valid-oauth-token',
         ])
@@ -146,7 +146,7 @@ describe('POST /api/v1/auth/oauth/login', function () {
             'email' => $user->email,
         ]);
 
-        $this->postJson('/api/v1/auth/oauth/login', [
+        $this->postJson(route('api.auth.oauth.login'), [
             'provider' => 'google',
             'token' => 'valid-oauth-token',
         ])->assertSuccessful();
@@ -157,7 +157,7 @@ describe('POST /api/v1/auth/oauth/login', function () {
     });
 
     it('fails with invalid provider', function () {
-        $this->postJson('/api/v1/auth/oauth/login', [
+        $this->postJson(route('api.auth.oauth.login'), [
             'provider' => 'invalid',
             'token' => 'some-token',
         ])->assertUnprocessable()
@@ -169,7 +169,7 @@ describe('POST /api/v1/auth/oauth/callback', function () {
     it('handles successful callback', function () {
         mockSocialiteDriver('google');
 
-        $this->postJson('/api/v1/auth/oauth/callback', [
+        $this->postJson(route('api.auth.oauth.callback'), [
             'provider' => 'google',
             'code' => 'valid-auth-code',
         ])
@@ -186,7 +186,7 @@ describe('POST /api/v1/auth/oauth/callback', function () {
     });
 
     it('handles callback with error parameter', function () {
-        $this->postJson('/api/v1/auth/oauth/callback', [
+        $this->postJson(route('api.auth.oauth.callback'), [
             'provider' => 'google',
             'error' => 'access_denied',
             'error_description' => 'User denied access',
@@ -202,7 +202,7 @@ describe('POST /api/v1/auth/oauth/link', function () {
         mockSocialiteDriver('google');
 
         $this->actingAs($user, 'api')
-            ->postJson('/api/v1/auth/oauth/link', [
+            ->postJson(route('api.auth.oauth.link'), [
                 'provider' => 'google',
                 'token' => 'valid-oauth-token',
             ])
@@ -216,7 +216,7 @@ describe('POST /api/v1/auth/oauth/link', function () {
     });
 
     it('requires authentication', function () {
-        $this->postJson('/api/v1/auth/oauth/link', [
+        $this->postJson(route('api.auth.oauth.link'), [
             'provider' => 'google',
             'token' => 'some-token',
         ])->assertUnauthorized();
@@ -232,7 +232,7 @@ describe('DELETE /api/v1/auth/oauth/unlink/{provider}', function () {
         ]);
 
         $this->actingAs($user, 'api')
-            ->deleteJson('/api/v1/auth/oauth/unlink/google', [
+            ->deleteJson(route('api.auth.oauth.unlink', ['provider' => 'google']), [
                 'password' => 'password123',
             ])
             ->assertSuccessful()
@@ -248,7 +248,7 @@ describe('DELETE /api/v1/auth/oauth/unlink/{provider}', function () {
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api')
-            ->deleteJson('/api/v1/auth/oauth/unlink/google', [])
+            ->deleteJson(route('api.auth.oauth.unlink', ['provider' => 'google']), [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     });
@@ -257,14 +257,14 @@ describe('DELETE /api/v1/auth/oauth/unlink/{provider}', function () {
         $user = User::factory()->create(['password' => 'password123']);
 
         $this->actingAs($user, 'api')
-            ->deleteJson('/api/v1/auth/oauth/unlink/google', [
+            ->deleteJson(route('api.auth.oauth.unlink', ['provider' => 'google']), [
                 'password' => 'wrong-password',
             ])->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     });
 
     it('requires authentication', function () {
-        $this->deleteJson('/api/v1/auth/oauth/unlink/google', [
+        $this->deleteJson(route('api.auth.oauth.unlink', ['provider' => 'google']), [
             'password' => 'password123',
         ])->assertUnauthorized();
     });

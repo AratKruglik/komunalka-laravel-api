@@ -24,7 +24,7 @@ describe('POST /api/v1/meterreading (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson('/api/v1/meterreading', $payload)
+            ->postJson(route('api.legacy-meter-reading.store'), $payload)
             ->assertCreated();
 
         $this->assertDatabaseHas('service_counter_values', [
@@ -41,7 +41,7 @@ describe('POST /api/v1/meterreading (store)', function () {
         unset($payload[$field]);
 
         $this->actingAs($this->user, 'api')
-            ->postJson('/api/v1/meterreading', $payload)
+            ->postJson(route('api.legacy-meter-reading.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['service_counter_id', 'value']);
@@ -55,7 +55,7 @@ describe('GET /api/v1/meterreading/{id} (show)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/api/v1/meterreading/{$counterValue->id}")
+            ->getJson(route('api.legacy-meter-reading.show', $counterValue->getKey()))
             ->assertSuccessful();
     });
 
@@ -65,7 +65,7 @@ describe('GET /api/v1/meterreading/{id} (show)', function () {
         $counterValue = ServiceCounterValue::factory()->create(['service_counter_id' => $otherCounter->id]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/api/v1/meterreading/{$counterValue->id}")
+            ->getJson(route('api.legacy-meter-reading.show', $counterValue->getKey()))
             ->assertNotFound();
     });
 });
@@ -78,7 +78,7 @@ describe('DELETE /api/v1/meterreading/{id} (destroy)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("/api/v1/meterreading/{$counterValue->id}")
+            ->deleteJson(route('api.legacy-meter-reading.destroy', $counterValue->getKey()))
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('service_counter_values', ['id' => $counterValue->id]);

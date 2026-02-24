@@ -8,7 +8,6 @@ use Modules\Address\Models\Region;
 use Modules\Auth\Models\User;
 
 beforeEach(function () {
-    $this->baseUrl = '/api/v1/address';
     $this->user = User::factory()->create();
     $this->region = Region::factory()->create();
     $this->addressType = AddressType::factory()->create();
@@ -22,7 +21,7 @@ describe('GET /address (index)', function () {
         }
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.address.index'))
             ->assertSuccessful()
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure(['data' => [['id', 'city', 'street', 'building_number', 'region', 'address_type']]]);
@@ -34,7 +33,7 @@ describe('GET /address (index)', function () {
         $otherUser->addresses()->attach($address->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.address.index'))
             ->assertSuccessful()
             ->assertJsonCount(0, 'data');
     });
@@ -46,14 +45,14 @@ describe('GET /address (index)', function () {
         $this->user->addresses()->attach($address2->id, ['is_primary' => true]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}?sort_by=is_primary&desc=true")
+            ->getJson(route('api.address.index', ['sort_by' => 'is_primary', 'desc' => 'true']))
             ->assertSuccessful();
 
         expect($response->json('data.0.is_primary'))->toBeTrue();
     });
 
     it('returns 401 for unauthenticated request', function () {
-        $this->getJson($this->baseUrl)->assertUnauthorized();
+        $this->getJson(route('api.address.index'))->assertUnauthorized();
     });
 });
 
@@ -66,7 +65,7 @@ describe('GET /address/{id} (show)', function () {
         $this->user->addresses()->attach($address->id, ['is_primary' => true]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$address->id}")
+            ->getJson(route('api.address.show', $address->id))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $address->id)
             ->assertJsonPath('data.region.id', $this->region->id)
@@ -80,13 +79,13 @@ describe('GET /address/{id} (show)', function () {
         $otherUser->addresses()->attach($address->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$address->id}")
+            ->getJson(route('api.address.show', $address->id))
             ->assertNotFound();
     });
 
     it('returns 404 for non-existent address', function () {
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/999")
+            ->getJson(route('api.address.show', 999))
             ->assertNotFound();
     });
 });
@@ -105,7 +104,7 @@ describe('POST /address (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.address.store'), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.city', 'Київ')
             ->assertJsonPath('data.street', 'Хрещатик')
@@ -132,7 +131,7 @@ describe('POST /address (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.address.store'), $payload)
             ->assertSuccessful();
 
         $this->assertDatabaseHas('address_user', [
@@ -153,14 +152,14 @@ describe('POST /address (store)', function () {
         unset($payload[$field]);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.address.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['region_id', 'address_type_id', 'city', 'street', 'building_number']);
 
     it('returns Ukrainian validation messages', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, [])
+            ->postJson(route('api.address.store'), [])
             ->assertUnprocessable()
             ->assertJsonValidationErrorFor('city');
     });
@@ -175,7 +174,7 @@ describe('POST /address (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.address.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('region_id');
     });
@@ -203,7 +202,7 @@ describe('PUT /address/{id} (update)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$address->id}", $payload)
+            ->putJson(route('api.address.update', $address->id), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.city', 'Одеса')
             ->assertJsonPath('data.region.id', $newRegion->id);
@@ -225,7 +224,7 @@ describe('PUT /address/{id} (update)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$address->id}", $payload)
+            ->putJson(route('api.address.update', $address->id), $payload)
             ->assertNotFound();
     });
 });
@@ -240,7 +239,7 @@ describe('PATCH /address/{id} (patch)', function () {
         $this->user->addresses()->attach($address->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->patchJson("{$this->baseUrl}/{$address->id}", ['city' => 'Харків'])
+            ->patchJson(route('api.address.patch', $address->id), ['city' => 'Харків'])
             ->assertSuccessful()
             ->assertJsonPath('data.city', 'Харків');
 
@@ -254,7 +253,7 @@ describe('PATCH /address/{id} (patch)', function () {
         $this->user->addresses()->attach($address2->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->patchJson("{$this->baseUrl}/{$address2->id}", ['is_primary' => true])
+            ->patchJson(route('api.address.patch', $address2->id), ['is_primary' => true])
             ->assertSuccessful();
 
         $this->assertDatabaseHas('address_user', [
@@ -275,7 +274,7 @@ describe('PATCH /address/{id} (patch)', function () {
         $otherUser->addresses()->attach($address->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->patchJson("{$this->baseUrl}/{$address->id}", ['city' => 'Тест'])
+            ->patchJson(route('api.address.patch', $address->id), ['city' => 'Тест'])
             ->assertNotFound();
     });
 });
@@ -286,7 +285,7 @@ describe('DELETE /address/{id} (destroy)', function () {
         $this->user->addresses()->attach($address->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$address->id}")
+            ->deleteJson(route('api.address.destroy', $address->id))
             ->assertSuccessful();
 
         $this->assertSoftDeleted('addresses', ['id' => $address->id]);
@@ -302,7 +301,7 @@ describe('DELETE /address/{id} (destroy)', function () {
         $otherUser->addresses()->attach($address->id, ['is_primary' => false]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$address->id}")
+            ->deleteJson(route('api.address.destroy', $address->id))
             ->assertNotFound();
     });
 });

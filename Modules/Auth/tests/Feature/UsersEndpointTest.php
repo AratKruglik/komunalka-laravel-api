@@ -8,7 +8,6 @@ use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
 
 beforeEach(function () {
-    $this->baseUrl = '/api/v1/users';
     $this->user = User::factory()->create();
 });
 
@@ -20,7 +19,7 @@ describe('GET /api/v1/users (index)', function () {
         User::factory()->count(2)->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.users.index'))
             ->assertSuccessful()
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure(['data' => [['id', 'username', 'first_name', 'last_name', 'email', 'role']]]);
@@ -31,7 +30,7 @@ describe('GET /api/v1/users (index)', function () {
         $this->user->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
         $response = $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.users.index'))
             ->assertSuccessful();
 
         $userData = collect($response->json('data'))->firstWhere('id', $this->user->getKey());
@@ -40,7 +39,7 @@ describe('GET /api/v1/users (index)', function () {
     });
 
     it('returns 401 when unauthenticated', function () {
-        $this->getJson($this->baseUrl)->assertUnauthorized();
+        $this->getJson(route('api.users.index'))->assertUnauthorized();
     });
 });
 
@@ -50,7 +49,7 @@ describe('GET /api/v1/users/{id} (show)', function () {
         $this->user->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$this->user->getKey()}")
+            ->getJson(route('api.users.show', $this->user->getKey()))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $this->user->getKey())
             ->assertJsonPath('data.username', $this->user->username)
@@ -77,12 +76,12 @@ describe('GET /api/v1/users/{id} (show)', function () {
 
     it('returns 404 for non-existent user', function () {
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/99999")
+            ->getJson(route('api.users.show', 99999))
             ->assertNotFound();
     });
 
     it('returns 401 when unauthenticated', function () {
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}")->assertUnauthorized();
+        $this->getJson(route('api.users.show', $this->user->getKey()))->assertUnauthorized();
     });
 });
 
@@ -102,7 +101,7 @@ describe('POST /api/v1/users (store)', function () {
 
     it('creates a new user', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $this->validPayload)
+            ->postJson(route('api.users.store'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonPath('data.username', 'newuser')
             ->assertJsonPath('data.email', 'newuser@example.com')
@@ -121,7 +120,7 @@ describe('POST /api/v1/users (store)', function () {
         $payload = array_merge($this->validPayload, ['email' => 'taken@example.com']);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('email');
     });
@@ -132,7 +131,7 @@ describe('POST /api/v1/users (store)', function () {
         $payload = array_merge($this->validPayload, ['username' => 'taken']);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('username');
     });
@@ -142,7 +141,7 @@ describe('POST /api/v1/users (store)', function () {
         unset($payload[$field]);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['username', 'first_name', 'last_name', 'email', 'password', 'role']);
@@ -153,7 +152,7 @@ describe('POST /api/v1/users (store)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     });
@@ -162,20 +161,20 @@ describe('POST /api/v1/users (store)', function () {
         $payload = array_merge($this->validPayload, ['role' => 'superadmin']);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('role');
     });
 
     it('returns 401 when unauthenticated', function () {
-        $this->postJson($this->baseUrl, $this->validPayload)->assertUnauthorized();
+        $this->postJson(route('api.users.store'), $this->validPayload)->assertUnauthorized();
     });
 });
 
 describe('PUT /api/v1/users/{id} (update)', function () {
     it('updates user profile fields', function () {
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$this->user->getKey()}", [
+            ->putJson(route('api.users.update', $this->user->getKey()), [
                 'first_name' => 'Updated',
                 'last_name' => 'Name',
                 'phone_number' => '+380509999999',
@@ -198,7 +197,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
         $avatar = UploadedFile::fake()->image('avatar.jpg', 800, 800);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$this->user->getKey()}", [
+            ->putJson(route('api.users.update', $this->user->getKey()), [
                 'avatar' => $avatar,
             ])
             ->assertSuccessful();
@@ -210,7 +209,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
         $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$this->user->getKey()}", [
+            ->putJson(route('api.users.update', $this->user->getKey()), [
                 'avatar' => $file,
             ])
             ->assertUnprocessable()
@@ -221,7 +220,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
         $avatar = UploadedFile::fake()->image('large.jpg')->size(3000);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$this->user->getKey()}", [
+            ->putJson(route('api.users.update', $this->user->getKey()), [
                 'avatar' => $avatar,
             ])
             ->assertUnprocessable()
@@ -232,7 +231,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
         $user = User::factory()->create(['password' => 'oldpassword123']);
 
         $this->actingAs($user, 'api')
-            ->putJson("{$this->baseUrl}/{$user->getKey()}", [
+            ->putJson(route('api.users.update', $user->getKey()), [
                 'current_password' => 'oldpassword123',
                 'new_password' => 'newpassword123',
                 'new_password_confirmation' => 'newpassword123',
@@ -242,7 +241,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
 
     it('rejects password change with invalid current password', function () {
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$this->user->getKey()}", [
+            ->putJson(route('api.users.update', $this->user->getKey()), [
                 'current_password' => 'wrong-password',
                 'new_password' => 'newpassword123',
                 'new_password_confirmation' => 'newpassword123',
@@ -253,7 +252,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
 
     it('requires current password when setting new password', function () {
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$this->user->getKey()}", [
+            ->putJson(route('api.users.update', $this->user->getKey()), [
                 'new_password' => 'newpassword123',
                 'new_password_confirmation' => 'newpassword123',
             ])
@@ -263,12 +262,12 @@ describe('PUT /api/v1/users/{id} (update)', function () {
 
     it('returns 404 for non-existent user', function () {
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/99999", ['first_name' => 'Test'])
+            ->putJson(route('api.users.update', 99999), ['first_name' => 'Test'])
             ->assertNotFound();
     });
 
     it('returns 401 when unauthenticated', function () {
-        $this->putJson("{$this->baseUrl}/{$this->user->getKey()}", ['first_name' => 'Test'])
+        $this->putJson(route('api.users.update', $this->user->getKey()), ['first_name' => 'Test'])
             ->assertUnauthorized();
     });
 });
@@ -278,7 +277,7 @@ describe('DELETE /api/v1/users/{id} (destroy)', function () {
         $userToDelete = User::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$userToDelete->getKey()}")
+            ->deleteJson(route('api.users.destroy', $userToDelete->getKey()))
             ->assertSuccessful()
             ->assertJsonPath('message', 'User deleted successfully.');
 
@@ -287,12 +286,12 @@ describe('DELETE /api/v1/users/{id} (destroy)', function () {
 
     it('returns 404 for non-existent user', function () {
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/99999")
+            ->deleteJson(route('api.users.destroy', 99999))
             ->assertNotFound();
     });
 
     it('returns 401 when unauthenticated', function () {
-        $this->deleteJson("{$this->baseUrl}/{$this->user->getKey()}")->assertUnauthorized();
+        $this->deleteJson(route('api.users.destroy', $this->user->getKey()))->assertUnauthorized();
     });
 });
 
@@ -310,22 +309,22 @@ describe('GET /api/v1/users/{id}/avatar (public)', function () {
         }
         copy($media->getPath(), $conversionPath);
 
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}/avatar")
+        $this->getJson(route('api.users.avatar', $this->user->getKey()))
             ->assertSuccessful();
     });
 
     it('returns 404 when user has no avatar', function () {
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}/avatar")
+        $this->getJson(route('api.users.avatar', $this->user->getKey()))
             ->assertNotFound();
     });
 
     it('returns 404 for non-existent user', function () {
-        $this->getJson("{$this->baseUrl}/99999/avatar")
+        $this->getJson(route('api.users.avatar', 99999))
             ->assertNotFound();
     });
 
     it('does not require authentication', function () {
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}/avatar")
+        $this->getJson(route('api.users.avatar', $this->user->getKey()))
             ->assertNotFound();
     });
 });
@@ -344,17 +343,17 @@ describe('GET /api/v1/users/{id}/avatar/thumbnail (public)', function () {
         }
         copy($media->getPath(), $conversionPath);
 
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}/avatar/thumbnail")
+        $this->getJson(route('api.users.avatar.thumbnail', $this->user->getKey()))
             ->assertSuccessful();
     });
 
     it('returns 404 when user has no avatar', function () {
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}/avatar/thumbnail")
+        $this->getJson(route('api.users.avatar.thumbnail', $this->user->getKey()))
             ->assertNotFound();
     });
 
     it('does not require authentication', function () {
-        $this->getJson("{$this->baseUrl}/{$this->user->getKey()}/avatar/thumbnail")
+        $this->getJson(route('api.users.avatar.thumbnail', $this->user->getKey()))
             ->assertNotFound();
     });
 });

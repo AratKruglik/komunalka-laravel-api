@@ -10,7 +10,6 @@ use Modules\Meter\Models\Meter;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function () {
-    $this->baseUrl = '/api/v1/meter';
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->id, ['is_primary' => true]);
@@ -25,7 +24,7 @@ describe('GET /api/v1/meter (index)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.meter.index'))
             ->assertSuccessful()
             ->assertJsonCount(2, 'data');
     });
@@ -38,13 +37,13 @@ describe('GET /api/v1/meter (index)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.meter.index'))
             ->assertSuccessful()
             ->assertJsonCount(0, 'data');
     });
 
     it('returns 401 when unauthenticated', function () {
-        $this->getJson($this->baseUrl)->assertUnauthorized();
+        $this->getJson(route('api.meter.index'))->assertUnauthorized();
     });
 });
 
@@ -56,7 +55,7 @@ describe('GET /api/v1/meter/{id} (show)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$meter->id}")
+            ->getJson(route('api.meter.show', $meter->getKey()))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $meter->id)
             ->assertJsonStructure(['data' => ['id', 'serial_number', 'name', 'is_active', 'address_id', 'utility_type']]);
@@ -69,7 +68,7 @@ describe('GET /api/v1/meter/{id} (show)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$meter->id}")
+            ->getJson(route('api.meter.show', $meter->getKey()))
             ->assertNotFound();
     });
 });
@@ -82,7 +81,7 @@ describe('GET /api/v1/meter/address/{addressId} (byAddress)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/address/{$this->address->id}")
+            ->getJson(route('api.meter.by-address', $this->address->getKey()))
             ->assertSuccessful()
             ->assertJsonCount(2, 'data');
     });
@@ -91,7 +90,7 @@ describe('GET /api/v1/meter/address/{addressId} (byAddress)', function () {
         $otherAddress = Address::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/address/{$otherAddress->id}")
+            ->getJson(route('api.meter.by-address', $otherAddress->getKey()))
             ->assertNotFound();
     });
 });
@@ -110,7 +109,7 @@ describe('GET /api/v1/meter/active (active)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/active")
+            ->getJson(route('api.meter.active'))
             ->assertSuccessful()
             ->assertJsonCount(1, 'data');
     });
@@ -128,7 +127,7 @@ describe('POST /api/v1/meter (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.meter.store'), $payload)
             ->assertCreated()
             ->assertJsonPath('data.name', 'Лічильник газу')
             ->assertJsonPath('data.address_id', $this->address->id);
@@ -147,7 +146,7 @@ describe('POST /api/v1/meter (store)', function () {
         unset($payload[$field]);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.meter.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['address_id', 'utility_type_id', 'serial_number', 'name', 'initial_reading']);
@@ -164,7 +163,7 @@ describe('POST /api/v1/meter (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.meter.store'), $payload)
             ->assertNotFound();
     });
 });
@@ -181,7 +180,7 @@ describe('POST /api/v1/meter/{id}/photo (uploadPhoto)', function () {
         $photo = UploadedFile::fake()->image('meter.jpg');
 
         $this->actingAs($this->user, 'api')
-            ->postJson("{$this->baseUrl}/{$meter->id}/photo", ['photo' => $photo])
+            ->postJson(route('api.meter.upload-photo', $meter->getKey()), ['photo' => $photo])
             ->assertSuccessful();
     });
 
@@ -194,7 +193,7 @@ describe('POST /api/v1/meter/{id}/photo (uploadPhoto)', function () {
         $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
 
         $this->actingAs($this->user, 'api')
-            ->postJson("{$this->baseUrl}/{$meter->id}/photo", ['photo' => $file])
+            ->postJson(route('api.meter.upload-photo', $meter->getKey()), ['photo' => $file])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('photo');
     });
@@ -209,7 +208,7 @@ describe('PUT /api/v1/meter/{id} (update)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$meter->id}", ['name' => 'Новий лічильник'])
+            ->putJson(route('api.meter.update', $meter->getKey()), ['name' => 'Новий лічильник'])
             ->assertSuccessful()
             ->assertJsonPath('data.name', 'Новий лічильник');
 
@@ -223,7 +222,7 @@ describe('PUT /api/v1/meter/{id} (update)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$meter->id}", ['name' => 'Updated'])
+            ->putJson(route('api.meter.update', $meter->getKey()), ['name' => 'Updated'])
             ->assertNotFound();
     });
 });
@@ -236,7 +235,7 @@ describe('DELETE /api/v1/meter/{id} (destroy)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$meter->id}")
+            ->deleteJson(route('api.meter.destroy', $meter->getKey()))
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('meters', ['id' => $meter->id]);
@@ -249,7 +248,7 @@ describe('DELETE /api/v1/meter/{id} (destroy)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$meter->id}")
+            ->deleteJson(route('api.meter.destroy', $meter->getKey()))
             ->assertNotFound();
     });
 });

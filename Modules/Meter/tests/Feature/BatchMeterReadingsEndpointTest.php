@@ -36,7 +36,7 @@ describe('POST /api/v1/meter-readings/batch (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson('/api/v1/meter-readings/batch', $payload)
+            ->postJson(route('api.meter-readings.store'), $payload)
             ->assertCreated()
             ->assertJsonPath('data.readings.0.consumption', 50)
             ->assertJsonPath('data.readings.0.reading_value', 150);
@@ -60,7 +60,7 @@ describe('POST /api/v1/meter-readings/batch (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson('/api/v1/meter-readings/batch', $payload)
+            ->postJson(route('api.meter-readings.store'), $payload)
             ->assertUnprocessable();
     });
 
@@ -99,7 +99,7 @@ describe('POST /api/v1/meter-readings/batch (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson('/api/v1/meter-readings/batch', $payload)
+            ->postJson(route('api.meter-readings.store'), $payload)
             ->assertCreated()
             ->assertJsonStructure(['data' => ['readings', 'tariff_calculations']]);
     });
@@ -112,7 +112,7 @@ describe('GET /api/v1/meter-readings/address/{addressId} (byAddress)', function 
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/api/v1/meter-readings/address/{$this->address->id}")
+            ->getJson(route('api.meter-readings.by-address', $this->address->getKey()))
             ->assertSuccessful()
             ->assertJsonCount(3, 'data');
     });
@@ -134,7 +134,7 @@ describe('GET /api/v1/meter-readings/address/{addressId} (byAddress)', function 
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/api/v1/meter-readings/address/{$this->address->id}?from=2026-02-01&to=2026-02-28")
+            ->getJson(route('api.meter-readings.by-address', ['addressId' => $this->address->getKey(), 'from' => '2026-02-01', 'to' => '2026-02-28']))
             ->assertSuccessful()
             ->assertJsonCount(1, 'data');
     });
@@ -147,7 +147,7 @@ describe('GET /api/v1/meter-readings/{id} (show)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/api/v1/meter-readings/{$reading->id}")
+            ->getJson(route('api.meter-readings.show', $reading->getKey()))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $reading->id)
             ->assertJsonStructure(['data' => ['id', 'reading_value', 'reading_date', 'consumption']]);
@@ -159,7 +159,7 @@ describe('GET /api/v1/meter-readings/{id} (show)', function () {
         $reading = MeterReading::factory()->create(['meter_id' => $otherMeter->id]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/api/v1/meter-readings/{$reading->id}")
+            ->getJson(route('api.meter-readings.show', $reading->getKey()))
             ->assertNotFound();
     });
 });
@@ -171,7 +171,7 @@ describe('DELETE /api/v1/meter-readings/{id} (destroy)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("/api/v1/meter-readings/{$reading->id}")
+            ->deleteJson(route('api.meter-readings.destroy', $reading->getKey()))
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('meter_readings', ['id' => $reading->id]);
@@ -183,7 +183,7 @@ describe('DELETE /api/v1/meter-readings/{id} (destroy)', function () {
         $reading = MeterReading::factory()->create(['meter_id' => $otherMeter->id]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("/api/v1/meter-readings/{$reading->id}")
+            ->deleteJson(route('api.meter-readings.destroy', $reading->getKey()))
             ->assertNotFound();
     });
 });

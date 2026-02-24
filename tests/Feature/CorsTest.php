@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 describe('CORS', function () {
     it('includes CORS headers on API responses', function () {
-        $this->getJson('/api/v1/utility-types', [
+        $this->getJson(route('api.utility-types.index'), [
             'Origin' => 'http://example.com',
         ])
             ->assertHeader('Access-Control-Allow-Origin');
     });
 
     it('responds to OPTIONS preflight requests', function () {
-        $this->options('/api/v1/utility-types', [], [
+        $this->options(route('api.utility-types.index'), [], [
             'Origin' => 'http://example.com',
             'Access-Control-Request-Method' => 'GET',
             'Access-Control-Request-Headers' => 'Authorization',

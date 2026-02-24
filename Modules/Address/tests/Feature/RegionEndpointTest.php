@@ -6,7 +6,6 @@ use Modules\Address\Models\Region;
 use Modules\Auth\Models\User;
 
 beforeEach(function () {
-    $this->baseUrl = '/api/v1/region';
     $this->user = User::factory()->create();
 });
 
@@ -15,14 +14,14 @@ describe('GET /region (index)', function () {
         Region::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.region.index'))
             ->assertSuccessful()
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure(['data' => [['id', 'name']]]);
     });
 
     it('returns 401 without authentication', function () {
-        $this->getJson($this->baseUrl)->assertUnauthorized();
+        $this->getJson(route('api.region.index'))->assertUnauthorized();
     });
 });
 
@@ -31,7 +30,7 @@ describe('GET /region/{id} (show)', function () {
         $region = Region::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$region->id}")
+            ->getJson(route('api.region.show', $region->id))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $region->id)
             ->assertJsonPath('data.name', $region->name);
@@ -39,7 +38,7 @@ describe('GET /region/{id} (show)', function () {
 
     it('returns 404 for non-existent region', function () {
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/999")
+            ->getJson(route('api.region.show', 999))
             ->assertNotFound();
     });
 });

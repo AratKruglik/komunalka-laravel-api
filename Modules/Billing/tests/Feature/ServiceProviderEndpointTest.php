@@ -10,7 +10,6 @@ use Modules\Shared\Models\Currency;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function () {
-    $this->baseUrl = '/api/v1/service-providers';
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->id, ['is_primary' => true]);
@@ -25,7 +24,7 @@ describe('GET /service-providers (index)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.service-providers.index'))
             ->assertSuccessful()
             ->assertJsonCount(2, 'data')
             ->assertJsonStructure(['data' => [['id', 'name', 'is_active', 'address_id', 'utility_type']]]);
@@ -42,13 +41,13 @@ describe('GET /service-providers (index)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson($this->baseUrl)
+            ->getJson(route('api.service-providers.index'))
             ->assertSuccessful()
             ->assertJsonCount(0, 'data');
     });
 
     it('returns 401 for unauthenticated request', function () {
-        $this->getJson($this->baseUrl)->assertUnauthorized();
+        $this->getJson(route('api.service-providers.index'))->assertUnauthorized();
     });
 });
 
@@ -67,7 +66,7 @@ describe('GET /service-providers/{id} (show)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$provider->id}")
+            ->getJson(route('api.service-providers.show', $provider->id))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $provider->id)
             ->assertJsonPath('data.utility_type.id', $this->utilityType->id)
@@ -84,13 +83,13 @@ describe('GET /service-providers/{id} (show)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/{$provider->id}")
+            ->getJson(route('api.service-providers.show', $provider->id))
             ->assertNotFound();
     });
 
     it('returns 404 for non-existent provider', function () {
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/999")
+            ->getJson(route('api.service-providers.show', 999))
             ->assertNotFound();
     });
 });
@@ -103,7 +102,7 @@ describe('GET /service-providers/address/{addressId} (byAddress)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/address/{$this->address->id}")
+            ->getJson(route('api.service-providers.by-address', $this->address->id))
             ->assertSuccessful()
             ->assertJsonCount(2, 'data');
     });
@@ -112,7 +111,7 @@ describe('GET /service-providers/address/{addressId} (byAddress)', function () {
         $otherAddress = Address::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson("{$this->baseUrl}/address/{$otherAddress->id}")
+            ->getJson(route('api.service-providers.by-address', $otherAddress->id))
             ->assertNotFound();
     });
 });
@@ -131,7 +130,7 @@ describe('POST /service-providers (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.service-providers.store'), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.name', 'Київенерго')
             ->assertJsonPath('data.address_id', $this->address->id)
@@ -161,7 +160,7 @@ describe('POST /service-providers (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.service-providers.store'), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.name', 'Газпостач')
             ->assertJsonCount(1, 'data.tariffs');
@@ -178,14 +177,14 @@ describe('POST /service-providers (store)', function () {
         unset($payload[$field]);
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.service-providers.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['address_id', 'utility_type_id', 'name']);
 
     it('returns Ukrainian validation messages', function () {
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, [])
+            ->postJson(route('api.service-providers.store'), [])
             ->assertUnprocessable()
             ->assertJsonValidationErrorFor('name');
     });
@@ -198,7 +197,7 @@ describe('POST /service-providers (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.service-providers.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('address_id');
     });
@@ -223,7 +222,7 @@ describe('POST /service-providers (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.service-providers.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('tariffs.0.effective_to');
     });
@@ -238,7 +237,7 @@ describe('POST /service-providers (store)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->postJson($this->baseUrl, $payload)
+            ->postJson(route('api.service-providers.store'), $payload)
             ->assertNotFound();
     });
 });
@@ -262,7 +261,7 @@ describe('PUT /service-providers/{id} (update)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$provider->id}", $payload)
+            ->putJson(route('api.service-providers.update', $provider->id), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.name', 'Оновлена назва')
             ->assertJsonPath('data.is_active', false)
@@ -286,7 +285,7 @@ describe('PUT /service-providers/{id} (update)', function () {
         ];
 
         $this->actingAs($this->user, 'api')
-            ->putJson("{$this->baseUrl}/{$provider->id}", $payload)
+            ->putJson(route('api.service-providers.update', $provider->id), $payload)
             ->assertNotFound();
     });
 });
@@ -304,7 +303,7 @@ describe('DELETE /service-providers/{id} (destroy)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$provider->id}")
+            ->deleteJson(route('api.service-providers.destroy', $provider->id))
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('service_providers', ['id' => $provider->id]);
@@ -321,7 +320,7 @@ describe('DELETE /service-providers/{id} (destroy)', function () {
         ]);
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("{$this->baseUrl}/{$provider->id}")
+            ->deleteJson(route('api.service-providers.destroy', $provider->id))
             ->assertNotFound();
     });
 });

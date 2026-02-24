@@ -5,8 +5,6 @@ declare(strict_types=1);
 use Modules\Auth\Models\User;
 
 beforeEach(function () {
-    $this->baseUrl = '/api/v1/auth/register';
-
     $this->validPayload = [
         'username' => 'johndoe',
         'first_name' => 'John',
@@ -20,7 +18,7 @@ beforeEach(function () {
 
 describe('POST /api/v1/auth/register', function () {
     it('registers a new user successfully', function () {
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonPath('data.user.username', 'johndoe')
             ->assertJsonPath('data.user.email', 'john@example.com');
@@ -34,7 +32,7 @@ describe('POST /api/v1/auth/register', function () {
     });
 
     it('returns authentication tokens on registration', function () {
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonStructure([
                 'data' => [
@@ -49,7 +47,7 @@ describe('POST /api/v1/auth/register', function () {
     });
 
     it('returns user data in response', function () {
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonStructure([
                 'data' => [
@@ -74,7 +72,7 @@ describe('POST /api/v1/auth/register', function () {
         $payload = $this->validPayload;
         unset($payload[$field]);
 
-        $this->postJson($this->baseUrl, $payload)
+        $this->postJson(route('api.auth.register'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['username', 'first_name', 'last_name', 'email', 'password']);
@@ -82,7 +80,7 @@ describe('POST /api/v1/auth/register', function () {
     it('fails with invalid email format', function () {
         $payload = array_merge($this->validPayload, ['email' => 'not-an-email']);
 
-        $this->postJson($this->baseUrl, $payload)
+        $this->postJson(route('api.auth.register'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('email');
     });
@@ -90,7 +88,7 @@ describe('POST /api/v1/auth/register', function () {
     it('fails with duplicate email', function () {
         User::factory()->create(['email' => 'john@example.com']);
 
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('email');
     });
@@ -98,7 +96,7 @@ describe('POST /api/v1/auth/register', function () {
     it('fails with duplicate username', function () {
         User::factory()->create(['username' => 'johndoe']);
 
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('username');
     });
@@ -108,7 +106,7 @@ describe('POST /api/v1/auth/register', function () {
             'password_confirmation' => 'different-password',
         ]);
 
-        $this->postJson($this->baseUrl, $payload)
+        $this->postJson(route('api.auth.register'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     });
@@ -119,19 +117,19 @@ describe('POST /api/v1/auth/register', function () {
             'password_confirmation' => 'short',
         ]);
 
-        $this->postJson($this->baseUrl, $payload)
+        $this->postJson(route('api.auth.register'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     });
 
     it('sets default role to user', function () {
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonPath('data.user.role', 'user');
     });
 
     it('sets default auth provider to local', function () {
-        $this->postJson($this->baseUrl, $this->validPayload)
+        $this->postJson(route('api.auth.register'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonPath('data.user.auth_provider', 'local');
     });
