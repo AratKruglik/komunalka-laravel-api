@@ -651,8 +651,8 @@ docker compose exec app php artisan module:make Export
 
 ### 8.5 Documentation
 
-- [ ] Оновити CLAUDE.md з новою модульною структурою
-- [ ] Оновити README.md
+- [x] Оновити CLAUDE.md з новою модульною структурою
+- [x] Оновити README.md з інструкцією по локальному розгортанню
 
 **Deliverable:** Production-ready API, повністю сумісне з .NET версією.
 

@@ -57,22 +57,36 @@ REST API для управління комунальними послугами
 
 ## Repository structure
 
-- `app/` — Models, Controllers, Providers, Form Requests, Jobs, Policies
+- `app/` — Base controller, service provider, repository contracts and base implementation
+- `Modules/` — Domain modules (nwidart/laravel-modules), each with models, actions, controllers, routes, resources, DTOs, repositories, factories, migrations, tests
 - `bootstrap/` — `app.php` (middleware, exceptions, routing), `providers.php`
 - `config/` — Configuration files
-- `database/` — Migrations, factories, seeders
-- `routes/` — `web.php`, `console.php`, API route files
-- `tests/` — Pest 4 tests (`Feature/`, `Unit/`)
-- `resources/` — Views, CSS, JS
-- `public/` — Web entry point, static assets
+- `tests/` — Cross-module Pest 4 tests (`Feature/EndToEnd/`, `Feature/ApiCompatibility/`, `Feature/EndpointCoverage/`, `Feature/Performance/`)
+
+### Modules
+
+| Module | Models | Actions | Endpoints | Purpose |
+|--------|--------|---------|-----------|---------|
+| **Shared** | Currency, UtilityType + 5 legacy | 7 | 3 | Reference data |
+| **Auth** | User, RefreshToken | 16 | 22 | JWT auth, OAuth, user management |
+| **Address** | Address, AddressType, Region, UserAddress | 10 | 11 | Address CRUD with user pivot |
+| **Billing** | ServiceProvider, Tariff | 8 | 7 | Tariff calculation, providers |
+| **Meter** | Meter, MeterReading | 15 | 21 | Meters, batch readings, photos |
+| **Export** | — | 3 | 2 | CSV/PDF export |
+
+Module structure: `Modules/{Name}/` → `Actions/`, `DTOs/`, `Http/Controllers/`, `Http/Requests/`, `Http/Resources/`, `Models/`, `Repositories/`, `routes/`, `database/`, `tests/`
 
 ## Tech stack
 
 - **Runtime:** PHP 8.4 (FrankenPHP/Octane)
 - **Database:** PostgreSQL 17
 - **Caching/Queues:** Redis
-- **Testing:** Pest 4, PHPUnit 12
+- **Testing:** Pest 4, PHPUnit 12 (361 tests, parallel mode)
+- **Static analysis:** PHPStan/Larastan level 5
 - **Code style:** Laravel Pint
+- **Architecture:** nwidart/laravel-modules, lorisleiva/laravel-actions
+- **Auth:** JWT (php-open-source-saver/jwt-auth), OAuth (laravel/socialite)
+- **Media:** spatie/laravel-medialibrary
 - **Dev tools:** Docker Compose, Boost (MCP)
 
 ## Setup
@@ -96,16 +110,34 @@ If you see `ViteException: Unable to locate file in Vite manifest` — run `dock
 
 ## Testing
 
-Activate `pest-testing` skill every time you work with tests.
-
 ```bash
 docker compose exec app php artisan test --compact
+docker compose exec app php artisan test --compact --parallel
 docker compose exec app php artisan test --compact --filter=testName
 ```
 
+- Parallel mode works out-of-the-box (12 processes).
 - Create tests: `docker compose exec app php artisan make:test --pest {name}` (feature) or `--pest --unit` (unit). Most tests should be feature tests.
 - Use model factories with custom states. Follow existing `$this->faker` vs `fake()` conventions.
+- Always use `route()` helper with named routes in tests, never hardcode URLs.
 - Do NOT delete tests without approval.
+
+### Test structure
+
+- `Modules/*/tests/` — Module-level feature and unit tests
+- `tests/Feature/EndToEnd/` — Cross-module integration flows
+- `tests/Feature/ApiCompatibility/` — Response format, pagination, token structure
+- `tests/Feature/EndpointCoverage/` — Edge cases, security, photo serving
+- `tests/Feature/Performance/` — N+1 prevention, queue processing
+
+## Static analysis
+
+```bash
+docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+```
+
+- Config: `phpstan.neon` (level 5, baseline in `phpstan-baseline.neon`)
+- Run after code changes to catch regressions. New code must not introduce new errors.
 
 ## Code style
 
@@ -161,7 +193,8 @@ Run before finalizing changes.
 
 ### Auth & queues
 
-- Built-in Laravel auth features (gates, policies, Sanctum)
+- JWT authentication via `php-open-source-saver/jwt-auth` with `actingAs($user, 'api')` in tests
+- OAuth via laravel/socialite (Google, GitHub)
 - `ShouldQueue` interface for time-consuming jobs
 
 ## Security
