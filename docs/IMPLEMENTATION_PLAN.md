@@ -327,7 +327,7 @@ docker compose exec app php artisan module:make Address
 
 ---
 
-## Фаза 4: Billing Module — постачальники та тарифи
+## ~~Фаза 4: Billing Module — постачальники та тарифи~~ DONE
 
 ### 4.1 Створення модуля
 
@@ -337,63 +337,63 @@ docker compose exec app php artisan module:make Billing
 
 ### 4.2 Моделі
 
-- [ ] `ServiceProvider` — name, description, phone, email, website, address_id, utility_type_id, is_active
+- [x] `ServiceProvider` — name, description, phone, email, website, address_id, utility_type_id, is_active
   - Зв'язки: belongsTo(Address), belongsTo(UtilityType), hasMany(Meter), hasMany(Tariff)
   - Cascade delete від Address, Restrict від UtilityType
-- [ ] `Tariff` — service_provider_id, utility_type_id, currency_id, name, base_rate, service_fee, effective_from, effective_to, notes
+- [x] `Tariff` — service_provider_id, utility_type_id, currency_id, name, base_rate, service_fee, effective_from, effective_to, notes
   - Зв'язки: belongsTo(ServiceProvider), belongsTo(UtilityType), belongsTo(Currency)
   - Scope: `effectiveAt(DateTime $date)` — фільтр за EffectiveFrom/To
 
 ### 4.3 Міграції
 
-- [ ] `create_service_providers_table`
-- [ ] `create_tariffs_table`
+- [x] `create_service_providers_table`
+- [x] `create_tariffs_table`
 
 ### 4.4 Factories
 
-- [ ] `ServiceProviderFactory`, `TariffFactory`
+- [x] `ServiceProviderFactory`, `TariffFactory`
 
 ### 4.4a Repositories
 
-- [ ] `ServiceProviderRepositoryInterface` — getByAddressIds, getByAddressId, findWithTariffs, create, update, delete
-- [ ] `ServiceProviderRepository`
-- [ ] `TariffRepositoryInterface` — getEffective(meterId, date), create, update
-- [ ] `TariffRepository`
-- [ ] Bind interfaces в `BillingServiceProvider`
+- [x] `ServiceProviderRepositoryInterface` — getByAddressIds, getByAddressId, findWithTariffs, create, update, delete
+- [x] `ServiceProviderRepository`
+- [x] `TariffRepositoryInterface` — getEffective(serviceProviderId, date), getEffectiveForUtilityType, create, update
+- [x] `TariffRepository`
+- [x] Bind interfaces в `BillingServiceProvider`
 
 ### 4.4b DTOs
 
-- [ ] `CreateServiceProviderData` — addressId, utilityTypeId, name, description, phone, email, website, isActive, tariffs[] (readonly, fromRequest)
-- [ ] `UpdateServiceProviderData` — name, description, phone, email, website, isActive, utilityTypeId (readonly, fromRequest)
-- [ ] `CreateTariffData` — utilityTypeId, currencyId, name, baseRate, serviceFee, effectiveFrom, effectiveTo, notes (readonly)
-- [ ] `TariffCalculationResult` — meterId, meterName, consumption, unit, baseRate, serviceFee, totalCost, currencyCode, currencySymbol (readonly)
+- [x] `CreateServiceProviderData` — addressId, utilityTypeId, name, description, phone, email, website, isActive, tariffs[] (readonly, fromRequest)
+- [x] `UpdateServiceProviderData` — name, description, phone, email, website, isActive, utilityTypeId (readonly, fromRequest)
+- [x] `CreateTariffData` — utilityTypeId, currencyId, name, baseRate, serviceFee, effectiveFrom, effectiveTo, notes (readonly)
+- [x] `TariffCalculationResult` — meterId, meterName, consumption, unit, baseRate, serviceFee, totalCost, currencyCode, currencySymbol (readonly)
 
 ### 4.5 Actions
 
-- [ ] `GetUserServiceProviders` — постачальники для адрес поточного користувача
-- [ ] `GetServiceProvider` — за ID з тарифами
-- [ ] `GetServiceProvidersByAddress` — за addressId
-- [ ] `CreateServiceProvider` — створення з вкладеними тарифами
-- [ ] `UpdateServiceProvider` — оновлення
-- [ ] `DeleteServiceProvider` — видалення
-- [ ] `GetEffectiveTariff` — пошук діючого тарифу за meterId + date
-- [ ] `CalculateTariffCost` — розрахунок: (consumption × BaseRate) + ServiceFee
+- [x] `GetUserServiceProviders` — постачальники для адрес поточного користувача
+- [x] `GetServiceProvider` — за ID з тарифами
+- [x] `GetServiceProvidersByAddress` — за addressId
+- [x] `CreateServiceProvider` — створення з вкладеними тарифами
+- [x] `UpdateServiceProvider` — оновлення
+- [x] `DeleteServiceProvider` — видалення
+- [x] `GetEffectiveTariff` — пошук діючого тарифу за serviceProviderId + utilityTypeId + date
+- [x] `CalculateTariffCost` — розрахунок: (consumption × BaseRate) + ServiceFee
 
 ### 4.6 HTTP Layer
 
-- [ ] `ServiceProviderController` — CRUD
-- [ ] Form Requests: `StoreServiceProviderRequest`, `UpdateServiceProviderRequest`
-- [ ] API Resources: `ServiceProviderResource`, `ServiceProviderWithTariffsResource`, `TariffResource`
-- [ ] Routes: `api/v1/service-providers/*`
+- [x] `ServiceProviderController` — CRUD
+- [x] Form Requests: `StoreServiceProviderRequest`, `UpdateServiceProviderRequest`
+- [x] API Resources: `ServiceProviderResource`, `TariffResource`
+- [x] Routes: `api/v1/service-providers/*`
 
 ### 4.7 Tests
 
-- [ ] Feature: ServiceProvider CRUD
-- [ ] Feature: Authorization (user owns address)
-- [ ] Unit: CalculateTariffCost з різними сценаріями
-- [ ] Unit: GetEffectiveTariff — date range logic
+- [x] Feature: ServiceProvider CRUD
+- [x] Feature: Authorization (user owns address)
+- [x] Unit: CalculateTariffCost з різними сценаріями
+- [x] Unit: GetEffectiveTariff — date range logic
 
-**Deliverable:** Повне управління постачальниками та тарифами з розрахунками.
+**Deliverable:** ~~Повне управління постачальниками та тарифами з розрахунками.~~ DONE
 
 ---
 

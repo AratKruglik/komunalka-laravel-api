@@ -45,6 +45,7 @@ RUN \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-configure zip && \
     docker-php-ext-install -j$(nproc) \
+        bcmath \
         pdo_pgsql \
         zip \
         gd \

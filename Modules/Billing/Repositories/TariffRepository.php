@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Billing\Repositories;
+
+use App\Repositories\EloquentRepository;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Billing\Models\Tariff;
+use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;
+
+/** @extends EloquentRepository<Tariff> */
+class TariffRepository extends EloquentRepository implements TariffRepositoryInterface
+{
+    public function __construct(Tariff $model)
+    {
+        parent::__construct($model);
+    }
+
+    public function getEffective(int $serviceProviderId, Carbon $date): ?Tariff
+    {
+        /** @var Tariff|null */
+        return $this->newQuery()
+            ->where('service_provider_id', $serviceProviderId)
+            ->effectiveAt($date)
+            ->with(['currency', 'utilityType'])
+            ->first();
+    }
+
+    public function getEffectiveForUtilityType(int $serviceProviderId, int $utilityTypeId, Carbon $date): ?Tariff
+    {
+        /** @var Tariff|null */
+        return $this->newQuery()
+            ->where('service_provider_id', $serviceProviderId)
+            ->where('utility_type_id', $utilityTypeId)
+            ->effectiveAt($date)
+            ->with(['currency', 'utilityType'])
+            ->first();
+    }
+
+    public function getByServiceProviderId(int $serviceProviderId): Collection
+    {
+        return $this->newQuery()
+            ->where('service_provider_id', $serviceProviderId)
+            ->with(['currency', 'utilityType'])
+            ->get();
+    }
+}

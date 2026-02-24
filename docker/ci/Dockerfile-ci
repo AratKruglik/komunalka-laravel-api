@@ -24,6 +24,7 @@ RUN set -ex && \
         && \
     docker-php-ext-configure zip && \
     docker-php-ext-install \
+        bcmath \
         sockets \
         zip \
         pdo_pgsql \
