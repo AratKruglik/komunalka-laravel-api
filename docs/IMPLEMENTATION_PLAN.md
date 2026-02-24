@@ -151,7 +151,7 @@ docker compose exec app php artisan module:make Shared
 
 ---
 
-## Фаза 2: Auth Module — автентифікація
+## ~~Фаза 2: Auth Module — автентифікація~~ DONE
 
 ### 2.1 Створення модуля
 
@@ -161,79 +161,79 @@ docker compose exec app php artisan module:make Auth
 
 ### 2.2 Моделі
 
-- [ ] `User` — всі поля з PRD, implements JWTSubject
+- [x] `User` — всі поля з PRD, implements JWTSubject
   - Зв'язки: hasMany(UserAddress), hasMany(RefreshToken)
   - Unique: email, compound (auth_provider, external_id)
   - Casts: email_verified (boolean), last_login_at (datetime)
   - Hidden: password, remember_token
-- [ ] `RefreshToken` — token, expiry_date, is_used, is_revoked, user_id
+- [x] `RefreshToken` — token, expiry_date, is_used, is_revoked, user_id
   - Зв'язки: belongsTo(User)
 
 ### 2.3 Міграції
 
-- [ ] `create_users_table` — всі поля включаючи avatar та OAuth fields
-- [ ] `create_refresh_tokens_table`
+- [x] `add_auth_columns_to_users_table` — всі поля включаючи OAuth fields
+- [x] `create_refresh_tokens_table`
 
 ### 2.4 Seeders та Factories
 
-- [ ] `UserFactory` — з states: admin, oauth_google, oauth_github, with_avatar
-- [ ] `RefreshTokenFactory`
+- [x] `UserFactory` — з states: admin, oauthGoogle, oauthGithub, unverified
+- [x] `RefreshTokenFactory`
 
 ### 2.4a Repositories
 
-- [ ] `UserRepositoryInterface` — findByEmail, findByExternalId(provider, externalId), create, update, delete
-- [ ] `UserRepository` (extends EloquentRepository)
-- [ ] `RefreshTokenRepositoryInterface` — findByToken, create, revokeForUser, deleteExpired
-- [ ] `RefreshTokenRepository` (extends EloquentRepository)
-- [ ] Bind interfaces в `AuthServiceProvider`
+- [x] `UserRepositoryInterface` — findByEmail, findByExternalId(provider, externalId), create, update, delete
+- [x] `UserRepository` (extends EloquentRepository)
+- [x] `RefreshTokenRepositoryInterface` — findValidByToken, create, revokeAllForUser, deleteExpired
+- [x] `RefreshTokenRepository` (extends EloquentRepository)
+- [x] Bind interfaces в `AuthServiceProvider`
 
 ### 2.4b DTOs
 
-- [ ] `RegisterUserData` — username, firstName, lastName, phoneNumber, email, password (readonly, fromRequest)
-- [ ] `LoginData` — email, password (readonly, fromRequest)
-- [ ] `RefreshTokenData` — refreshToken (readonly, fromRequest)
-- [ ] `OAuthLoginData` — provider, token (readonly, fromRequest)
-- [ ] `OAuthCallbackData` — provider, code, state, error, errorDescription (readonly, fromRequest)
-- [ ] `UpdateUserData` — username, firstName, lastName, phoneNumber, email, currentPassword, newPassword (readonly, fromRequest)
+- [x] `RegisterUserData` — username, firstName, lastName, phoneNumber, email, password (readonly, fromRequest)
+- [x] `LoginData` — email, password (readonly, fromRequest)
+- [x] `RefreshTokenData` — refreshToken (readonly, fromRequest)
+- [x] `OAuthLoginData` — provider, token (readonly, fromRequest)
+- [x] `OAuthCallbackData` — provider, code, state, error, errorDescription (readonly, fromRequest)
+- [ ] `UpdateUserData` — username, firstName, lastName, phoneNumber, email, currentPassword, newPassword (readonly, fromRequest) — перенесено до Фази 6
 
 ### 2.5 Services
 
-- [ ] `JwtService` — generateToken, generateRefreshToken, validateExpiredToken, getTokenExpiration
+- [x] `JwtService` — generateTokenPair, refreshTokenPair, getTokenExpiration
   - Custom claims: sub, email, name, role, jti
   - Конфігурація: JWT_EXPIRATION_MINUTES (30), JWT_REFRESH_TOKEN_EXPIRATION_DAYS (7)
-- [ ] `OAuthService` — handleGoogleAuth, handleGitHubAuth, generateUniqueUsername
+- [x] `OAuthService` — getAuthorizationUrl, handleCallback, authenticateWithToken, findOrCreateUser, generateUniqueUsername
   - Інтеграція з Socialite
   - CSRF state через Cache (5 хв)
 
 ### 2.6 Actions
 
-- [ ] `RegisterUser` — валідація, BCrypt hash, JWT generation
-- [ ] `LoginUser` — email/password auth, prevent OAuth-only users
-- [ ] `RefreshToken` — validate used/revoked/expired, issue new pair
-- [ ] `RevokeToken` — mark as revoked
-- [ ] `ValidateToken` — check JWT validity
-- [ ] `OAuthLogin` — authenticate via provider token
-- [ ] `GetOAuthUrl` — generate authorization URL
-- [ ] `HandleOAuthCallback` — process auth code callback
-- [ ] `LinkOAuthProvider` — link provider to existing user
-- [ ] `UnlinkOAuthProvider` — unlink provider (requires password)
+- [x] `RegisterUser` — валідація, BCrypt hash, JWT generation
+- [x] `LoginUser` — email/password auth, prevent OAuth-only users
+- [x] `RefreshUserToken` — validate used/revoked/expired, issue new pair
+- [x] `RevokeToken` — mark as revoked
+- [x] `ValidateToken` — check JWT validity
+- [x] `OAuthLogin` — authenticate via provider token
+- [x] `GetOAuthUrl` — generate authorization URL
+- [x] `HandleOAuthCallback` — process auth code callback
+- [x] `LinkOAuthProvider` — link provider to existing user
+- [x] `UnlinkOAuthProvider` — unlink provider (requires password)
 
 ### 2.7 HTTP Layer
 
-- [ ] `AuthController` — route-to-action mapping
-- [ ] Form Requests: `LoginRequest`, `RegisterRequest`, `RefreshTokenRequest`, `OAuthLoginRequest`, `OAuthCallbackRequest`
-- [ ] API Resources: `AuthenticationResponse`
-- [ ] Routes: `api/v1/auth/*`
-- [ ] Middleware: JWT auth guard registration
+- [x] `AuthController` — route-to-action mapping
+- [x] Form Requests: `LoginRequest`, `RegisterRequest`, `RefreshTokenRequest`, `OAuthLoginRequest`, `OAuthCallbackRequest`, `LinkOAuthRequest`, `UnlinkOAuthRequest`
+- [x] API Resources: `AuthenticationResource`, `UserResource`
+- [x] Routes: `api/v1/auth/*`
+- [x] Middleware: JWT auth guard registration
 
 ### 2.8 Tests
 
-- [ ] Feature: register, login, refresh, revoke, validate
-- [ ] Feature: OAuth login, callback, link, unlink
-- [ ] Unit: JwtService token generation/validation
-- [ ] Unit: RegisterUser action, LoginUser action
+- [x] Feature: register, login, refresh, revoke, validate
+- [x] Feature: OAuth login, callback, link, unlink
+- [x] Unit: JwtService token generation/validation
+- [x] Unit: RegisterUser action, LoginUser action
 
-**Deliverable:** Повний auth flow працює — register, login, JWT, refresh, OAuth.
+**Deliverable:** ~~Повний auth flow працює — register, login, JWT, refresh, OAuth.~~ DONE
 
 ---
 
