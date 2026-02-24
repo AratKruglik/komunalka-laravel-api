@@ -25,6 +25,7 @@ class RegisterUser
     {
         /** @var \Modules\Auth\Models\User $user */
         $user = $this->userRepository->create([
+            'name' => "{$data->firstName} {$data->lastName}",
             'username' => $data->username,
             'first_name' => $data->firstName,
             'last_name' => $data->lastName,

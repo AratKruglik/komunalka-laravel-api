@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Services;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -51,13 +52,13 @@ class OAuthService
 
     public function findOrCreateUser(SocialiteUser $socialiteUser, AuthProvider $provider): User
     {
-        $existingByExternalId = $this->userRepository->findByExternalId($provider, (string) $socialiteUser->getId());
+        $existingByExternalId = $this->userRepository->findByExternalId($provider, $socialiteUser->getId());
 
         if ($existingByExternalId) {
             return $existingByExternalId;
         }
 
-        $existingByEmail = $this->userRepository->findByEmail((string) $socialiteUser->getEmail());
+        $existingByEmail = $this->userRepository->findByEmail($socialiteUser->getEmail());
 
         if ($existingByEmail) {
             $existingByEmail->update([
@@ -68,13 +69,18 @@ class OAuthService
             return $existingByEmail;
         }
 
-        $username = $this->generateUniqueUsername((string) $socialiteUser->getName());
+        $name = $socialiteUser->getName() ?? '';
+        $nameParts = explode(' ', $name);
+        $username = $this->generateUniqueUsername($name);
+        $firstName = Arr::get($socialiteUser->user, 'given_name', Arr::first($nameParts) ?: $username);
+        $lastName = Arr::get($socialiteUser->user, 'family_name', Arr::get($nameParts, 1, ''));
 
         /** @var User $user */
         $user = $this->userRepository->create([
+            'name' => trim("{$firstName} {$lastName}") ?: $username,
             'username' => $username,
-            'first_name' => $socialiteUser->user['given_name'] ?? explode(' ', (string) $socialiteUser->getName())[0] ?? $username,
-            'last_name' => $socialiteUser->user['family_name'] ?? explode(' ', (string) $socialiteUser->getName())[1] ?? '',
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => $socialiteUser->getEmail(),
             'auth_provider' => $provider,
             'external_id' => $socialiteUser->getId(),
