@@ -1,3 +1,4 @@
 {
-    "Shared": true
+    "Shared": true,
+    "Auth": true
 }
