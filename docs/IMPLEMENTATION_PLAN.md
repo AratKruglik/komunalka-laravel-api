@@ -407,99 +407,101 @@ docker compose exec app php artisan module:make Meter
 
 ### 5.2 Моделі
 
-- [ ] `Meter` — address_id, utility_type_id, serial_number, name, description, model_name, location, installation_date, initial_reading, service_provider_id, notes, is_active
+- [x] `Meter` — address_id, utility_type_id, serial_number, name, description, model_name, location, installation_date, initial_reading, service_provider_id, notes, is_active
   - Зв'язки: belongsTo(Address), belongsTo(UtilityType), belongsTo(ServiceProvider nullable), hasMany(MeterReading)
   - Scope: `active()`, `forAddress(int $addressId)`
   - **Implements HasMedia** — media collection `photo` (singleFile) для фото лічильника
-- [ ] `MeterReading` — meter_id, reading_value, reading_date, previous_reading_value, consumption, notes, is_estimated, tariff_id
+- [x] `MeterReading` — meter_id, reading_value, reading_date, previous_reading_value, consumption, notes, is_estimated, tariff_id
   - Зв'язки: belongsTo(Meter), belongsTo(Tariff nullable)
   - **Implements HasMedia** — media collection `photos` (multiple) для фото показників
   - Conversions: `optimized` (800px, JPEG 85%), `thumbnail` (200px, JPEG 85%) — queued
-- [ ] ~~MeterReadingPhoto~~ — **ЗАМІНЕНО** на spatie/laravel-medialibrary `media` таблицю
-- [ ] ~~MeterReadingImage~~ — **ЗАМІНЕНО** на spatie/laravel-medialibrary `media` таблицю
+- [x] ~~MeterReadingPhoto~~ — **ЗАМІНЕНО** на spatie/laravel-medialibrary `media` таблицю
+- [x] ~~MeterReadingImage~~ — **ЗАМІНЕНО** на spatie/laravel-medialibrary `media` таблицю
 
 ### 5.3 Міграції
 
-- [ ] `create_meters_table` — FK: address_id, utility_type_id, service_provider_id (nullable, onDelete SET NULL)
-- [ ] `create_meter_readings_table` — FK: meter_id, tariff_id (nullable)
-- [ ] ~~create_meter_reading_photos_table~~ — НЕ потрібна (spatie media table)
-- [ ] ~~create_meter_reading_images_table~~ — НЕ потрібна (spatie media table)
+- [x] `create_meters_table` — FK: address_id, utility_type_id, service_provider_id (nullable, onDelete SET NULL)
+- [x] `create_meter_readings_table` — FK: meter_id, tariff_id (nullable)
+- [x] ~~create_meter_reading_photos_table~~ — НЕ потрібна (spatie media table)
+- [x] ~~create_meter_reading_images_table~~ — НЕ потрібна (spatie media table)
 
 ### 5.4 Factories
 
-- [ ] `MeterFactory`, `MeterReadingFactory`
+- [x] `MeterFactory`, `MeterReadingFactory`
 
 ### 5.4a Repositories
 
-- [ ] `MeterRepositoryInterface` — getByAddressId, getActive, findWithRelations, create, update, delete
-- [ ] `MeterRepository`
-- [ ] `MeterReadingRepositoryInterface` — getByAddressId(from, to), getByMeterId, findWithPhotos, create, delete
-- [ ] `MeterReadingRepository`
-- [ ] Bind interfaces в `MeterServiceProvider`
+- [x] `MeterRepositoryInterface` — getByAddressId, getActive, findWithRelations, create, update, delete
+- [x] `MeterRepository`
+- [x] `MeterReadingRepositoryInterface` — getByAddressId(from, to), getByMeterId, findWithPhotos, create, delete
+- [x] `MeterReadingRepository`
+- [x] Bind interfaces в `MeterServiceProvider`
 
 ### 5.4b DTOs
 
-- [ ] `CreateMeterData` — addressId, utilityTypeId, serialNumber, name, description, modelName, location, installationDate, initialReading, serviceProviderId, notes, isActive (readonly, fromRequest)
-- [ ] `UpdateMeterData` — serialNumber, name, description, modelName, location, installationDate, initialReading, serviceProviderId, notes, isActive (all nullable, readonly, fromRequest)
-- [ ] `CreateMeterReadingData` — meterId, readingValue, readingDate, notes, isEstimated, tariffId (readonly)
-- [ ] `BatchReadingData` — addressId, readings: CreateMeterReadingData[] (readonly, fromRequest)
+- [x] `CreateMeterData` — addressId, utilityTypeId, serialNumber, name, description, modelName, location, installationDate, initialReading, serviceProviderId, notes, isActive (readonly, fromRequest)
+- [x] `UpdateMeterData` — serialNumber, name, description, modelName, location, installationDate, initialReading, serviceProviderId, notes, isActive (all nullable, readonly, fromRequest)
+- [x] `CreateMeterReadingData` — meterId, readingValue, readingDate, notes, isEstimated, tariffId (readonly)
+- [x] `BatchReadingData` — addressId, readings: CreateMeterReadingData[] (readonly, fromRequest)
 - [ ] `ExportRequestData` — addressIds[], fromDate, toDate, format (readonly, fromRequest)
 
 ### 5.5 Media (spatie/laravel-medialibrary)
 
 Замість custom ImageService/FileStorageService/Jobs:
-- [ ] Визначити media collections на `MeterReading` model: `photos` (multiple, mime: jpeg/png/webp, max 10MB)
-- [ ] Визначити media collections на `Meter` model: `photo` (singleFile, mime: jpeg/png/webp)
-- [ ] Визначити conversions: `optimized` (800px, quality 85, jpg, queued) та `thumbnail` (200px, quality 85, jpg, queued)
-- [ ] Налаштувати queue connection для media conversions в `config/media-library.php`
+- [x] Визначити media collections на `MeterReading` model: `photos` (multiple, mime: jpeg/png/webp, max 10MB)
+- [x] Визначити media collections на `Meter` model: `photo` (singleFile, mime: jpeg/png/webp)
+- [x] Визначити conversions: `optimized` (800px, quality 85, jpg, queued) та `thumbnail` (200px, quality 85, jpg, queued)
+- [x] Налаштувати queue connection для media conversions в `config/media-library.php`
 
 ### 5.7 Actions
 
 #### Meter CRUD
-- [ ] `GetAllMeters` — всі лічильники
-- [ ] `GetMeter` — за ID
-- [ ] `GetMetersByAddress` — за addressId
-- [ ] `GetActiveMeters` — тільки активні
-- [ ] `CreateMeter` — створення (JSON body)
-- [ ] `UploadMeterPhoto` — завантаження фото лічильника (через medialibrary: `$meter->addMedia()->toMediaCollection('photo')`)
-- [ ] `UpdateMeter` — оновлення (partial update)
-- [ ] `DeleteMeter` — видалення
+- [x] `GetAllMeters` — всі лічильники
+- [x] `GetMeter` — за ID
+- [x] `GetMetersByAddress` — за addressId
+- [x] `GetActiveMeters` — тільки активні
+- [x] `CreateMeter` — створення (JSON body)
+- [x] `UploadMeterPhoto` — завантаження фото лічильника (через medialibrary: `$meter->addMedia()->toMediaCollection('photo')`)
+- [x] `UpdateMeter` — оновлення (partial update)
+- [x] `DeleteMeter` — видалення
 
 #### Meter Reading
-- [ ] `CreateBatchReadings` — пакетне створення з фото та розрахунками тарифів
+- [x] `CreateBatchReadings` — пакетне створення з фото та розрахунками тарифів
   - Валідація: meter belongs to address, is active, reading >= previous
   - Авто-визначення тарифу
   - Розрахунок consumption та cost
   - Фото: `$reading->addMedia($file)->toMediaCollection('photos')` — conversions queued автоматично
-- [ ] `GetReadingsByAddress` — за addressId з date range filter
-- [ ] `GetMeterReading` — за ID
-- [ ] `DeleteMeterReading` — видалення + cleanup файлів
+- [x] `GetReadingsByAddress` — за addressId з date range filter
+- [x] `GetMeterReading` — за ID
+- [x] `DeleteMeterReading` — видалення + cleanup файлів
 
 #### Legacy MeterReading (ServiceCounterValue)
-- [ ] `CreateServiceCounterValue` — створення показника (legacy)
-- [ ] `GetServiceCounterValue` — отримання за ID
-- [ ] `DeleteServiceCounterValue` — видалення
+- [x] `CreateServiceCounterValue` — створення показника (legacy)
+- [x] `GetServiceCounterValue` — отримання за ID
+- [x] `DeleteServiceCounterValue` — видалення
 
 ### 5.8 HTTP Layer
 
-- [ ] `MeterController` — CRUD
-- [ ] `BatchMeterReadingsController` — batch create, get by address, photos serving
-- [ ] `MeterReadingController` — legacy endpoints
-- [ ] Form Requests: `StoreMeterRequest`, `UpdateMeterRequest`, `StoreMeterReadingRequest`, `BatchMeterReadingRequest`
-- [ ] API Resources: `MeterResource`, `MeterReadingResource` (з media URLs через `getFirstMediaUrl`), `BatchMeterReadingResponse`, `TariffCalculationResource`
-- [ ] Routes: `api/v1/meter/*`, `api/v1/meter-readings/*`, `api/v1/meterreading/*`
-- [ ] Photo serving endpoints: використовують `$reading->getFirstMediaUrl('photos', 'optimized')` та `thumbnail`
+- [x] `MeterController` — CRUD
+- [x] `BatchMeterReadingsController` — batch create, get by address, photos serving
+- [x] `LegacyMeterReadingController` — legacy endpoints
+- [x] `MeterReadingPhotoController` — public photo serving
+- [x] Form Requests: `StoreMeterRequest`, `UpdateMeterRequest`, `UploadMeterPhotoRequest`, `StoreMeterReadingRequest`, `BatchMeterReadingRequest`
+- [x] API Resources: `MeterResource`, `MeterReadingResource` (з media URLs через `getFirstMediaUrl`), `BatchMeterReadingResponse`, `TariffCalculationResource`
+- [x] Routes: `api/v1/meter/*`, `api/v1/meter-readings/*`, `api/v1/meterreading/*`
+- [x] Photo serving endpoints: використовують `$reading->getFirstMediaUrl('photos', 'optimized')` та `thumbnail`
 
 ### 5.9 Tests
 
-- [ ] Feature: Meter CRUD
-- [ ] Feature: Batch readings creation з тарифними розрахунками
-- [ ] Feature: Photo upload та serving
-- [ ] Feature: Multi-tenancy validation
-- [ ] Feature: Reading value validation (>= previous)
-- [ ] Unit: CreateBatchReadings action
-- [ ] Unit: ImageService processing
-- [ ] Integration: Full flow — create meter → submit readings → verify calculations
+- [x] Feature: Meter CRUD
+- [x] Feature: Batch readings creation з тарифними розрахунками
+- [x] Feature: Photo upload та serving
+- [x] Feature: Multi-tenancy validation
+- [x] Feature: Reading value validation (>= previous)
+- [x] Unit: CreateBatchReadings action
+- [x] Unit: CreateMeter action
+- [x] Unit: DeleteMeter action
+- [x] Feature: Legacy MeterReading (ServiceCounterValue) endpoints
 
 **Deliverable:** Повне управління лічильниками, показниками, фото з тарифними розрахунками.
 

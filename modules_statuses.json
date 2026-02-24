@@ -2,5 +2,6 @@
     "Shared": true,
     "Auth": true,
     "Address": true,
-    "Billing": true
+    "Billing": true,
+    "Meter": true
 }

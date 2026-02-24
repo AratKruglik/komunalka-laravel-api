@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/meter",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Meter\\": "",
+            "Modules\\Meter\\Database\\Factories\\": "database/factories/",
+            "Modules\\Meter\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Meter\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Meter",
+    "alias": "meter",
+    "description": "",
+    "keywords": [],
+    "priority": 4,
+    "providers": [
+        "Modules\\Meter\\Providers\\MeterServiceProvider"
+    ],
+    "files": []
+}
