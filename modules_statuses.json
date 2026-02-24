@@ -3,5 +3,6 @@
     "Auth": true,
     "Address": true,
     "Billing": true,
-    "Meter": true
+    "Meter": true,
+    "Export": true
 }

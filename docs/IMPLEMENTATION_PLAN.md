@@ -194,7 +194,7 @@ docker compose exec app php artisan module:make Auth
 - [x] `RefreshTokenData` — refreshToken (readonly, fromRequest)
 - [x] `OAuthLoginData` — provider, token (readonly, fromRequest)
 - [x] `OAuthCallbackData` — provider, code, state, error, errorDescription (readonly, fromRequest)
-- [ ] `UpdateUserData` — username, firstName, lastName, phoneNumber, email, currentPassword, newPassword (readonly, fromRequest) — перенесено до Фази 6
+- [x] `UpdateUserData` — username, firstName, lastName, phoneNumber, email, currentPassword, newPassword (readonly, fromRequest) — реалізовано у Фазі 6
 
 ### 2.5 Services
 
@@ -443,7 +443,7 @@ docker compose exec app php artisan module:make Meter
 - [x] `UpdateMeterData` — serialNumber, name, description, modelName, location, installationDate, initialReading, serviceProviderId, notes, isActive (all nullable, readonly, fromRequest)
 - [x] `CreateMeterReadingData` — meterId, readingValue, readingDate, notes, isEstimated, tariffId (readonly)
 - [x] `BatchReadingData` — addressId, readings: CreateMeterReadingData[] (readonly, fromRequest)
-- [ ] `ExportRequestData` — addressIds[], fromDate, toDate, format (readonly, fromRequest)
+- [x] `ExportRequestData` — addressIds[], fromDate, toDate, format (readonly, fromRequest)
 
 ### 5.5 Media (spatie/laravel-medialibrary)
 
@@ -512,30 +512,31 @@ docker compose exec app php artisan module:make Meter
 ### 6.1 Users (розширення Auth Module)
 
 **Media (spatie/laravel-medialibrary):**
-- [ ] Визначити media collection на `User` model: `avatar` (singleFile, mime: jpeg/png/gif/heic/heif, max 2MB)
-- [ ] Conversions: `optimized` (800px, quality 85, jpg, queued), `thumbnail` (200px, quality 85, jpg, queued)
-- [ ] singleFile — автоматично видаляє попередній аватар при завантаженні нового
+- [x] Визначити media collection на `User` model: `avatar` (singleFile, mime: jpeg/png/gif/heic/heif, max 2MB)
+- [x] Conversions: `optimized` (800px, quality 85, jpg, queued), `thumbnail` (200px, quality 85, jpg, queued)
+- [x] singleFile — автоматично видаляє попередній аватар при завантаженні нового
 
 **Repositories:**
-- [ ] Розширити `UserRepositoryInterface` — getAllWithAddresses, findWithAddresses
+- [x] Розширити `UserRepositoryInterface` — getAllWithAddresses, findWithAddresses
 
 **DTOs:**
-- [ ] `UpdateUserData` вже створено у Фазі 2
+- [x] `UpdateUserData` вже створено у Фазі 2
+- [x] `CreateUserData` — створення користувача
 
 **Actions:**
-- [ ] `GetAllUsers` — список всіх
-- [ ] `GetUser` — за ID з адресами
-- [ ] `CreateUser` — створення (admin)
-- [ ] `UpdateUser` — оновлення профілю + avatar через medialibrary (`$user->addMedia()->toMediaCollection('avatar')`) + password change
-- [ ] `DeleteUser` — видалення (medialibrary автоматично cleanup файли)
-- [ ] `GetUserAvatar` — отримання аватару (`$user->getFirstMediaUrl('avatar', 'optimized')`)
+- [x] `GetAllUsers` — список всіх
+- [x] `GetUser` — за ID з адресами
+- [x] `CreateUser` — створення (admin)
+- [x] `UpdateUser` — оновлення профілю + avatar через medialibrary (`$user->addMedia()->toMediaCollection('avatar')`) + password change
+- [x] `DeleteUser` — видалення (medialibrary автоматично cleanup файли)
+- [x] `GetUserAvatar` — отримання аватару (`$user->getFirstMediaUrl('avatar', 'optimized')`)
 
 **HTTP Layer:**
-- [ ] `UsersController` — CRUD + avatar endpoints
-- [ ] Form Requests: `UpdateUserRequest` — username, profile fields, password change, avatar (multipart)
-- [ ] API Resources: `UserResource` (з nested AddressResource, avatar URLs через medialibrary)
-- [ ] Routes: `api/v1/users/*`
-- [ ] Avatar routes — public (no auth), redirect до media URL
+- [x] `UsersController` — CRUD + avatar endpoints
+- [x] Form Requests: `StoreUserRequest`, `UpdateUserRequest` — profile fields, password change, avatar (multipart)
+- [x] API Resources: `UserResource` (з nested AddressResource, avatar URLs через medialibrary)
+- [x] Routes: `api/v1/users/*`
+- [x] Avatar routes — public (no auth), redirect до media URL
 
 ### 6.2 Export Module
 
@@ -544,21 +545,21 @@ docker compose exec app php artisan module:make Export
 ```
 
 **Actions:**
-- [ ] `ExportMeterReadings` — orchestrator: fetch data → generate file
-- [ ] `ExportToCsv` — RFC 4180 CSV generation
-- [ ] `ExportToPdf` — A4 landscape PDF generation
+- [x] `ExportMeterReadings` — orchestrator: fetch data → generate file
+- [x] `ExportToCsv` — RFC 4180 CSV generation
+- [x] `ExportToPdf` — A4 landscape PDF generation
 
 **HTTP Layer:**
-- [ ] `ExportController`
-- [ ] Form Requests: `ExportMeterReadingsRequest` — address_ids[], from_date, to_date, format (csv/pdf)
-- [ ] Routes: `api/v1/export/meter-readings`
+- [x] `ExportController`
+- [x] Form Requests: `ExportMeterReadingsRequest` — address_ids[], from_date, to_date, format (csv/pdf)
+- [x] Routes: `api/v1/export/meter-readings`
 
 ### 6.3 Tests
 
-- [ ] Feature: User CRUD з avatar
-- [ ] Feature: Password change (requires current password)
-- [ ] Feature: Export CSV/PDF з date filtering
-- [ ] Unit: ExportToCsv, ExportToPdf actions
+- [x] Feature: User CRUD з avatar
+- [x] Feature: Password change (requires current password)
+- [x] Feature: Export CSV/PDF з date filtering
+- [x] Unit: ExportToCsv, ExportToPdf actions
 
 **Deliverable:** User management та export functionality.
 

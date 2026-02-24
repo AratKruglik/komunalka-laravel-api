@@ -6,6 +6,7 @@ namespace Modules\Auth\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Address\Http\Resources\AddressResource;
 use Modules\Auth\Models\User;
 
 /** @mixin User */
@@ -27,6 +28,15 @@ class UserResource extends JsonResource
             'last_login_at' => $this->last_login_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+            'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
+            'avatar_optimized_url' => $this->when(
+                $this->relationLoaded('media'),
+                fn () => $this->getFirstMediaUrl('avatar', 'optimized') ?: null,
+            ),
+            'avatar_thumbnail_url' => $this->when(
+                $this->relationLoaded('media'),
+                fn () => $this->getFirstMediaUrl('avatar', 'thumbnail') ?: null,
+            ),
         ];
     }
 }

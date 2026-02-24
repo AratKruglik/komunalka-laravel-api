@@ -2,6 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Http\Controllers\AuthController;
+use Modules\Auth\Http\Controllers\UsersController;
+
+Route::prefix('v1/users')->name('users.')->group(function (): void {
+    Route::get('{id}/avatar', [UsersController::class, 'avatar'])->name('avatar');
+    Route::get('{id}/avatar/thumbnail', [UsersController::class, 'avatarThumbnail'])->name('avatar.thumbnail');
+
+    Route::middleware('auth:api')->group(function (): void {
+        Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::get('{id}', [UsersController::class, 'show'])->name('show');
+        Route::post('/', [UsersController::class, 'store'])->name('store');
+        Route::put('{id}', [UsersController::class, 'update'])->name('update');
+        Route::delete('{id}', [UsersController::class, 'destroy'])->name('destroy');
+    });
+});
 
 Route::prefix('v1/auth')->name('auth.')->group(function (): void {
     Route::post('register', [AuthController::class, 'register'])->name('register');

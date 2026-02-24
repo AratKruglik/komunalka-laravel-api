@@ -15,10 +15,14 @@ use Modules\Auth\Database\Factories\UserFactory;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements HasMedia, JWTSubject
 {
     use HasFactory;
+    use InteractsWithMedia;
     use Notifiable;
 
     protected $fillable = [
@@ -80,6 +84,28 @@ class User extends Authenticatable implements JWTSubject
     public function refreshTokens(): HasMany
     {
         return $this->hasMany(RefreshToken::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/heic', 'image/heif']);
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('optimized')
+            ->width(800)
+            ->format('jpg')
+            ->quality(85)
+            ->queued();
+
+        $this->addMediaConversion('thumbnail')
+            ->width(200)
+            ->format('jpg')
+            ->quality(85)
+            ->queued();
     }
 
     protected static function newFactory(): UserFactory

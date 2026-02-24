@@ -22,7 +22,7 @@ class MeterReadingRepository extends EloquentRepository implements MeterReadingR
     {
         return $this->newQuery()
             ->whereIn('meter_id', $meterIds)
-            ->with(['meter.utilityType', 'tariff', 'media'])
+            ->with(['meter.utilityType', 'meter.address', 'tariff', 'media'])
             ->when($from, fn ($query) => $query->where('reading_date', '>=', $from))
             ->when($to, fn ($query) => $query->where('reading_date', '<=', $to))
             ->orderBy('reading_date', 'desc')
