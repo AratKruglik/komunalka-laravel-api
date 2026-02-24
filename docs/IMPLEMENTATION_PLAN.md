@@ -569,51 +569,51 @@ docker compose exec app php artisan module:make Export
 
 ### 7.1 Global Exception Handler
 
-- [ ] Створити custom exception handler в `bootstrap/app.php`
-- [ ] Маппінг exceptions → HTTP responses (аналогічно .NET ExceptionHandlerMiddleware):
+- [x] Створити custom exception handler в `bootstrap/app.php`
+- [x] Маппінг exceptions → HTTP responses (аналогічно .NET ExceptionHandlerMiddleware):
   - ModelNotFoundException → 404
   - AuthenticationException → 401
   - AuthorizationException → 403
   - ValidationException → 422
   - QueryException → 409 (для constraint violations)
   - Default → 500
-- [ ] Структурований JSON формат (statusCode, message, details, timestamp, path)
-- [ ] Сховати details у production
+- [x] Структурований JSON формат (statusCode, message, details, timestamp, path)
+- [x] Сховати details у production
 
 ### 7.2 API Response Format
 
-- [ ] Створити `ApiResponse` wrapper trait або macro
-- [ ] Пагінація через Laravel built-in (вже Laravel-compatible формат)
-- [ ] Забезпечити однаковий формат links/meta
+- [x] Створити `ApiResponse` wrapper trait або macro
+- [x] Пагінація через Laravel built-in (вже Laravel-compatible формат)
+- [x] Забезпечити однаковий формат links/meta
 
 ### 7.3 Rate Limiting
 
-- [ ] Налаштувати throttle middleware в `bootstrap/app.php`
-- [ ] Rate limits для auth endpoints (строгіші)
-- [ ] Rate limits для загальних endpoints
+- [x] Налаштувати throttle middleware в `bootstrap/app.php`
+- [x] Rate limits для auth endpoints (строгіші)
+- [x] Rate limits для загальних endpoints
 
 ### 7.4 CORS
 
-- [ ] Налаштувати `config/cors.php`
-- [ ] Environment-based origins (CORS_ALLOWED_ORIGINS)
-- [ ] Credentials support для specific origins
+- [x] Налаштувати `config/cors.php`
+- [x] Environment-based origins (CORS_ALLOWED_ORIGINS)
+- [x] Credentials support для specific origins
 
 ### 7.5 Health Checks
 
-- [ ] GET /health — basic health check
-- [ ] GET /health/ready — database connectivity check
+- [x] GET /health — basic health check
+- [x] GET /health/ready — database connectivity check
 
 ### 7.6 Logging
 
-- [ ] Налаштувати structured logging в `config/logging.php`
-- [ ] Daily rotating files (30-day retention)
+- [x] Налаштувати structured logging в `config/logging.php`
+- [x] Daily rotating files (30-day retention)
 
 ### 7.7 Tests
 
-- [ ] Feature: Exception handling responses
-- [ ] Feature: Rate limiting
-- [ ] Feature: CORS headers
-- [ ] Feature: Health check endpoints
+- [x] Feature: Exception handling responses
+- [x] Feature: Rate limiting
+- [x] Feature: CORS headers
+- [x] Feature: Health check endpoints
 
 **Deliverable:** Production-ready API з proper error handling, rate limiting, health checks.
 
