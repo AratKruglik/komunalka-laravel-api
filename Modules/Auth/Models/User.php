@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Modules\Auth\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Modules\Address\Models\Address;
+use Modules\Address\Models\UserAddress;
 use Modules\Auth\Database\Factories\UserFactory;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
@@ -62,6 +65,15 @@ class User extends Authenticatable implements JWTSubject
             'name' => $this->name,
             'role' => $this->role?->value,
         ];
+    }
+
+    /** @return BelongsToMany<Address, $this> */
+    public function addresses(): BelongsToMany
+    {
+        return $this->belongsToMany(Address::class, 'address_user')
+            ->using(UserAddress::class)
+            ->withPivot('is_primary')
+            ->withTimestamps();
     }
 
     /** @return HasMany<RefreshToken, $this> */

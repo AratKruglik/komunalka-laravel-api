@@ -237,7 +237,7 @@ docker compose exec app php artisan module:make Auth
 
 ---
 
-## Фаза 3: Address Module — адреси та регіони
+## ~~Фаза 3: Address Module — адреси та регіони~~ DONE
 
 ### 3.1 Створення модуля
 
@@ -247,80 +247,83 @@ docker compose exec app php artisan module:make Address
 
 ### 3.2 Моделі
 
-- [ ] `Address` — всі поля, soft deletes
+- [x] `Address` — всі поля, soft deletes
   - Зв'язки: belongsTo(Region), belongsTo(AddressType), belongsToMany(User via UserAddress), hasMany(Meter), hasMany(ServiceProvider)
-- [ ] `AddressType` — name, description, icon
+- [x] `AddressType` — name, description, icon
   - Зв'язки: hasMany(Address)
-- [ ] `Region` — name
+- [x] `Region` — name
   - Зв'язки: hasMany(Address)
-- [ ] `UserAddress` (pivot model, table: address_user) — user_id, address_id, is_primary
+- [x] `UserAddress` (pivot model, table: address_user) — user_id, address_id, is_primary
   - Unique composite: (user_id, address_id)
   - Unique filtered: тільки один is_primary=true per user
 
 ### 3.3 Міграції
 
-- [ ] `create_regions_table`
-- [ ] `create_address_types_table`
-- [ ] `create_addresses_table` — з soft deletes
-- [ ] `create_address_user_table` — з unique constraints
+- [x] `create_regions_table`
+- [x] `create_address_types_table`
+- [x] `create_addresses_table` — з soft deletes
+- [x] `create_address_user_table` — з unique constraints
+- [x] `add_foreign_key_to_address_service_category_table` — deferred FK від Shared module
 
 ### 3.4 Seeders
 
-- [ ] `RegionSeeder` — 25 областей України
-- [ ] `AddressTypeSeeder` — Квартира, Приватний будинок, Офіс
+- [x] `RegionSeeder` — 27 регіонів (25 областей + АР Крим + м. Київ + м. Севастополь)
+- [x] `AddressTypeSeeder` — Квартира, Приватний будинок, Офіс
 
 ### 3.5 Factories
 
-- [ ] `AddressFactory`, `AddressTypeFactory`, `RegionFactory`
+- [x] `AddressFactory`, `AddressTypeFactory`, `RegionFactory`
 
 ### 3.5a Repositories
 
-- [ ] `AddressRepositoryInterface` — getForUser(userId, perPage, sortBy, desc), findForUser(userId, addressId), createWithPivot, softDelete
-- [ ] `AddressRepository` (extends EloquentRepository)
-- [ ] `AddressTypeRepositoryInterface` — all, find
-- [ ] `AddressTypeRepository`
-- [ ] `RegionRepositoryInterface` — all, find
-- [ ] `RegionRepository`
-- [ ] `UserAddressRepositoryInterface` — getByUserId, setPrimary, removePrimary
-- [ ] `UserAddressRepository`
-- [ ] Bind interfaces в `AddressServiceProvider`
+- [x] `AddressRepositoryInterface` — getForUser(userId, perPage, sortBy, desc), findForUser(userId, addressId)
+- [x] `AddressRepository` (extends EloquentRepository)
+- [x] `AddressTypeRepositoryInterface` — all, find
+- [x] `AddressTypeRepository`
+- [x] `RegionRepositoryInterface` — all, find
+- [x] `RegionRepository`
+- [x] `UserAddressRepositoryInterface` — attach, detach, setPrimary, clearPrimary, userOwnsAddress
+- [x] `UserAddressRepository`
+- [x] Bind interfaces в `AddressServiceProvider`
 
 ### 3.5b DTOs
 
-- [ ] `CreateAddressData` — regionId, city, street, buildingNumber, apartmentNumber, zipCode, notes, isPrimary, addressTypeId (readonly, fromRequest)
-- [ ] `UpdateAddressData` — regionId, city, street, buildingNumber, apartmentNumber, zipCode, notes, isPrimary, addressTypeId (readonly, fromRequest)
-- [ ] `AddressPaginationData` — page, perPage, sortBy, desc (readonly, fromRequest/query)
+- [x] `CreateAddressData` — regionId, addressTypeId, city, street, buildingNumber, apartmentNumber, zipCode, notes, isPrimary (readonly, fromRequest)
+- [x] `UpdateAddressData` — regionId, addressTypeId, city, street, buildingNumber, apartmentNumber, zipCode, notes, isPrimary (readonly, fromRequest)
+- [x] `PatchAddressData` — all nullable for partial updates (readonly, fromRequest)
+- [x] `AddressPaginationData` — page, perPage, sortBy, desc (readonly, fromRequest/query)
 
 ### 3.6 Actions
 
-- [ ] `GetUserAddresses` — пагінація, сортування (city, updatedAt, isPrimary, createdAt)
-- [ ] `GetUserAddress` — з перевіркою доступу через UserAddress
-- [ ] `CreateAddress` — створення + UserAddress pivot + primary address logic
-- [ ] `UpdateAddress` — оновлення + primary address enforcement
-- [ ] `DeleteAddress` — soft delete + pivot cleanup
-- [ ] `GetAllAddressTypes` — список типів
-- [ ] `GetAddressType` — тип за ID
-- [ ] `GetAllRegions` — список регіонів
-- [ ] `GetRegion` — регіон за ID
+- [x] `GetUserAddresses` — пагінація, сортування (city, updatedAt, isPrimary, createdAt)
+- [x] `GetUserAddress` — з перевіркою доступу через UserAddress
+- [x] `CreateAddress` — створення + UserAddress pivot + primary address logic
+- [x] `UpdateAddress` — оновлення + primary address enforcement
+- [x] `PatchAddress` — partial update + toggle primary
+- [x] `DeleteAddress` — soft delete + pivot cleanup
+- [x] `GetAllAddressTypes` — список типів
+- [x] `GetAddressType` — тип за ID
+- [x] `GetAllRegions` — список регіонів
+- [x] `GetRegion` — регіон за ID
 
 ### 3.7 HTTP Layer
 
-- [ ] `AddressController` — CRUD з пагінацією
-- [ ] `AddressTypeController` — GET only
-- [ ] `RegionController` — GET only
-- [ ] Form Requests: `StoreAddressRequest`, `UpdateAddressRequest` (з українськими повідомленнями)
-- [ ] API Resources: `AddressResource` (з nested Region, AddressType), `AddressTypeResource`, `RegionResource`
-- [ ] Routes: `api/v1/address/*`, `api/v1/addresstype/*`, `api/v1/region/*`
+- [x] `AddressController` — CRUD з пагінацією (index, show, store, update, patch, destroy)
+- [x] `AddressTypeController` — GET only
+- [x] `RegionController` — GET only
+- [x] Form Requests: `StoreAddressRequest`, `UpdateAddressRequest`, `PatchAddressRequest` (з українськими повідомленнями)
+- [x] API Resources: `AddressResource` (з nested Region, AddressType), `AddressTypeResource`, `RegionResource`
+- [x] Routes: `api/v1/address/*`, `api/v1/addresstype/*`, `api/v1/region/*` (10 endpoints, auth:api)
 
 ### 3.8 Tests
 
-- [ ] Feature: Address CRUD з пагінацією та сортуванням
-- [ ] Feature: Multi-tenancy (user A не бачить адреси user B)
-- [ ] Feature: Primary address logic
-- [ ] Feature: AddressType та Region endpoints
-- [ ] Unit: CreateAddress, UpdateAddress, DeleteAddress actions
+- [x] Feature: Address CRUD з пагінацією та сортуванням
+- [x] Feature: Multi-tenancy (user A не бачить адреси user B)
+- [x] Feature: Primary address logic
+- [x] Feature: AddressType та Region endpoints
+- [x] Unit: CreateAddress, UpdateAddress, PatchAddress, DeleteAddress actions
 
-**Deliverable:** Повне управління адресами, регіонами, типами адрес з multi-tenancy.
+**Deliverable:** ~~Повне управління адресами, регіонами, типами адрес з multi-tenancy.~~ DONE
 
 ---
 
