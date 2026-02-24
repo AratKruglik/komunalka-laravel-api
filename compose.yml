@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     container_name: ka-app
     environment:
-      COMMAND: php artisan octane:frankenphp --host=0.0.0.0 --port=80 --watch
+      COMMAND: php artisan octane:frankenphp --host=localhost --port=443 --https --http-redirect --watch
       PROCESS: app
       XDEBUG_MODE: debug,coverage
     depends_on:
@@ -51,7 +51,6 @@ services:
         condition: service_healthy
     volumes:
       - ./:/var/www
-      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
       - ka_app_composer_data:/.composer
@@ -66,7 +65,7 @@ services:
       - ka-db-network
       - ka-redis-network
     healthcheck:
-      test: curl -s http://localhost/up >/dev/null || exit 1
+      test: curl -sk https://localhost/up >/dev/null || exit 1
       interval: 5s
       timeout: 10s
       retries: 20

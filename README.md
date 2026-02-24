@@ -51,17 +51,37 @@ This will: install dependencies, generate app key, run migrations, install npm p
 docker compose exec app php artisan jwt:secret
 ```
 
-The API is now available at **http://localhost**.
+The API is now available at **https://localhost**.
 
 ## Services
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| API | http://localhost | Main application |
+| API | https://localhost | Main application |
 | Mailpit | http://localhost:8025 | Email testing dashboard |
 | WebSockets | ws://localhost:8080 | Real-time events (Reverb) |
 | PostgreSQL | localhost:5432 | Database |
 | Redis | localhost:6379 | Cache & queues |
+
+## Local HTTPS
+
+HTTPS works out of the box via Caddy's `tls internal` directive, which generates a self-signed certificate from Caddy's local CA. HTTP requests to `http://localhost` are automatically redirected to HTTPS.
+
+The `.env` file includes `OCTANE_HTTPS=true` so Laravel generates correct `https://` URLs.
+
+To trust the local CA certificate on macOS (removes browser warnings):
+
+```bash
+docker compose cp app:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./caddy-root.crt
+rm ./caddy-root.crt
+```
+
+To verify HTTPS is working:
+
+```bash
+curl -k https://localhost/health
+```
 
 ## API Modules
 
