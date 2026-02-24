@@ -1,0 +1,727 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$apartment_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$building_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$city\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$street\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressResource\:\:\$zip_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>is_primary" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: Modules/Address/Http/Resources/AddressResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressTypeResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressTypeResource\:\:\$icon\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\AddressTypeResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/AddressTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Http\\Resources\\RegionResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Address/Http/Resources/RegionResource.php
+
+		-
+			message: '#^Method Modules\\Address\\Models\\Address\:\:users\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Modules\\Auth\\Models\\User, \$this\(Modules\\Address\\Models\\Address\), Illuminate\\Database\\Eloquent\\Relations\\Pivot, ''pivot''\> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Modules\\Auth\\Models\\User, \$this\(Modules\\Address\\Models\\Address\), Modules\\Address\\Models\\UserAddress, ''pivot''\>\.$#'
+			identifier: return.type
+			count: 1
+			path: Modules/Address/Models/Address.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Models\\User\:\:\$auth_provider\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Actions/LoginUser.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Models\\User\:\:\$first_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Actions/UpdateUser.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Models\\User\:\:\$last_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Actions/UpdateUser.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$auth_provider\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$email_verified\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$first_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$last_login_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$last_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$phone_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Http\\Resources\\UserResource\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Models/User.php
+
+		-
+			message: '#^Call to an undefined method Spatie\\Image\\Drivers\\ImageDriver\:\:queued\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: Modules/Auth/Models/User.php
+
+		-
+			message: '#^Method Modules\\Auth\\Models\\User\:\:addresses\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Modules\\Address\\Models\\Address, \$this\(Modules\\Auth\\Models\\User\), Illuminate\\Database\\Eloquent\\Relations\\Pivot, ''pivot''\> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Modules\\Address\\Models\\Address, \$this\(Modules\\Auth\\Models\\User\), Modules\\Address\\Models\\UserAddress, ''pivot''\>\.$#'
+			identifier: return.type
+			count: 1
+			path: Modules/Auth/Models/User.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Auth\\Models\\RefreshToken\:\:\$token\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Auth/Services/JwtService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\StatefulGuard\:\:factory\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Auth/Services/JwtService.php
+
+		-
+			message: '#^Result of method Illuminate\\Contracts\\Auth\\StatefulGuard\:\:login\(\) \(void\) is used\.$#'
+			identifier: method.void
+			count: 1
+			path: Modules/Auth/Services/JwtService.php
+
+		-
+			message: '#^Access to an undefined property Laravel\\Socialite\\Contracts\\User\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: Modules/Auth/Services/OAuthService.php
+
+		-
+			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:stateless\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: Modules/Auth/Services/OAuthService.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Models\\Tariff\:\:\$base_rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Actions/CalculateTariffCost.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Models\\Tariff\:\:\$service_fee\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Actions/CalculateTariffCost.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\Currency\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Actions/CalculateTariffCost.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\Currency\:\:\$symbol\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Actions/CalculateTariffCost.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Models\\ServiceProvider\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Actions/GetServiceProvider.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\ServiceProviderResource\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/ServiceProviderResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$base_rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$effective_from\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$effective_to\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$service_fee\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Http\\Resources\\TariffResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Billing/Http/Resources/TariffResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Models\\Address\:\:\$apartment_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Models\\Address\:\:\$building_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Models\\Address\:\:\$city\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Address\\Models\\Address\:\:\$street\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$serial_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$consumption\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$previous_reading_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$reading_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$reading_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\UtilityType\:\:\$display_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: Modules/Export/Actions/ExportToCsv.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$initial_reading\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$service_provider_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$utility_type_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$reading_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$tariff_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\UtilityType\:\:\$unit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\ServiceCounter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateServiceCounterValue.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/DeleteMeter.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/DeleteMeterReading.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\ServiceCounter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/DeleteServiceCounterValue.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/GetMeter.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/GetMeterReading.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Models\\ServiceCounter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/GetServiceCounterValue.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/UpdateMeter.php
+
+		-
+			message: '#^Call to function is_array\(\) with Illuminate\\Http\\UploadedFile will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: Modules/Meter/DTOs/BatchReadingData.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$consumption\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$is_estimated\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$previous_reading_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$reading_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$reading_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterReadingResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$initial_reading\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$installation_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$model_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$serial_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Http/Resources/MeterResource.php
+
+		-
+			message: '#^Call to an undefined method Spatie\\Image\\Drivers\\ImageDriver\:\:queued\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: Modules/Meter/Models/Meter.php
+
+		-
+			message: '#^Call to an undefined method Spatie\\Image\\Drivers\\ImageDriver\:\:queued\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: Modules/Meter/Models/MeterReading.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\CurrencyResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/CurrencyResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\CurrencyResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/CurrencyResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\CurrencyResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/CurrencyResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\CurrencyResource\:\:\$symbol\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/CurrencyResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\CurrencyResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/CurrencyResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$display_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$unit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\UtilityTypeResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
+
+		-
+			message: '#^Method App\\Repositories\\EloquentRepository\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, TModel of Illuminate\\Database\\Eloquent\\Model\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Repositories/EloquentRepository.php
+
+		-
+			message: '#^Method App\\Repositories\\EloquentRepository\:\:newQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Repositories/EloquentRepository.php
