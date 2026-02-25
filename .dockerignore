@@ -1,22 +1,39 @@
+# Version control
 .git
 .gitignore
 .gitattributes
 
+# Dependencies (rebuilt inside container)
 vendor/
 node_modules/
 
+# Environment (secrets)
 .env
 .env.*
 !.env.example
 !.env.production.example
 
+# IDE & editor
 .idea/
 .vscode/
+.zed/
+.nova/
+.fleet/
+.editorconfig
 *.swp
 *.swo
 *~
 .DS_Store
+Thumbs.db
 
+# AI agent configs
+.claude/
+.mcp.json
+CLAUDE.md
+GEMINI.md
+
+# Testing & QA
+tests/
 .phpunit.result.cache
 .phpunit.cache
 coverage/
@@ -25,17 +42,25 @@ phpstan.neon
 phpstan-baseline.neon
 pint.json
 
-public/hot
-public/build
-storage/logs/*
-!storage/logs/.gitignore
-
-docs/
-README.md
-
-docker-compose*.yml
+# Docker build files (image doesn't need its own build context)
+docker/ci/
+docker/postgres/
 compose*.yml
+docker-compose*.yml
 .dockerignore
 
-docker/ci/
-tests/
+# Built assets
+public/hot
+public/build
+
+# Storage artifacts
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/testing/
+
+# Module stubs (scaffolding, not needed at runtime)
+stubs/
+
+# Documentation
+docs/
+README.md
