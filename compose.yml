@@ -69,14 +69,17 @@ services:
       interval: 5s
       timeout: 10s
       retries: 20
+    stop_signal: SIGINT
+    stop_grace_period: 10s
 
   workers:
     <<: *app
     container_name: ka-worker
     environment:
-      COMMAND: php artisan queue:work
+      COMMAND: php artisan queue:work --sleep=3 --tries=3 --timeout=60
       PROCESS: worker
     ports: []
+    stop_grace_period: 30s
     networks:
       - ka-db-network
       - ka-redis-network

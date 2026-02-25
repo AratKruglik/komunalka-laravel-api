@@ -54,7 +54,7 @@ RUN \
         sockets \
         pcntl && \
     pecl install redis imagick && \
-    docker-php-ext-enable redis imagick
+    docker-php-ext-enable redis imagick opcache
 
 # Install Xdebug and PCOV for development
 RUN pecl install xdebug pcov && \
@@ -62,6 +62,18 @@ RUN pecl install xdebug pcov && \
 
 # Configure PHP settings
 RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/memory-limit.ini
+
+# Configure OPcache for development (revalidate on every request)
+RUN { \
+        echo 'opcache.enable=1'; \
+        echo 'opcache.memory_consumption=128'; \
+        echo 'opcache.interned_strings_buffer=8'; \
+        echo 'opcache.max_accelerated_files=10000'; \
+        echo 'opcache.validate_timestamps=1'; \
+        echo 'opcache.revalidate_freq=0'; \
+        echo 'opcache.save_comments=1'; \
+        echo 'opcache.enable_cli=1'; \
+    } > /usr/local/etc/php/conf.d/opcache-development.ini
 
 # Configure Xdebug for development
 RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
