@@ -25,8 +25,8 @@ class AddressResource extends JsonResource
             'is_primary' => (bool) ($this->pivot?->is_primary ?? $this->is_primary ?? false),
             'region' => new RegionResource($this->whenLoaded('region')),
             'address_type' => new AddressTypeResource($this->whenLoaded('addressType')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Modules\Address\Actions\CreateAddress;
-use Modules\Address\DTOs\CreateAddressData;
+use Modules\Address\DTO\CreateAddressData;
 use Modules\Address\Models\AddressType;
 use Modules\Address\Models\Region;
 use Modules\Auth\Models\User;

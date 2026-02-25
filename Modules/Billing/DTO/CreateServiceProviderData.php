@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Billing\DTOs;
+namespace Modules\Billing\DTO;
 
 use Modules\Billing\Http\Requests\StoreServiceProviderRequest;
 

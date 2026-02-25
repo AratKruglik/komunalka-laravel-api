@@ -26,8 +26,8 @@ class ServiceProviderResource extends JsonResource
             'address_id' => $this->address_id,
             'utility_type' => new UtilityTypeResource($this->whenLoaded('utilityType')),
             'tariffs' => TariffResource::collection($this->whenLoaded('tariffs')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

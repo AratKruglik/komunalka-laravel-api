@@ -6,7 +6,7 @@ namespace Modules\Export\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Modules\Export\Actions\ExportMeterReadings;
-use Modules\Export\DTOs\ExportRequestData;
+use Modules\Export\DTO\ExportRequestData;
 use Modules\Export\Http\Requests\ExportMeterReadingsRequest;
 use Symfony\Component\HttpFoundation\Response;
 

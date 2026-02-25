@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
 use Modules\Billing\Actions\CreateServiceProvider;
-use Modules\Billing\DTOs\CreateServiceProviderData;
-use Modules\Billing\DTOs\CreateTariffData;
+use Modules\Billing\DTO\CreateServiceProviderData;
+use Modules\Billing\DTO\CreateTariffData;
 use Modules\Shared\Models\Currency;
 use Modules\Shared\Models\UtilityType;
 

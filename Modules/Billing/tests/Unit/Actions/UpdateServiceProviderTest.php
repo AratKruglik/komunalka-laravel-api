@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
 use Modules\Billing\Actions\UpdateServiceProvider;
-use Modules\Billing\DTOs\UpdateServiceProviderData;
+use Modules\Billing\DTO\UpdateServiceProviderData;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Shared\Models\UtilityType;
 

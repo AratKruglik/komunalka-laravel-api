@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Shared\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Shared\DTOs\UpdateCurrencyData;
+use Modules\Shared\DTO\UpdateCurrencyData;
 use Modules\Shared\Models\Currency;
 use Modules\Shared\Repositories\Contracts\CurrencyRepositoryInterface;
 

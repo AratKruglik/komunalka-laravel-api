@@ -13,8 +13,8 @@ Route::prefix('v1')->middleware('auth:api')->group(function (): void {
     Route::patch('address/{id}', [AddressController::class, 'patch'])->name('address.patch');
     Route::delete('address/{id}', [AddressController::class, 'destroy'])->name('address.destroy');
 
-    Route::get('addresstype', [AddressTypeController::class, 'index'])->name('addresstype.index');
-    Route::get('addresstype/{id}', [AddressTypeController::class, 'show'])->name('addresstype.show');
+    Route::get('addresstype', [AddressTypeController::class, 'index'])->name('address-type.index');
+    Route::get('addresstype/{id}', [AddressTypeController::class, 'show'])->name('address-type.show');
 
     Route::get('region', [RegionController::class, 'index'])->name('region.index');
     Route::get('region/{id}', [RegionController::class, 'show'])->name('region.show');

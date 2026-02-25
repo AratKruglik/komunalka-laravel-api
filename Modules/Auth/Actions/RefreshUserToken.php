@@ -6,7 +6,7 @@ namespace Modules\Auth\Actions;
 
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\RefreshTokenData;
+use Modules\Auth\DTO\RefreshTokenData;
 use Modules\Auth\Repositories\Contracts\RefreshTokenRepositoryInterface;
 use Modules\Auth\Services\JwtService;
 

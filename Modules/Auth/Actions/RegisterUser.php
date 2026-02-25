@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Auth\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\RegisterUserData;
+use Modules\Auth\DTO\RegisterUserData;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;

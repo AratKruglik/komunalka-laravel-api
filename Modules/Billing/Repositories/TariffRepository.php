@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Repositories;
 
 use App\Repositories\EloquentRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Billing\Models\Tariff;
 use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;
@@ -18,7 +18,7 @@ class TariffRepository extends EloquentRepository implements TariffRepositoryInt
         parent::__construct($model);
     }
 
-    public function getEffective(int $serviceProviderId, Carbon $date): ?Tariff
+    public function getEffective(int $serviceProviderId, CarbonImmutable $date): ?Tariff
     {
         /** @var Tariff|null */
         return $this->newQuery()
@@ -28,7 +28,7 @@ class TariffRepository extends EloquentRepository implements TariffRepositoryInt
             ->first();
     }
 
-    public function getEffectiveForUtilityType(int $serviceProviderId, int $utilityTypeId, Carbon $date): ?Tariff
+    public function getEffectiveForUtilityType(int $serviceProviderId, int $utilityTypeId, CarbonImmutable $date): ?Tariff
     {
         /** @var Tariff|null */
         return $this->newQuery()

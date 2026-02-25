@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Export\Actions;
 
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
-use Modules\Export\DTOs\ExportRequestData;
+use Modules\Export\DTO\ExportRequestData;
 use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
 use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;

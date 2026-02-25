@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Billing\DTOs\UpdateServiceProviderData;
+use Modules\Billing\DTO\UpdateServiceProviderData;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface;
 

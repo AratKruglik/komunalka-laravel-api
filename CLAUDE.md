@@ -58,7 +58,7 @@ REST API for utility management. Built with PHP 8.4, Laravel 12, PostgreSQL. All
 ## Repository structure
 
 - `app/` — Base controller, service provider, repository contracts and base implementation
-- `Modules/` — Domain modules (nwidart/laravel-modules), each with models, actions, controllers, routes, resources, DTOs, repositories, factories, migrations, tests
+- `Modules/` — Domain modules (nwidart/laravel-modules), each with models, actions, controllers, routes, resources, DTO, repositories, factories, migrations, tests
 - `bootstrap/` — `app.php` (middleware, exceptions, routing), `providers.php`
 - `config/` — Configuration files
 - `tests/` — Cross-module Pest 4 tests (`Feature/EndToEnd/`, `Feature/ApiCompatibility/`, `Feature/EndpointCoverage/`, `Feature/Performance/`)
@@ -74,7 +74,7 @@ REST API for utility management. Built with PHP 8.4, Laravel 12, PostgreSQL. All
 | **Meter** | Meter, MeterReading | 15 | 21 | Meters, batch readings, photos |
 | **Export** | — | 3 | 2 | CSV/PDF export |
 
-Module structure: `Modules/{Name}/` → `Actions/`, `DTOs/`, `Http/Controllers/`, `Http/Requests/`, `Http/Resources/`, `Models/`, `Repositories/`, `routes/`, `database/`, `tests/`
+Module structure: `Modules/{Name}/` → `Actions/`, `DTO/`, `Http/Controllers/`, `Http/Requests/`, `Http/Resources/`, `Models/`, `Repositories/`, `routes/`, `database/`, `tests/`
 
 ## Tech stack
 

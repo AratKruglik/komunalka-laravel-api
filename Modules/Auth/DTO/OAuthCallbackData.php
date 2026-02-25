@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Auth\DTOs;
+namespace Modules\Auth\DTO;
 
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Http\Requests\OAuthCallbackRequest;

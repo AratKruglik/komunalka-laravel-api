@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Meter\DTOs;
+namespace Modules\Meter\DTO;
 
 final readonly class CreateMeterReadingData
 {

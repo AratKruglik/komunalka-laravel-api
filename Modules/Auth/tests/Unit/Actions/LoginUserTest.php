@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Validation\ValidationException;
 use Modules\Auth\Actions\LoginUser;
-use Modules\Auth\DTOs\LoginData;
+use Modules\Auth\DTO\LoginData;
 use Modules\Auth\Models\User;
 
 it('returns token pair for valid credentials', function () {

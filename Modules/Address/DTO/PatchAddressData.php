@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Address\DTOs;
+namespace Modules\Address\DTO;
 
 use Modules\Address\Http\Requests\PatchAddressRequest;
 
@@ -38,33 +38,15 @@ final readonly class PatchAddressData
     /** @return array<string, mixed> */
     public function toAddressAttributes(): array
     {
-        $attributes = [];
-
-        if ($this->regionId !== null) {
-            $attributes['region_id'] = $this->regionId;
-        }
-        if ($this->addressTypeId !== null) {
-            $attributes['address_type_id'] = $this->addressTypeId;
-        }
-        if ($this->city !== null) {
-            $attributes['city'] = $this->city;
-        }
-        if ($this->street !== null) {
-            $attributes['street'] = $this->street;
-        }
-        if ($this->buildingNumber !== null) {
-            $attributes['building_number'] = $this->buildingNumber;
-        }
-        if ($this->apartmentNumber !== null) {
-            $attributes['apartment_number'] = $this->apartmentNumber;
-        }
-        if ($this->zipCode !== null) {
-            $attributes['zip_code'] = $this->zipCode;
-        }
-        if ($this->notes !== null) {
-            $attributes['notes'] = $this->notes;
-        }
-
-        return $attributes;
+        return array_filter([
+            'region_id' => $this->regionId,
+            'address_type_id' => $this->addressTypeId,
+            'city' => $this->city,
+            'street' => $this->street,
+            'building_number' => $this->buildingNumber,
+            'apartment_number' => $this->apartmentNumber,
+            'zip_code' => $this->zipCode,
+            'notes' => $this->notes,
+        ], fn (mixed $value): bool => $value !== null);
     }
 }

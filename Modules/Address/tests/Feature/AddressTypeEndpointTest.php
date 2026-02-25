@@ -14,14 +14,14 @@ describe('GET /addresstype (index)', function () {
         AddressType::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson(route('api.addresstype.index'))
+            ->getJson(route('api.address-type.index'))
             ->assertSuccessful()
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure(['data' => [['id', 'name', 'description', 'icon']]]);
     });
 
     it('returns 401 without authentication', function () {
-        $this->getJson(route('api.addresstype.index'))->assertUnauthorized();
+        $this->getJson(route('api.address-type.index'))->assertUnauthorized();
     });
 });
 
@@ -30,7 +30,7 @@ describe('GET /addresstype/{id} (show)', function () {
         $type = AddressType::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson(route('api.addresstype.show', $type->id))
+            ->getJson(route('api.address-type.show', $type->id))
             ->assertSuccessful()
             ->assertJsonPath('data.id', $type->id)
             ->assertJsonPath('data.name', $type->name);
@@ -38,7 +38,7 @@ describe('GET /addresstype/{id} (show)', function () {
 
     it('returns 404 for non-existent address type', function () {
         $this->actingAs($this->user, 'api')
-            ->getJson(route('api.addresstype.show', 999))
+            ->getJson(route('api.address-type.show', 999))
             ->assertNotFound();
     });
 });

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Actions;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Billing\Models\Tariff;
 use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;
@@ -15,7 +15,7 @@ class GetEffectiveTariff
 
     public function __construct(private TariffRepositoryInterface $repository) {}
 
-    public function handle(int $serviceProviderId, int $utilityTypeId, Carbon $date): ?Tariff
+    public function handle(int $serviceProviderId, int $utilityTypeId, CarbonImmutable $date): ?Tariff
     {
         return $this->repository->getEffectiveForUtilityType($serviceProviderId, $utilityTypeId, $date);
     }

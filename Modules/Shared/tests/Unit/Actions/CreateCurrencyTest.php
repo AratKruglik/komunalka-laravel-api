@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Modules\Shared\Actions\CreateCurrency;
-use Modules\Shared\DTOs\CreateCurrencyData;
+use Modules\Shared\DTO\CreateCurrencyData;
 use Modules\Shared\Models\Currency;
 
 it('creates a currency from DTO', function () {

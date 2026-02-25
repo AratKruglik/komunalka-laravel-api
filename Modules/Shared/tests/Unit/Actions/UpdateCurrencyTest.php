@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Modules\Shared\Actions\UpdateCurrency;
-use Modules\Shared\DTOs\UpdateCurrencyData;
+use Modules\Shared\DTO\UpdateCurrencyData;
 use Modules\Shared\Models\Currency;
 
 it('updates a currency from DTO', function () {

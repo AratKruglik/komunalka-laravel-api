@@ -6,7 +6,7 @@ namespace Modules\Address\Actions;
 
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Address\DTOs\UpdateAddressData;
+use Modules\Address\DTO\UpdateAddressData;
 use Modules\Address\Models\Address;
 use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;

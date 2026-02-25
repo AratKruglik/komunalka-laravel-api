@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Modules\Meter\DTOs;
+namespace Modules\Meter\DTO;
 
-use Modules\Billing\DTOs\TariffCalculationResult;
+use Modules\Billing\DTO\TariffCalculationResult;
 use Modules\Meter\Models\MeterReading;
 
 final readonly class BatchReadingResult

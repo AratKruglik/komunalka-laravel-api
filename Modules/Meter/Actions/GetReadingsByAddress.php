@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Meter\Actions;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
@@ -24,7 +24,7 @@ class GetReadingsByAddress
     ) {}
 
     /** @return Collection<int, MeterReading> */
-    public function handle(int $userId, int $addressId, ?Carbon $from = null, ?Carbon $to = null): Collection
+    public function handle(int $userId, int $addressId, ?CarbonImmutable $from = null, ?CarbonImmutable $to = null): Collection
     {
         abort_if(! $this->userAddressRepository->userOwnsAddress($userId, $addressId), Response::HTTP_NOT_FOUND);
 

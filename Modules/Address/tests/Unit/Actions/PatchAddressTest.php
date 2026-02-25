@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Modules\Address\Actions\CreateAddress;
 use Modules\Address\Actions\PatchAddress;
-use Modules\Address\DTOs\CreateAddressData;
-use Modules\Address\DTOs\PatchAddressData;
+use Modules\Address\DTO\CreateAddressData;
+use Modules\Address\DTO\PatchAddressData;
 use Modules\Address\Models\AddressType;
 use Modules\Address\Models\Region;
 use Modules\Auth\Models\User;

@@ -21,8 +21,8 @@ class UtilityTypeResource extends JsonResource
             'unit' => $this->unit,
             'description' => $this->description,
             'is_active' => $this->is_active,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

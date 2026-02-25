@@ -16,8 +16,6 @@ class MeterResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
-        $photoUrl = $this->getFirstMediaUrl('photo', 'optimized');
-
         return [
             'id' => $this->id,
             'serial_number' => $this->serial_number,
@@ -32,9 +30,9 @@ class MeterResource extends JsonResource
             'address_id' => $this->address_id,
             'utility_type' => new UtilityTypeResource($this->whenLoaded('utilityType')),
             'service_provider' => new ServiceProviderResource($this->whenLoaded('serviceProvider')),
-            'photo_url' => $photoUrl !== '' ? $photoUrl : null,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'photo_url' => $this->getFirstMediaUrl('photo', 'optimized') ?: null,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

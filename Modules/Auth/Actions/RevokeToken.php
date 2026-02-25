@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Auth\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\RefreshTokenData;
+use Modules\Auth\DTO\RefreshTokenData;
 use Modules\Auth\Models\RefreshToken;
 
 class RevokeToken

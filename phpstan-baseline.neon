@@ -201,13 +201,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Modules\\Billing\\Models\\Tariff\:\:\$base_rate\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: Modules/Billing/Actions/CalculateTariffCost.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Billing\\Models\\Tariff\:\:\$service_fee\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: Modules/Billing/Actions/CalculateTariffCost.php
 
 		-
@@ -508,7 +508,7 @@ parameters:
 			message: '#^Call to function is_array\(\) with Illuminate\\Http\\UploadedFile will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 1
-			path: Modules/Meter/DTOs/BatchReadingData.php
+			path: Modules/Meter/DTO/BatchReadingData.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Meter\\Http\\Resources\\MeterReadingResource\:\:\$consumption\.$#'

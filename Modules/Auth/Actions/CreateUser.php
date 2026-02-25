@@ -6,7 +6,7 @@ namespace Modules\Auth\Actions;
 
 use Illuminate\Support\Facades\Hash;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\CreateUserData;
+use Modules\Auth\DTO\CreateUserData;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;

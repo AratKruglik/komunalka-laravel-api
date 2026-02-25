@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Modules\Shared\DTOs;
+namespace Modules\Shared\DTO;
 
-use Modules\Shared\Http\Requests\UpdateCurrencyRequest;
+use Modules\Shared\Http\Requests\StoreCurrencyRequest;
 
-final readonly class UpdateCurrencyData
+final readonly class CreateCurrencyData
 {
     public function __construct(
         public string $code,
@@ -14,7 +14,7 @@ final readonly class UpdateCurrencyData
         public string $symbol,
     ) {}
 
-    public static function fromRequest(UpdateCurrencyRequest $request): self
+    public static function fromRequest(StoreCurrencyRequest $request): self
     {
         return new self(
             code: $request->validated('code'),

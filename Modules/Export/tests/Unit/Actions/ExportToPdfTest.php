@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Export\Actions\ExportToPdf;
 use Spatie\LaravelPdf\Facades\Pdf;
@@ -26,8 +26,8 @@ it('generates non-empty PDF output', function () {
 
     $pdf = app(ExportToPdf::class)->handle(
         $readings,
-        Carbon::parse('2026-01-01'),
-        Carbon::parse('2026-01-31'),
+        CarbonImmutable::parse('2026-01-01'),
+        CarbonImmutable::parse('2026-01-31'),
     );
 
     expect($pdf)->toBeString()
@@ -44,8 +44,8 @@ it('handles empty collection', function () {
 
     $pdf = app(ExportToPdf::class)->handle(
         $readings,
-        Carbon::parse('2026-01-01'),
-        Carbon::parse('2026-01-31'),
+        CarbonImmutable::parse('2026-01-01'),
+        CarbonImmutable::parse('2026-01-31'),
     );
 
     expect($pdf)->toBeString()

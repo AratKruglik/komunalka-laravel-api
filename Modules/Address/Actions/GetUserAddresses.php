@@ -6,7 +6,7 @@ namespace Modules\Address\Actions;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Address\DTOs\AddressPaginationData;
+use Modules\Address\DTO\AddressPaginationData;
 use Modules\Address\Models\Address;
 use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
 

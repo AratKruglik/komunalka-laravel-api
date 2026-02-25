@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Modules\Billing\Actions\GetEffectiveTariff;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Billing\Models\Tariff;
@@ -26,7 +26,7 @@ it('returns tariff effective at given date', function () {
     $result = app(GetEffectiveTariff::class)->handle(
         $this->provider->id,
         $this->utilityType->id,
-        Carbon::parse('2026-06-15'),
+        CarbonImmutable::parse('2026-06-15'),
     );
 
     expect($result)->not->toBeNull()
@@ -44,7 +44,7 @@ it('returns null when no tariff is effective at given date', function () {
     $result = app(GetEffectiveTariff::class)->handle(
         $this->provider->id,
         $this->utilityType->id,
-        Carbon::parse('2026-07-01'),
+        CarbonImmutable::parse('2026-07-01'),
     );
 
     expect($result)->toBeNull();
@@ -61,7 +61,7 @@ it('returns tariff with no end date when effective_to is null', function () {
     $result = app(GetEffectiveTariff::class)->handle(
         $this->provider->id,
         $this->utilityType->id,
-        Carbon::parse('2030-12-31'),
+        CarbonImmutable::parse('2030-12-31'),
     );
 
     expect($result)->not->toBeNull()
@@ -79,7 +79,7 @@ it('returns tariff on boundary date (effective_from)', function () {
     $result = app(GetEffectiveTariff::class)->handle(
         $this->provider->id,
         $this->utilityType->id,
-        Carbon::parse('2026-03-01'),
+        CarbonImmutable::parse('2026-03-01'),
     );
 
     expect($result)->not->toBeNull()
@@ -97,7 +97,7 @@ it('returns tariff on boundary date (effective_to)', function () {
     $result = app(GetEffectiveTariff::class)->handle(
         $this->provider->id,
         $this->utilityType->id,
-        Carbon::parse('2026-03-31'),
+        CarbonImmutable::parse('2026-03-31'),
     );
 
     expect($result)->not->toBeNull()
@@ -117,7 +117,7 @@ it('filters by utility type id', function () {
     $result = app(GetEffectiveTariff::class)->handle(
         $this->provider->id,
         $this->utilityType->id,
-        Carbon::parse('2026-06-15'),
+        CarbonImmutable::parse('2026-06-15'),
     );
 
     expect($result)->toBeNull();

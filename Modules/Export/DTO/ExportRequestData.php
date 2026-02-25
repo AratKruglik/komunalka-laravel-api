@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Modules\Export\DTOs;
+namespace Modules\Export\DTO;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Modules\Export\Http\Requests\ExportMeterReadingsRequest;
 
 final readonly class ExportRequestData
 {
     public function __construct(
         public array $addressIds,
-        public Carbon $fromDate,
-        public Carbon $toDate,
+        public CarbonImmutable $fromDate,
+        public CarbonImmutable $toDate,
         public string $format,
     ) {}
 
@@ -20,8 +20,8 @@ final readonly class ExportRequestData
     {
         return new self(
             addressIds: $request->validated('address_ids'),
-            fromDate: Carbon::parse($request->validated('from_date')),
-            toDate: Carbon::parse($request->validated('to_date')),
+            fromDate: CarbonImmutable::parse($request->validated('from_date')),
+            toDate: CarbonImmutable::parse($request->validated('to_date')),
             format: $request->validated('format'),
         );
     }

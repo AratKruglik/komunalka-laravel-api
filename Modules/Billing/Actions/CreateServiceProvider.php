@@ -7,7 +7,7 @@ namespace Modules\Billing\Actions;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
-use Modules\Billing\DTOs\CreateServiceProviderData;
+use Modules\Billing\DTO\CreateServiceProviderData;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface;
 use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;

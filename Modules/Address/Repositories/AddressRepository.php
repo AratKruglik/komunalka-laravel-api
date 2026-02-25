@@ -20,22 +20,16 @@ class AddressRepository extends EloquentRepository implements AddressRepositoryI
     public function getForUser(int $userId, int $perPage = 15, string $sortBy = 'created_at', bool $desc = true): LengthAwarePaginator
     {
         $direction = $desc ? 'desc' : 'asc';
+        $sortColumn = $sortBy === 'is_primary' ? 'address_user.is_primary' : "addresses.{$sortBy}";
 
-        $query = $this->newQuery()
+        return $this->newQuery()
             ->select('addresses.*')
+            ->addSelect('address_user.is_primary')
             ->join('address_user', 'addresses.id', '=', 'address_user.address_id')
             ->where('address_user.user_id', $userId)
-            ->with(['region', 'addressType']);
-
-        if ($sortBy === 'is_primary') {
-            $query->addSelect('address_user.is_primary')
-                ->orderBy('address_user.is_primary', $direction);
-        } else {
-            $query->addSelect('address_user.is_primary')
-                ->orderBy("addresses.{$sortBy}", $direction);
-        }
-
-        return $query->paginate($perPage);
+            ->with(['region', 'addressType'])
+            ->orderBy($sortColumn, $direction)
+            ->paginate($perPage);
     }
 
     public function findForUser(int $userId, int $addressId): ?Address

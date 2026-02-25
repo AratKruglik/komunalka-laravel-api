@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Auth\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\OAuthLoginData;
+use Modules\Auth\DTO\OAuthLoginData;
 use Modules\Auth\Services\JwtService;
 use Modules\Auth\Services\OAuthService;
 

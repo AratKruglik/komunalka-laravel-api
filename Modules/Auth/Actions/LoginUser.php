@@ -7,7 +7,7 @@ namespace Modules\Auth\Actions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\LoginData;
+use Modules\Auth\DTO\LoginData;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
 use Modules\Auth\Services\JwtService;

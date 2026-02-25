@@ -26,8 +26,8 @@ class TariffResource extends JsonResource
             'notes' => $this->notes,
             'utility_type' => new UtilityTypeResource($this->whenLoaded('utilityType')),
             'currency' => new CurrencyResource($this->whenLoaded('currency')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

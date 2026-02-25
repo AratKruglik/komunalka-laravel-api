@@ -6,7 +6,7 @@ namespace Modules\Meter\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
-use Modules\Meter\DTOs\CreateMeterData;
+use Modules\Meter\DTO\CreateMeterData;
 use Modules\Meter\Models\Meter;
 use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;

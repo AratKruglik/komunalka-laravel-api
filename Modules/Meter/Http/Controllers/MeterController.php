@@ -16,8 +16,8 @@ use Modules\Meter\Actions\GetMeter;
 use Modules\Meter\Actions\GetMetersByAddress;
 use Modules\Meter\Actions\UpdateMeter;
 use Modules\Meter\Actions\UploadMeterPhoto;
-use Modules\Meter\DTOs\CreateMeterData;
-use Modules\Meter\DTOs\UpdateMeterData;
+use Modules\Meter\DTO\CreateMeterData;
+use Modules\Meter\DTO\UpdateMeterData;
 use Modules\Meter\Http\Requests\StoreMeterRequest;
 use Modules\Meter\Http\Requests\UpdateMeterRequest;
 use Modules\Meter\Http\Requests\UploadMeterPhotoRequest;
@@ -72,6 +72,6 @@ class MeterController extends Controller
     {
         $action->handle($request->user()->id, $id);
 
-        return response()->json(['message' => 'Лічильник успішно видалено.']);
+        return response()->json(['message' => 'Meter deleted successfully.']);
     }
 }

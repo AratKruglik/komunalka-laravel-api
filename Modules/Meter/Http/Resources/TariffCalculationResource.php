@@ -6,7 +6,7 @@ namespace Modules\Meter\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Billing\DTOs\TariffCalculationResult;
+use Modules\Billing\DTO\TariffCalculationResult;
 
 /** @mixin TariffCalculationResult */
 class TariffCalculationResource extends JsonResource

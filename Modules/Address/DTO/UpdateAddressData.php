@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Modules\Address\DTOs;
+namespace Modules\Address\DTO;
 
-use Modules\Address\Http\Requests\StoreAddressRequest;
+use Modules\Address\Http\Requests\UpdateAddressRequest;
 
-final readonly class CreateAddressData
+final readonly class UpdateAddressData
 {
     public function __construct(
         public int $regionId,
@@ -20,7 +20,7 @@ final readonly class CreateAddressData
         public bool $isPrimary,
     ) {}
 
-    public static function fromRequest(StoreAddressRequest $request): self
+    public static function fromRequest(UpdateAddressRequest $request): self
     {
         return new self(
             regionId: (int) $request->validated('region_id'),

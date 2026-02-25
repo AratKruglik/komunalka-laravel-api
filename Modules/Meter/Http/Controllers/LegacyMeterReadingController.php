@@ -37,24 +37,25 @@ class LegacyMeterReadingController extends Controller
     {
         $action->handle($request->user()->id, $id);
 
-        return response()->json(['message' => 'Показання успішно видалено.']);
+        return response()->json(['message' => 'Meter reading deleted successfully.']);
     }
 
     public function imageOptimized(int $id): BinaryFileResponse
     {
-        $media = Media::query()->find($id);
-
-        abort_if($media === null, Response::HTTP_NOT_FOUND);
-
-        return response()->file($media->getPath('optimized'));
+        return $this->serveMediaConversion($id, 'optimized');
     }
 
     public function imageThumbnail(int $id): BinaryFileResponse
+    {
+        return $this->serveMediaConversion($id, 'thumbnail');
+    }
+
+    private function serveMediaConversion(int $id, string $conversion): BinaryFileResponse
     {
         $media = Media::query()->find($id);
 
         abort_if($media === null, Response::HTTP_NOT_FOUND);
 
-        return response()->file($media->getPath('thumbnail'));
+        return response()->file($media->getPath($conversion));
     }
 }

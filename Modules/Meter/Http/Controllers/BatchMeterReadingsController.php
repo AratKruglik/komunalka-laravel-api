@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Meter\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -13,7 +13,7 @@ use Modules\Meter\Actions\CreateBatchReadings;
 use Modules\Meter\Actions\DeleteMeterReading;
 use Modules\Meter\Actions\GetMeterReading;
 use Modules\Meter\Actions\GetReadingsByAddress;
-use Modules\Meter\DTOs\BatchReadingData;
+use Modules\Meter\DTO\BatchReadingData;
 use Modules\Meter\Http\Requests\BatchMeterReadingRequest;
 use Modules\Meter\Http\Resources\BatchMeterReadingResponse;
 use Modules\Meter\Http\Resources\MeterReadingResource;
@@ -30,8 +30,8 @@ class BatchMeterReadingsController extends Controller
 
     public function byAddress(Request $request, int $addressId, GetReadingsByAddress $action): AnonymousResourceCollection
     {
-        $from = $request->query('from') ? Carbon::parse($request->query('from')) : null;
-        $to = $request->query('to') ? Carbon::parse($request->query('to')) : null;
+        $from = $request->query('from') ? CarbonImmutable::parse($request->query('from')) : null;
+        $to = $request->query('to') ? CarbonImmutable::parse($request->query('to')) : null;
 
         return MeterReadingResource::collection($action->handle($request->user()->id, $addressId, $from, $to));
     }
@@ -45,6 +45,6 @@ class BatchMeterReadingsController extends Controller
     {
         $action->handle($request->user()->id, $id);
 
-        return response()->json(['message' => 'Показання лічильника успішно видалено.']);
+        return response()->json(['message' => 'Meter reading deleted successfully.']);
     }
 }

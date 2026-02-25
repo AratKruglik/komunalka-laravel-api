@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Meter\Repositories;
 
 use App\Repositories\EloquentRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Meter\Models\MeterReading;
 use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
@@ -18,7 +18,7 @@ class MeterReadingRepository extends EloquentRepository implements MeterReadingR
         parent::__construct($model);
     }
 
-    public function getByMeterIds(array $meterIds, ?Carbon $from = null, ?Carbon $to = null): Collection
+    public function getByMeterIds(array $meterIds, ?CarbonImmutable $from = null, ?CarbonImmutable $to = null): Collection
     {
         return $this->newQuery()
             ->whereIn('meter_id', $meterIds)

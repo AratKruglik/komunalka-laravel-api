@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
 use Modules\Meter\Actions\CreateMeter;
-use Modules\Meter\DTOs\CreateMeterData;
+use Modules\Meter\DTO\CreateMeterData;
 use Modules\Meter\Models\Meter;
 use Modules\Shared\Models\UtilityType;
 use Symfony\Component\HttpKernel\Exception\HttpException;

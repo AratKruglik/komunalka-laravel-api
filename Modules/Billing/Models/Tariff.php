@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -59,7 +59,7 @@ class Tariff extends Model
     }
 
     /** @param Builder<self> $query */
-    public function scopeEffectiveAt(Builder $query, Carbon $date): void
+    public function scopeEffectiveAt(Builder $query, CarbonImmutable $date): void
     {
         $query->where('effective_from', '<=', $date)
             ->where(function (Builder $q) use ($date) {

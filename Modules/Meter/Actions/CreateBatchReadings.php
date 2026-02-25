@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Modules\Meter\Actions;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
 use Modules\Billing\Actions\CalculateTariffCost;
 use Modules\Billing\Actions\GetEffectiveTariff;
-use Modules\Billing\DTOs\TariffCalculationResult;
-use Modules\Meter\DTOs\BatchReadingData;
-use Modules\Meter\DTOs\BatchReadingResult;
+use Modules\Billing\DTO\TariffCalculationResult;
+use Modules\Meter\DTO\BatchReadingData;
+use Modules\Meter\DTO\BatchReadingResult;
 use Modules\Meter\Models\MeterReading;
 use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
 use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
@@ -73,7 +73,7 @@ class CreateBatchReadings
                     $tariff = $this->getEffectiveTariff->handle(
                         $meter->service_provider_id,
                         $meter->utility_type_id,
-                        Carbon::parse($reading->readingDate),
+                        CarbonImmutable::parse($reading->readingDate),
                     );
 
                     if ($tariff !== null) {

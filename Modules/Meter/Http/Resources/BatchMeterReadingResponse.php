@@ -6,7 +6,7 @@ namespace Modules\Meter\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Meter\DTOs\BatchReadingResult;
+use Modules\Meter\DTO\BatchReadingResult;
 
 /** @mixin BatchReadingResult */
 class BatchMeterReadingResponse extends JsonResource

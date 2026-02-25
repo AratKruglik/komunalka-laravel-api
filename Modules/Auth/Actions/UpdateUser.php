@@ -7,7 +7,7 @@ namespace Modules\Auth\Actions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\UpdateUserData;
+use Modules\Auth\DTO\UpdateUserData;
 use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
 

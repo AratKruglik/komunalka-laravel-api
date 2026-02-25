@@ -6,7 +6,7 @@ namespace Modules\Auth\Actions;
 
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\DTOs\OAuthCallbackData;
+use Modules\Auth\DTO\OAuthCallbackData;
 use Modules\Auth\Services\JwtService;
 use Modules\Auth\Services\OAuthService;
 

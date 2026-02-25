@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Meter\DTOs;
+namespace Modules\Meter\DTO;
 
 use Illuminate\Http\UploadedFile;
 use Modules\Meter\Http\Requests\BatchMeterReadingRequest;

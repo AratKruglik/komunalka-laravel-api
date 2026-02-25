@@ -31,8 +31,8 @@ class MeterReadingResource extends JsonResource
                 'optimized_url' => $media->getUrl('optimized'),
                 'thumbnail_url' => $media->getUrl('thumbnail'),
             ]),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

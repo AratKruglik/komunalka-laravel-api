@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Hash;
 use Modules\Auth\Actions\RegisterUser;
-use Modules\Auth\DTOs\RegisterUserData;
+use Modules\Auth\DTO\RegisterUserData;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
 use Modules\Auth\Models\User;
