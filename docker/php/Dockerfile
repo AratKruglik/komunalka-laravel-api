@@ -9,8 +9,6 @@ RUN set -ex && \
     apk update && \
     apk add --no-cache \
         git \
-        nodejs \
-        npm \
         postgresql-dev \
         libzip-dev \
         libpng-dev \
@@ -52,14 +50,9 @@ RUN composer install \
     --optimize-autoloader \
     --classmap-authoritative
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
 COPY . .
 
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
-
-RUN npm run build
 
 RUN php artisan config:cache && \
     php artisan route:cache && \

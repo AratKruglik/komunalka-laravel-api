@@ -54,12 +54,10 @@ services:
       - caddy_data:/data
       - caddy_config:/config
       - ka_app_composer_data:/.composer
-      - ka_app_npm_data:/.npm
     ports:
       - '80:80'
       - '443:443'
       - '443:443/udp'
-      - '5173:5173'
       - '9003:9003'
     networks:
       - ka-db-network
@@ -156,9 +154,6 @@ volumes:
   ka_app_composer_data:
     driver: local
     name: ka_app_composer_data
-  ka_app_npm_data:
-    driver: local
-    name: ka_app_npm_data
 
 networks:
   ka-db-network:

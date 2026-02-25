@@ -106,8 +106,6 @@ Starts server (FrankenPHP), queue worker, scheduler, and reverb.
 - API: `http://localhost`
 - Mailpit: `http://localhost:8025`
 
-If you see `ViteException: Unable to locate file in Vite manifest` — run `docker compose exec app npm run build`.
-
 ## Testing
 
 Activate `pest-testing` skill every time you work with tests.
@@ -216,7 +214,7 @@ Run before finalizing changes.
 ## Do not
 
 - Create new root-level directories without approval
-- Change dependencies (`composer.json`, `package.json`) without approval
+- Change dependencies (`composer.json`) without approval
 - Modify `bootstrap/app.php` routing config without understanding current setup
 - Create verification scripts when tests cover the functionality
 

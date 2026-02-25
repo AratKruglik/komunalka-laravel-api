@@ -9,8 +9,6 @@ RUN \
     apk update && \
     apk add --no-cache \
         git \
-        nodejs \
-        npm \
         postgresql-dev \
         libzip-dev \
         libpng-dev \
@@ -87,18 +85,13 @@ RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ex
 RUN echo "pcov.enabled=1" >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini && \
     echo "pcov.directory=/var/www" >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
 
-# Install Node.js tools
-RUN npm install -g corepack
-RUN corepack enable && corepack prepare yarn@4.10.3 --activate
-
 # Copy supervisor configuration
 COPY docker/php/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set working directory
 WORKDIR /var/www
 
-# Expose ports for HTTP, HTTPS, HTTP/3, and Vite dev server
-EXPOSE 80 443 443/udp 5173
+EXPOSE 80 443 443/udp
 
 # Use supervisor as entrypoint to manage multiple processes
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]
