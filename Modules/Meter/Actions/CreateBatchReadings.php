@@ -33,6 +33,17 @@ class CreateBatchReadings
     public function handle(int $userId, BatchReadingData $data): BatchReadingResult
     {
         return DB::transaction(function () use ($userId, $data): BatchReadingResult {
+            $meterIds = array_map(fn ($r) => $r->meterId, $data->readings);
+
+            $meters = $this->meterRepository->findManyWithRelations($meterIds)->keyBy('id');
+            $latestReadings = $this->meterReadingRepository->getLatestForMeters($meterIds);
+
+            $addressIds = $meters->pluck('address_id')->unique()->values()->all();
+            abort_if(
+                ! $this->userAddressRepository->userOwnsAddresses($userId, $addressIds),
+                Response::HTTP_NOT_FOUND,
+            );
+
             /** @var array<int, MeterReading> $readings */
             $readings = [];
 
@@ -40,12 +51,11 @@ class CreateBatchReadings
             $tariffCalculations = [];
 
             foreach ($data->readings as $reading) {
-                $meter = $this->meterRepository->findWithRelations($reading->meterId);
+                $meter = $meters->get($reading->meterId);
 
                 abort_if($meter === null, Response::HTTP_NOT_FOUND);
-                abort_if(! $this->userAddressRepository->userOwnsAddress($userId, $meter->address_id), Response::HTTP_NOT_FOUND);
 
-                $previousReading = $this->meterReadingRepository->getLatestForMeter($reading->meterId);
+                $previousReading = $latestReadings->get($reading->meterId);
                 $previousValue = $previousReading ? $previousReading->reading_value : $meter->initial_reading;
 
                 abort_if(

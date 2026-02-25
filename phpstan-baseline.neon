@@ -153,7 +153,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Modules\\Auth\\Models\\User\:\:\$role\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: Modules/Auth/Models/User.php
 
 		-
@@ -331,6 +331,12 @@ parameters:
 			path: Modules/Billing/Http/Resources/TariffResource.php
 
 		-
+			message: '#^Access to an undefined property Modules\\Billing\\Models\\ServiceProvider\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: Modules/Billing/Policies/ServiceProviderPolicy.php
+
+		-
 			message: '#^Access to an undefined property Modules\\Address\\Models\\Address\:\:\$apartment_number\.$#'
 			identifier: property.notFound
 			count: 1
@@ -407,12 +413,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: Modules/Export/Actions/ExportToCsv.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Meter/Actions/CreateBatchReadings.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$initial_reading\.$#'
@@ -641,6 +641,18 @@ parameters:
 			identifier: method.notFound
 			count: 2
 			path: Modules/Meter/Models/MeterReading.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: Modules/Meter/Policies/MeterPolicy.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$address_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: Modules/Meter/Policies/MeterReadingPolicy.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Shared\\Http\\Resources\\CurrencyResource\:\:\$code\.$#'

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Meter\Models;
 
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,11 +13,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Address\Models\Address;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Meter\Database\Factories\MeterFactory;
+use Modules\Meter\Policies\MeterPolicy;
 use Modules\Shared\Models\UtilityType;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+#[UsePolicy(MeterPolicy::class)]
 class Meter extends Model implements HasMedia
 {
     use HasFactory;
@@ -85,7 +88,9 @@ class Meter extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('photo')->singleFile();
+        $this->addMediaCollection('photo')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/heic', 'image/heif']);
     }
 
     public function registerMediaConversions(?Media $media = null): void

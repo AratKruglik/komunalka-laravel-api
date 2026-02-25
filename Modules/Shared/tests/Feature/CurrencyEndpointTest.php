@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
+use Modules\Auth\Models\User;
 use Modules\Shared\Models\Currency;
 
+beforeEach(function () {
+    $this->admin = User::factory()->admin()->create();
+});
+
 describe('index', function () {
-    it('returns a list of currencies', function () {
+    it('returns a list of currencies without auth', function () {
         Currency::factory()->count(3)->create();
 
         $this->getJson(route('api.currencies.index'))
@@ -16,7 +21,7 @@ describe('index', function () {
 });
 
 describe('show', function () {
-    it('returns a single currency', function () {
+    it('returns a single currency without auth', function () {
         $currency = Currency::factory()->create();
 
         $this->getJson(route('api.currencies.show', ['currency' => $currency->id]))
@@ -32,10 +37,11 @@ describe('show', function () {
 });
 
 describe('store', function () {
-    it('creates a new currency', function () {
+    it('admin creates a new currency', function () {
         $payload = ['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'];
 
-        $this->postJson(route('api.currencies.store'), $payload)
+        $this->actingAs($this->admin, 'api')
+            ->postJson(route('api.currencies.store'), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.code', 'USD')
             ->assertJsonPath('data.name', 'US Dollar')
@@ -44,11 +50,28 @@ describe('store', function () {
         $this->assertDatabaseHas('currencies', $payload);
     });
 
+    it('returns 401 without auth', function () {
+        $payload = ['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'];
+
+        $this->postJson(route('api.currencies.store'), $payload)
+            ->assertUnauthorized();
+    });
+
+    it('returns 403 for regular user', function () {
+        $user = User::factory()->create();
+        $payload = ['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'];
+
+        $this->actingAs($user, 'api')
+            ->postJson(route('api.currencies.store'), $payload)
+            ->assertForbidden();
+    });
+
     it('validates required fields', function (string $field) {
         $payload = ['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'];
         unset($payload[$field]);
 
-        $this->postJson(route('api.currencies.store'), $payload)
+        $this->actingAs($this->admin, 'api')
+            ->postJson(route('api.currencies.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
     })->with(['code', 'name', 'symbol']);
@@ -56,7 +79,8 @@ describe('store', function () {
     it('validates code must be exactly 3 characters', function () {
         $payload = ['code' => 'US', 'name' => 'US Dollar', 'symbol' => '$'];
 
-        $this->postJson(route('api.currencies.store'), $payload)
+        $this->actingAs($this->admin, 'api')
+            ->postJson(route('api.currencies.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('code');
     });
@@ -66,18 +90,20 @@ describe('store', function () {
 
         $payload = ['code' => 'USD', 'name' => 'Another Dollar', 'symbol' => '$'];
 
-        $this->postJson(route('api.currencies.store'), $payload)
+        $this->actingAs($this->admin, 'api')
+            ->postJson(route('api.currencies.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('code');
     });
 });
 
 describe('update', function () {
-    it('updates an existing currency', function () {
+    it('admin updates an existing currency', function () {
         $currency = Currency::factory()->create(['code' => 'USD']);
         $payload = ['code' => 'EUR', 'name' => 'Euro', 'symbol' => '€'];
 
-        $this->putJson(route('api.currencies.update', ['currency' => $currency->id]), $payload)
+        $this->actingAs($this->admin, 'api')
+            ->putJson(route('api.currencies.update', ['currency' => $currency->id]), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.code', 'EUR')
             ->assertJsonPath('data.name', 'Euro');
@@ -89,19 +115,53 @@ describe('update', function () {
         $currency = Currency::factory()->create(['code' => 'USD']);
         $payload = ['code' => 'USD', 'name' => 'Updated Dollar', 'symbol' => '$'];
 
-        $this->putJson(route('api.currencies.update', ['currency' => $currency->id]), $payload)
+        $this->actingAs($this->admin, 'api')
+            ->putJson(route('api.currencies.update', ['currency' => $currency->id]), $payload)
             ->assertSuccessful()
             ->assertJsonPath('data.name', 'Updated Dollar');
+    });
+
+    it('returns 401 without auth', function () {
+        $currency = Currency::factory()->create();
+
+        $this->putJson(route('api.currencies.update', ['currency' => $currency->id]), ['code' => 'EUR', 'name' => 'Euro', 'symbol' => '€'])
+            ->assertUnauthorized();
+    });
+
+    it('returns 403 for regular user', function () {
+        $user = User::factory()->create();
+        $currency = Currency::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->putJson(route('api.currencies.update', ['currency' => $currency->id]), ['code' => 'EUR', 'name' => 'Euro', 'symbol' => '€'])
+            ->assertForbidden();
     });
 });
 
 describe('destroy', function () {
-    it('deletes a currency', function () {
+    it('admin deletes a currency', function () {
         $currency = Currency::factory()->create();
 
-        $this->deleteJson(route('api.currencies.destroy', ['currency' => $currency->id]))
+        $this->actingAs($this->admin, 'api')
+            ->deleteJson(route('api.currencies.destroy', ['currency' => $currency->id]))
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('currencies', ['id' => $currency->id]);
+    });
+
+    it('returns 401 without auth', function () {
+        $currency = Currency::factory()->create();
+
+        $this->deleteJson(route('api.currencies.destroy', ['currency' => $currency->id]))
+            ->assertUnauthorized();
+    });
+
+    it('returns 403 for regular user', function () {
+        $user = User::factory()->create();
+        $currency = Currency::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->deleteJson(route('api.currencies.destroy', ['currency' => $currency->id]))
+            ->assertForbidden();
     });
 });

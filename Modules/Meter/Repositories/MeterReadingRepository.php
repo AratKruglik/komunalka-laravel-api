@@ -38,6 +38,24 @@ class MeterReadingRepository extends EloquentRepository implements MeterReadingR
             ->first();
     }
 
+    public function getLatestForMeters(array $meterIds): Collection
+    {
+        if ($meterIds === []) {
+            return new Collection;
+        }
+
+        $latestIds = $this->newQuery()
+            ->selectRaw('MAX(id) as id')
+            ->whereIn('meter_id', $meterIds)
+            ->groupBy('meter_id')
+            ->pluck('id');
+
+        return $this->newQuery()
+            ->whereIn('id', $latestIds)
+            ->get()
+            ->keyBy('meter_id');
+    }
+
     public function findWithRelations(int $id): ?MeterReading
     {
         /** @var MeterReading|null */

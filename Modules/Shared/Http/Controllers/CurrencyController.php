@@ -7,6 +7,7 @@ namespace Modules\Shared\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 use Modules\Shared\Actions\CreateCurrency;
 use Modules\Shared\Actions\DeleteCurrency;
 use Modules\Shared\Actions\GetAllCurrencies;
@@ -41,6 +42,7 @@ class CurrencyController extends Controller
     public function update(int $currency, UpdateCurrencyRequest $request, UpdateCurrency $action): CurrencyResource
     {
         $model = app(GetCurrency::class)->handle($currency);
+        Gate::authorize('update', $model);
         $updated = $action->handle($model, UpdateCurrencyData::fromRequest($request));
 
         return new CurrencyResource($updated);
@@ -49,6 +51,7 @@ class CurrencyController extends Controller
     public function destroy(int $currency, DeleteCurrency $action): JsonResponse
     {
         $model = app(GetCurrency::class)->handle($currency);
+        Gate::authorize('delete', $model);
         $action->handle($model);
 
         return response()->json(['message' => 'Currency deleted successfully.']);

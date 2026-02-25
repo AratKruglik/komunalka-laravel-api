@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Modules\Meter\Models;
 
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Billing\Models\Tariff;
 use Modules\Meter\Database\Factories\MeterReadingFactory;
+use Modules\Meter\Policies\MeterReadingPolicy;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+#[UsePolicy(MeterReadingPolicy::class)]
 class MeterReading extends Model implements HasMedia
 {
     use HasFactory;

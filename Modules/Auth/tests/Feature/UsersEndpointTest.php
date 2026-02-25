@@ -9,33 +9,40 @@ use Modules\Auth\Models\User;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
+    $this->admin = User::factory()->admin()->create();
 });
 
 describe('GET /api/v1/users (index)', function () {
-    it('returns all users with addresses', function () {
+    it('returns all users for admin', function () {
         $address = Address::factory()->create();
-        $this->user->addresses()->attach($address->getKey(), ['is_primary' => true]);
+        $this->admin->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
         User::factory()->count(2)->create();
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->getJson(route('api.users.index'))
             ->assertSuccessful()
-            ->assertJsonCount(3, 'data')
+            ->assertJsonCount(4, 'data')
             ->assertJsonStructure(['data' => [['id', 'username', 'first_name', 'last_name', 'email', 'role']]]);
     });
 
     it('includes addresses in response when user has them', function () {
         $address = Address::factory()->create();
-        $this->user->addresses()->attach($address->getKey(), ['is_primary' => true]);
+        $this->admin->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->admin, 'api')
             ->getJson(route('api.users.index'))
             ->assertSuccessful();
 
-        $userData = collect($response->json('data'))->firstWhere('id', $this->user->getKey());
+        $userData = collect($response->json('data'))->firstWhere('id', $this->admin->getKey());
 
         expect($userData['addresses'])->toHaveCount(1);
+    });
+
+    it('returns 403 for regular user', function () {
+        $this->actingAs($this->user, 'api')
+            ->getJson(route('api.users.index'))
+            ->assertForbidden();
     });
 
     it('returns 401 when unauthenticated', function () {
@@ -44,7 +51,7 @@ describe('GET /api/v1/users (index)', function () {
 });
 
 describe('GET /api/v1/users/{id} (show)', function () {
-    it('returns user with addresses and avatar urls', function () {
+    it('returns own profile for regular user', function () {
         $address = Address::factory()->create();
         $this->user->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
@@ -74,8 +81,23 @@ describe('GET /api/v1/users/{id} (show)', function () {
             ]);
     });
 
-    it('returns 404 for non-existent user', function () {
+    it('returns 403 when viewing another user', function () {
+        $otherUser = User::factory()->create();
+
         $this->actingAs($this->user, 'api')
+            ->getJson(route('api.users.show', $otherUser->getKey()))
+            ->assertForbidden();
+    });
+
+    it('admin can view any user', function () {
+        $this->actingAs($this->admin, 'api')
+            ->getJson(route('api.users.show', $this->user->getKey()))
+            ->assertSuccessful()
+            ->assertJsonPath('data.id', $this->user->getKey());
+    });
+
+    it('returns 404 for non-existent user', function () {
+        $this->actingAs($this->admin, 'api')
             ->getJson(route('api.users.show', 99999))
             ->assertNotFound();
     });
@@ -99,8 +121,8 @@ describe('POST /api/v1/users (store)', function () {
         ];
     });
 
-    it('creates a new user', function () {
-        $this->actingAs($this->user, 'api')
+    it('admin creates a new user', function () {
+        $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.store'), $this->validPayload)
             ->assertSuccessful()
             ->assertJsonPath('data.username', 'newuser')
@@ -114,12 +136,18 @@ describe('POST /api/v1/users (store)', function () {
         ]);
     });
 
+    it('returns 403 for regular user', function () {
+        $this->actingAs($this->user, 'api')
+            ->postJson(route('api.users.store'), $this->validPayload)
+            ->assertForbidden();
+    });
+
     it('validates unique email', function () {
         User::factory()->create(['email' => 'taken@example.com']);
 
         $payload = array_merge($this->validPayload, ['email' => 'taken@example.com']);
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('email');
@@ -130,7 +158,7 @@ describe('POST /api/v1/users (store)', function () {
 
         $payload = array_merge($this->validPayload, ['username' => 'taken']);
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('username');
@@ -140,7 +168,7 @@ describe('POST /api/v1/users (store)', function () {
         $payload = $this->validPayload;
         unset($payload[$field]);
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
@@ -151,7 +179,7 @@ describe('POST /api/v1/users (store)', function () {
             'password_confirmation' => 'different-password',
         ]);
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
@@ -160,7 +188,7 @@ describe('POST /api/v1/users (store)', function () {
     it('validates role must be user or admin', function () {
         $payload = array_merge($this->validPayload, ['role' => 'superadmin']);
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.store'), $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('role');
@@ -172,7 +200,7 @@ describe('POST /api/v1/users (store)', function () {
 });
 
 describe('PUT /api/v1/users/{id} (update)', function () {
-    it('updates user profile fields', function () {
+    it('updates own profile fields', function () {
         $this->actingAs($this->user, 'api')
             ->putJson(route('api.users.update', $this->user->getKey()), [
                 'first_name' => 'Updated',
@@ -189,6 +217,25 @@ describe('PUT /api/v1/users/{id} (update)', function () {
             'first_name' => 'Updated',
             'last_name' => 'Name',
         ]);
+    });
+
+    it('returns 403 when updating another user', function () {
+        $otherUser = User::factory()->create();
+
+        $this->actingAs($this->user, 'api')
+            ->putJson(route('api.users.update', $otherUser->getKey()), [
+                'first_name' => 'Hacked',
+            ])
+            ->assertForbidden();
+    });
+
+    it('admin can update any user', function () {
+        $this->actingAs($this->admin, 'api')
+            ->putJson(route('api.users.update', $this->user->getKey()), [
+                'first_name' => 'AdminUpdated',
+            ])
+            ->assertSuccessful()
+            ->assertJsonPath('data.first_name', 'AdminUpdated');
     });
 
     it('uploads avatar', function () {
@@ -261,7 +308,7 @@ describe('PUT /api/v1/users/{id} (update)', function () {
     });
 
     it('returns 404 for non-existent user', function () {
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->putJson(route('api.users.update', 99999), ['first_name' => 'Test'])
             ->assertNotFound();
     });
@@ -273,10 +320,10 @@ describe('PUT /api/v1/users/{id} (update)', function () {
 });
 
 describe('DELETE /api/v1/users/{id} (destroy)', function () {
-    it('deletes a user', function () {
+    it('admin deletes a user', function () {
         $userToDelete = User::factory()->create();
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->admin, 'api')
             ->deleteJson(route('api.users.destroy', $userToDelete->getKey()))
             ->assertSuccessful()
             ->assertJsonPath('message', 'User deleted successfully.');
@@ -284,8 +331,22 @@ describe('DELETE /api/v1/users/{id} (destroy)', function () {
         $this->assertDatabaseMissing('users', ['id' => $userToDelete->getKey()]);
     });
 
-    it('returns 404 for non-existent user', function () {
+    it('returns 403 for regular user', function () {
+        $userToDelete = User::factory()->create();
+
         $this->actingAs($this->user, 'api')
+            ->deleteJson(route('api.users.destroy', $userToDelete->getKey()))
+            ->assertForbidden();
+    });
+
+    it('regular user cannot delete self', function () {
+        $this->actingAs($this->user, 'api')
+            ->deleteJson(route('api.users.destroy', $this->user->getKey()))
+            ->assertForbidden();
+    });
+
+    it('returns 404 for non-existent user', function () {
+        $this->actingAs($this->admin, 'api')
             ->deleteJson(route('api.users.destroy', 99999))
             ->assertNotFound();
     });

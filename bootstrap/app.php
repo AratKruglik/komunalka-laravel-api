@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ThrottleRequests::class.':api',
         ]);
 
-        $middleware->trustProxies(at: env('TRUSTED_PROXIES', '*'));
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES', ''));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function (Request $request): bool {

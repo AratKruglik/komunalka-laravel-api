@@ -49,4 +49,12 @@ class MeterRepository extends EloquentRepository implements MeterRepositoryInter
             ->with(['utilityType', 'serviceProvider', 'media'])
             ->find($id);
     }
+
+    public function findManyWithRelations(array $ids): Collection
+    {
+        return $this->newQuery()
+            ->whereIn('id', $ids)
+            ->with(['utilityType', 'serviceProvider', 'media'])
+            ->get();
+    }
 }

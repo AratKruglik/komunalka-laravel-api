@@ -51,4 +51,18 @@ class UserAddressRepository implements UserAddressRepositoryInterface
             ->where('address_id', $addressId)
             ->exists();
     }
+
+    public function userOwnsAddresses(int $userId, array $addressIds): bool
+    {
+        if ($addressIds === []) {
+            return true;
+        }
+
+        $count = UserAddress::query()
+            ->where('user_id', $userId)
+            ->whereIn('address_id', $addressIds)
+            ->count();
+
+        return $count === count(array_unique($addressIds));
+    }
 }

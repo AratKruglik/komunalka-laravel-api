@@ -22,13 +22,11 @@ class ExportMeterReadings
 
     public function handle(int $userId, ExportRequestData $data): Response
     {
-        foreach ($data->addressIds as $addressId) {
-            abort_if(
-                ! $this->userAddressRepository->userOwnsAddress($userId, $addressId),
-                Response::HTTP_FORBIDDEN,
-                'Доступ до однієї або кількох вказаних адрес заборонено.',
-            );
-        }
+        abort_if(
+            ! $this->userAddressRepository->userOwnsAddresses($userId, $data->addressIds),
+            Response::HTTP_FORBIDDEN,
+            'Доступ до однієї або кількох вказаних адрес заборонено.',
+        );
 
         $meterIds = $this->meterRepository
             ->getByAddressIds($data->addressIds)

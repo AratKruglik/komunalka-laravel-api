@@ -8,4 +8,7 @@ use App\Repositories\Contracts\RepositoryInterface;
 use Modules\Shared\Models\Currency;
 
 /** @extends RepositoryInterface<Currency> */
-interface CurrencyRepositoryInterface extends RepositoryInterface {}
+interface CurrencyRepositoryInterface extends RepositoryInterface
+{
+    public function invalidateCache(): void;
+}

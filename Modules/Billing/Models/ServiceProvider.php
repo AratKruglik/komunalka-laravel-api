@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Address\Models\Address;
 use Modules\Billing\Database\Factories\ServiceProviderFactory;
+use Modules\Billing\Policies\ServiceProviderPolicy;
 use Modules\Shared\Models\UtilityType;
 
+#[UsePolicy(ServiceProviderPolicy::class)]
 class ServiceProvider extends Model
 {
     use HasFactory;

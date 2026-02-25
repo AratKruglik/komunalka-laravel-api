@@ -17,4 +17,6 @@ interface UtilityTypeRepositoryInterface extends RepositoryInterface
 
     /** @return Collection<int, UtilityType> */
     public function getActive(): Collection;
+
+    public function invalidateCache(): void;
 }

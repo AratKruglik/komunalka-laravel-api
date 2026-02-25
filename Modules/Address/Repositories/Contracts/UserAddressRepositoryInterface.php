@@ -15,4 +15,7 @@ interface UserAddressRepositoryInterface
     public function clearPrimary(int $userId): void;
 
     public function userOwnsAddress(int $userId, int $addressId): bool;
+
+    /** @param array<int> $addressIds */
+    public function userOwnsAddresses(int $userId, array $addressIds): bool;
 }

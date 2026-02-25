@@ -23,4 +23,8 @@ interface MeterRepositoryInterface extends RepositoryInterface
     public function getActiveByAddressIds(array $addressIds): Collection;
 
     public function findWithRelations(int $id): ?Meter;
+
+    /** @param array<int> $ids
+     *  @return Collection<int, Meter> */
+    public function findManyWithRelations(array $ids): Collection;
 }

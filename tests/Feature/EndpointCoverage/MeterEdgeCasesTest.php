@@ -127,11 +127,19 @@ describe('PUT /api/v1/users/{id} (edge cases)', function () {
 });
 
 describe('DELETE /api/v1/users/{id} (edge cases)', function () {
-    it('can delete self', function () {
-        $this->actingAs($this->user, 'api')
+    it('admin can delete user', function () {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin, 'api')
             ->deleteJson(route('api.users.destroy', $this->user->getKey()))
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
+    });
+
+    it('regular user cannot delete self', function () {
+        $this->actingAs($this->user, 'api')
+            ->deleteJson(route('api.users.destroy', $this->user->getKey()))
+            ->assertForbidden();
     });
 });

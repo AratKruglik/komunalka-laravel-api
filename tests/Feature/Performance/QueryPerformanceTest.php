@@ -103,9 +103,10 @@ describe('N+1 query prevention', function () {
     });
 
     it('loads GET /api/v1/users without lazy loading', function () {
+        $admin = User::factory()->admin()->create();
         User::factory()->count(3)->create();
 
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($admin, 'api')
             ->getJson(route('api.users.index'))
             ->assertSuccessful();
     });
