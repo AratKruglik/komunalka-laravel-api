@@ -12,7 +12,7 @@ final readonly class RegisterUserData
         public string $username,
         public string $firstName,
         public string $lastName,
-        public string $phoneNumber,
+        public ?string $phoneNumber,
         public string $email,
         public string $password,
     ) {}
