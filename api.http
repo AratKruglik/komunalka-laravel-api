@@ -1,0 +1,1106 @@
+### Komunalka Laravel API — HTTP Client
+# Base URL: http-client.env.json
+# Tokens: http-client.private.env.json (gitignored)
+# Login/refresh requests auto-save tokens via response handlers
+
+### ============================================================================
+### Authentication Endpoints
+### ============================================================================
+
+### Register new user (without phone number)
+# Response 200 OK:
+# {
+#   "data": {
+#     "user": {
+#       "id": 1,
+#       "username": "testuser",
+#       "first_name": "Олена",
+#       "last_name": "Петренко",
+#       "email": "test (at) example.com",
+#       "phone_number": null,
+#       "role": "user",
+#       "auth_provider": null,
+#       "email_verified": false,
+#       "last_login_at": null,
+#       "addresses": [],
+#       "avatar_optimized_url": null,
+#       "avatar_thumbnail_url": null,
+#       "created_at": "2025-01-10T10:00:00.000000Z",
+#       "updated_at": "2025-01-10T10:00:00.000000Z"
+#     },
+#     "access_token": "eyJ...",
+#     "refresh_token": "abc123...",
+#     "token_type": "bearer",
+#     "expires_in": 3600
+#   }
+# }
+#
+# Response 422 Unprocessable Entity:
+# {
+#   "message": "Data validation error",
+#   "errors": { "email": ["The email has already been taken."] }
+# }
+POST {{host}}/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "testuser",
+  "first_name": "Олена",
+  "last_name": "Петренко",
+  "email": "test@example.com",
+  "password": "Password123!",
+  "password_confirmation": "Password123!"
+}
+
+### Register new user (with phone number)
+POST {{host}}/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "petrenko",
+  "first_name": "Олена",
+  "last_name": "Петренко",
+  "phone_number": "+380501234567",
+  "email": "olena@example.com",
+  "password": "Password123!",
+  "password_confirmation": "Password123!"
+}
+
+### Login user — saves auth_token and refresh_token
+# Response 200 OK:
+# {
+#   "data": {
+#     "user": { "id": 1, "username": "testuser", ... },
+#     "access_token": "eyJ...",
+#     "refresh_token": "abc123...",
+#     "token_type": "bearer",
+#     "expires_in": 3600
+#   }
+# }
+#
+# Response 401 Unauthorized:
+# { "message": "Invalid email or password" }
+POST {{host}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+> {%
+    client.global.set("auth_token", response.body.data.access_token);
+    client.global.set("refresh_token", response.body.data.refresh_token);
+%}
+
+### Login as admin — saves admin_token
+POST {{host}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@komunalka.com",
+  "password": "Password123!"
+}
+
+> {%
+    client.global.set("admin_token", response.body.data.access_token);
+    client.global.set("refresh_token", response.body.data.refresh_token);
+%}
+
+### Refresh JWT token — saves new tokens
+# Response 200 OK:
+# {
+#   "data": {
+#     "user": { ... },
+#     "access_token": "eyJ...",
+#     "refresh_token": "newToken...",
+#     "token_type": "bearer",
+#     "expires_in": 3600
+#   }
+# }
+#
+# Response 401 Unauthorized:
+# { "message": "Invalid or expired refresh token" }
+POST {{host}}/auth/refresh-token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refresh_token": "{{refresh_token}}"
+}
+
+> {%
+    client.global.set("auth_token", response.body.data.access_token);
+    client.global.set("refresh_token", response.body.data.refresh_token);
+%}
+
+### Validate JWT token
+# Response 200 OK:
+# {
+#   "data": {
+#     "id": 1,
+#     "username": "testuser",
+#     "first_name": "Олена",
+#     "last_name": "Петренко",
+#     "email": "test (at) example.com",
+#     "phone_number": "+380501234567",
+#     "role": "user",
+#     "auth_provider": null,
+#     "email_verified": true,
+#     "last_login_at": "2025-01-15T10:30:00.000000Z",
+#     "addresses": [],
+#     "avatar_optimized_url": null,
+#     "avatar_thumbnail_url": null,
+#     "created_at": "2025-01-10T10:00:00.000000Z",
+#     "updated_at": "2025-01-15T10:30:00.000000Z"
+#   }
+# }
+#
+# Response 401 Unauthorized:
+# { "message": "Unauthenticated." }
+GET {{host}}/auth/validate-token
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Revoke refresh token
+# Response 200 OK:
+# { "message": "Token revoked successfully." }
+POST {{host}}/auth/revoke-token
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "refresh_token": "{{refresh_token}}"
+}
+
+### ============================================================================
+### OAuth Authentication Endpoints
+### ============================================================================
+
+### Get Google OAuth authorization URL
+# Response 200 OK:
+# {
+#   "data": {
+#     "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...&redirect_uri=...&response_type=code&scope=openid%20email%20profile&state=..."
+#   }
+# }
+GET {{host}}/auth/oauth/google/authorize
+Accept: application/json
+
+### Get GitHub OAuth authorization URL
+# Response 200 OK:
+# {
+#   "data": {
+#     "authorization_url": "https://github.com/login/oauth/authorize?client_id=...&redirect_uri=...&scope=user:email&state=..."
+#   }
+# }
+GET {{host}}/auth/oauth/github/authorize
+Accept: application/json
+
+### OAuth login with token (Google ID token or GitHub access token)
+# Response 200 OK:
+# {
+#   "data": {
+#     "user": { "id": 5, "username": "john_doe_google", "auth_provider": "google", ... },
+#     "access_token": "eyJ...",
+#     "refresh_token": "oauthRefreshToken...",
+#     "token_type": "bearer",
+#     "expires_in": 3600
+#   }
+# }
+#
+# Response 401 Unauthorized:
+# { "message": "Invalid OAuth token" }
+POST {{host}}/auth/oauth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "provider": "google",
+  "token": "your-id-token-or-access-token"
+}
+
+### OAuth callback (authorization code flow)
+# Response 200 OK:
+# {
+#   "data": {
+#     "user": { "id": 2, "username": "githubuser", "auth_provider": "github", ... },
+#     "access_token": "eyJ...",
+#     "refresh_token": "githubRefreshToken...",
+#     "token_type": "bearer",
+#     "expires_in": 3600
+#   }
+# }
+#
+# Response 400 Bad Request:
+# { "message": "Invalid authorization code or state mismatch" }
+POST {{host}}/auth/oauth/callback
+Content-Type: application/json
+Accept: application/json
+
+{
+  "provider": "github",
+  "code": "authorization-code-from-provider",
+  "state": "state-parameter"
+}
+
+### Link OAuth provider to existing account
+# Response 200 OK:
+# { "message": "OAuth provider linked successfully." }
+#
+# Response 400 Bad Request:
+# { "message": "This account is already linked to another user" }
+POST {{host}}/auth/oauth/link
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "provider": "github",
+  "token": "your-access-token"
+}
+
+### Unlink OAuth provider from account
+# Response 200 OK:
+# { "message": "OAuth provider unlinked successfully." }
+#
+# Response 400 Bad Request:
+# { "message": "Cannot unlink the only authentication method" }
+DELETE {{host}}/auth/oauth/unlink/github
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "password": "Password123!"
+}
+
+### ============================================================================
+### User Management Endpoints
+### ============================================================================
+
+### Get all users (admin)
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "username": "testuser",
+#       "first_name": "Олена",
+#       "last_name": "Петренко",
+#       "email": "test (at) example.com",
+#       "phone_number": "+380501234567",
+#       "role": "user",
+#       "auth_provider": null,
+#       "email_verified": true,
+#       "last_login_at": "2025-01-15T10:30:00.000000Z",
+#       "addresses": [],
+#       "avatar_optimized_url": null,
+#       "avatar_thumbnail_url": null,
+#       "created_at": "2025-01-10T10:00:00.000000Z",
+#       "updated_at": "2025-01-15T10:30:00.000000Z"
+#     }
+#   ]
+# }
+GET {{host}}/users
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+
+### Get user by ID
+GET {{host}}/users/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Create user (admin)
+# Fields: username, first_name, last_name, phone_number?, email, password, password_confirmation, role (user|admin)
+# Response 201 Created:
+# {
+#   "data": {
+#     "id": 2,
+#     "username": "newuser",
+#     "first_name": "Іван",
+#     "last_name": "Коваленко",
+#     "email": "ivan (at) example.com",
+#     "phone_number": "+380671234567",
+#     "role": "user",
+#     ...
+#   }
+# }
+POST {{host}}/users
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "username": "newuser",
+  "first_name": "Іван",
+  "last_name": "Коваленко",
+  "phone_number": "+380671234567",
+  "email": "ivan@example.com",
+  "password": "Password123!",
+  "password_confirmation": "Password123!",
+  "role": "user"
+}
+
+### Update user profile
+PUT {{host}}/users/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "first_name": "Олена",
+  "last_name": "Петренко-Іваненко",
+  "phone_number": "+380509876543"
+}
+
+### Update user password
+PUT {{host}}/users/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "current_password": "Password123!",
+  "new_password": "NewPassword456!",
+  "new_password_confirmation": "NewPassword456!"
+}
+
+### Delete user (admin)
+# Response 200 OK:
+# { "message": "User deleted successfully." }
+DELETE {{host}}/users/1
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+
+### Get user avatar (no auth required)
+# Response 200 OK: Binary image data
+# Response 404 Not Found: No avatar uploaded
+GET {{host}}/users/1/avatar
+Accept: image/*
+
+### Get user avatar thumbnail (no auth required)
+GET {{host}}/users/1/avatar/thumbnail
+Accept: image/*
+
+### ============================================================================
+### Shared / Reference Data Endpoints
+### ============================================================================
+
+### List utility types (no auth required)
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "slug": "gas",
+#       "display_name": "Газ",
+#       "unit": "м³",
+#       "description": "Природний газ",
+#       "is_active": true,
+#       "created_at": "2025-01-01T00:00:00.000000Z",
+#       "updated_at": "2025-01-01T00:00:00.000000Z"
+#     },
+#     {
+#       "id": 2,
+#       "slug": "electricity",
+#       "display_name": "Електроенергія",
+#       "unit": "кВт·год",
+#       "description": "Електрична енергія",
+#       "is_active": true,
+#       "created_at": "2025-01-01T00:00:00.000000Z",
+#       "updated_at": "2025-01-01T00:00:00.000000Z"
+#     }
+#   ]
+# }
+GET {{host}}/utility-types
+Accept: application/json
+
+### Get utility type by ID
+GET {{host}}/utility-types/1
+Accept: application/json
+
+### List currencies (no auth required)
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "code": "UAH",
+#       "name": "Українська гривня",
+#       "symbol": "₴",
+#       "created_at": "2025-01-01T00:00:00.000000Z",
+#       "updated_at": "2025-01-01T00:00:00.000000Z"
+#     }
+#   ]
+# }
+GET {{host}}/currencies
+Accept: application/json
+
+### Get currency by ID
+GET {{host}}/currencies/1
+Accept: application/json
+
+### Create currency (admin)
+# Fields: code (3 chars, unique), name, symbol
+# Response 201 Created:
+# {
+#   "data": {
+#     "id": 2,
+#     "code": "EUR",
+#     "name": "Євро",
+#     "symbol": "€",
+#     "created_at": "2025-01-15T10:00:00.000000Z",
+#     "updated_at": "2025-01-15T10:00:00.000000Z"
+#   },
+#   "message": "Currency created successfully."
+# }
+POST {{host}}/currencies
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "code": "EUR",
+  "name": "Євро",
+  "symbol": "€"
+}
+
+### Update currency (admin)
+PUT {{host}}/currencies/2
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "code": "EUR",
+  "name": "Euro",
+  "symbol": "€"
+}
+
+### Delete currency (admin)
+# Response 200 OK:
+# { "message": "Currency deleted successfully." }
+DELETE {{host}}/currencies/2
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+
+### ============================================================================
+### Address Endpoints
+### ============================================================================
+
+### List regions
+# Response 200 OK:
+# {
+#   "data": [
+#     { "id": 1, "name": "Вінницька область" },
+#     { "id": 9, "name": "Київська область" }
+#   ]
+# }
+GET {{host}}/region
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get region by ID
+GET {{host}}/region/9
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### List address types
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "name": "Квартира",
+#       "description": "Багатоквартирний будинок у місті",
+#       "icon": "apartment"
+#     },
+#     {
+#       "id": 2,
+#       "name": "Будинок",
+#       "description": "Приватний будинок",
+#       "icon": "house"
+#     }
+#   ]
+# }
+GET {{host}}/addresstype
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get address type by ID
+GET {{host}}/addresstype/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### List user addresses
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "city": "Київ",
+#       "street": "вул. Хрещатик",
+#       "building_number": "1",
+#       "apartment_number": "101",
+#       "zip_code": "01001",
+#       "notes": "Центр міста",
+#       "is_primary": true,
+#       "region": { "id": 9, "name": "Київська область" },
+#       "address_type": { "id": 1, "name": "Квартира", "description": "...", "icon": "apartment" },
+#       "created_at": "2025-01-15T10:30:00.000000Z",
+#       "updated_at": "2025-01-15T10:30:00.000000Z"
+#     }
+#   ]
+# }
+GET {{host}}/address
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get address by ID
+GET {{host}}/address/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Create address
+# Fields: region_id, address_type_id, city, street, building_number, apartment_number?, zip_code?, notes?, is_primary?
+# Response 201 Created:
+# {
+#   "data": {
+#     "id": 1,
+#     "city": "Київ",
+#     "street": "вул. Хрещатик",
+#     "building_number": "1",
+#     "apartment_number": "101",
+#     "zip_code": "01001",
+#     "notes": "Центр міста",
+#     "is_primary": true,
+#     "region": { "id": 9, "name": "Київська область" },
+#     "address_type": { "id": 1, "name": "Квартира", ... },
+#     "created_at": "2025-01-15T10:30:00.000000Z",
+#     "updated_at": "2025-01-15T10:30:00.000000Z"
+#   }
+# }
+POST {{host}}/address
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "region_id": 9,
+  "address_type_id": 1,
+  "city": "Київ",
+  "street": "вул. Хрещатик",
+  "building_number": "1",
+  "apartment_number": "101",
+  "zip_code": "01001",
+  "notes": "Центр міста",
+  "is_primary": true
+}
+
+### Update address (full)
+PUT {{host}}/address/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "region_id": 9,
+  "address_type_id": 1,
+  "city": "Київ",
+  "street": "вул. Хрещатик",
+  "building_number": "1",
+  "apartment_number": "202",
+  "zip_code": "01001",
+  "notes": "Оновлена адреса",
+  "is_primary": true
+}
+
+### Patch address (partial)
+PATCH {{host}}/address/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "apartment_number": "303",
+  "notes": "Змінено квартиру"
+}
+
+### Delete address
+# Response 200 OK:
+# { "message": "Address deleted successfully." }
+DELETE {{host}}/address/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### ============================================================================
+### Billing / Service Provider Endpoints
+### ============================================================================
+
+### List service providers
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "name": "Київгаз",
+#       "description": "Постачання природного газу",
+#       "phone": "+380441234567",
+#       "email": "info (at) kyivgaz.ua",
+#       "website": "https://kyivgaz.ua",
+#       "is_active": true,
+#       "address_id": 1,
+#       "utility_type": { "id": 1, "slug": "gas", "display_name": "Газ", "unit": "м³", ... },
+#       "tariffs": [
+#         {
+#           "id": 1,
+#           "name": "Базовий тариф газ",
+#           "base_rate": 7.96,
+#           "service_fee": 0.50,
+#           "effective_from": "2025-01-01",
+#           "effective_to": null,
+#           "notes": null,
+#           "utility_type": { ... },
+#           "currency": { "id": 1, "code": "UAH", "name": "Українська гривня", "symbol": "₴", ... },
+#           "created_at": "2025-01-01T00:00:00.000000Z",
+#           "updated_at": "2025-01-01T00:00:00.000000Z"
+#         }
+#       ],
+#       "created_at": "2025-01-01T00:00:00.000000Z",
+#       "updated_at": "2025-01-01T00:00:00.000000Z"
+#     }
+#   ]
+# }
+GET {{host}}/service-providers
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get service provider by ID
+GET {{host}}/service-providers/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get service providers by address
+GET {{host}}/service-providers/address/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Create service provider (with tariffs)
+# Fields: address_id, utility_type_id, name, description?, phone?, email?, website?, is_active?, tariffs[]?
+# Tariff fields: utility_type_id, currency_id, name, base_rate, service_fee?, effective_from, effective_to?, notes?
+# Response 201 Created:
+# {
+#   "data": {
+#     "id": 2,
+#     "name": "Київенерго",
+#     "description": "Постачання електроенергії",
+#     "utility_type": { "id": 2, "slug": "electricity", "display_name": "Електроенергія", ... },
+#     "tariffs": [ { "id": 1, "name": "Базовий тариф електроенергія", "base_rate": 2.64, ... } ],
+#     ...
+#   }
+# }
+POST {{host}}/service-providers
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "address_id": 1,
+  "utility_type_id": 2,
+  "name": "Київенерго",
+  "description": "Постачання електроенергії",
+  "phone": "+380442345678",
+  "email": "info@kyivenergo.ua",
+  "website": "https://kyivenergo.ua",
+  "is_active": true,
+  "tariffs": [
+    {
+      "utility_type_id": 2,
+      "currency_id": 1,
+      "name": "Базовий тариф електроенергія",
+      "base_rate": 2.64,
+      "service_fee": 0.00,
+      "effective_from": "2025-01-01",
+      "effective_to": null,
+      "notes": "До 250 кВт·год/місяць"
+    }
+  ]
+}
+
+### Update service provider
+# Fields: utility_type_id, name, description?, phone?, email?, website?, is_active?
+PUT {{host}}/service-providers/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "utility_type_id": 1,
+  "name": "Київгаз (оновлено)",
+  "description": "Постачання природного газу — оновлено",
+  "phone": "+380441234567",
+  "email": "support@kyivgaz.ua",
+  "website": "https://kyivgaz.ua",
+  "is_active": true
+}
+
+### Delete service provider
+# Response 200 OK:
+# { "message": "Service provider deleted successfully." }
+DELETE {{host}}/service-providers/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### ============================================================================
+### Meter Endpoints
+### ============================================================================
+
+### List all meters
+# Response 200 OK:
+# {
+#   "data": [
+#     {
+#       "id": 1,
+#       "serial_number": "G-2024-001234",
+#       "name": "Лічильник газу кухня",
+#       "description": "Мембранний лічильник",
+#       "model_name": "Metrix G4",
+#       "location": "Кухня",
+#       "installation_date": "2024-06-15",
+#       "initial_reading": 1234.56,
+#       "notes": null,
+#       "is_active": true,
+#       "address_id": 1,
+#       "utility_type": { "id": 1, "slug": "gas", "display_name": "Газ", "unit": "м³", ... },
+#       "service_provider": { "id": 1, "name": "Київгаз", ... },
+#       "photo_url": null,
+#       "created_at": "2025-01-15T10:30:00.000000Z",
+#       "updated_at": "2025-01-15T10:30:00.000000Z"
+#     }
+#   ]
+# }
+GET {{host}}/meter
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get active meters
+GET {{host}}/meter/active
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get meters by address
+GET {{host}}/meter/address/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get meter by ID
+GET {{host}}/meter/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Create meter
+# Fields: address_id, utility_type_id, service_provider_id?, serial_number, name, description?, model_name?, location?, installation_date?, initial_reading, notes?, is_active?
+# Response 201 Created:
+# {
+#   "data": {
+#     "id": 1,
+#     "serial_number": "G-2024-001234",
+#     "name": "Лічильник газу кухня",
+#     "utility_type": { ... },
+#     "service_provider": { ... },
+#     ...
+#   }
+# }
+POST {{host}}/meter
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "address_id": 1,
+  "utility_type_id": 1,
+  "service_provider_id": 1,
+  "serial_number": "G-2024-001234",
+  "name": "Лічильник газу кухня",
+  "description": "Мембранний лічильник",
+  "model_name": "Metrix G4",
+  "location": "Кухня",
+  "installation_date": "2024-06-15",
+  "initial_reading": 1234.56,
+  "notes": null,
+  "is_active": true
+}
+
+### Update meter
+PUT {{host}}/meter/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "Лічильник газу кухня (оновлено)",
+  "location": "Кухня, біля плити",
+  "is_active": true
+}
+
+### Delete meter
+# Response 200 OK:
+# { "message": "Meter deleted successfully." }
+DELETE {{host}}/meter/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Upload meter photo (multipart)
+POST {{host}}/meter/1/photo
+Content-Type: multipart/form-data; boundary=boundary
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+--boundary
+Content-Disposition: form-data; name="photo"; filename="meter_photo.jpg"
+Content-Type: image/jpeg
+
+< ./storage/app/test/meter_photo.jpg
+--boundary--
+
+### ============================================================================
+### Meter Reading Endpoints
+### ============================================================================
+
+### Create batch meter readings (with photos, multipart)
+# Response 201 Created:
+# {
+#   "data": {
+#     "readings": [
+#       {
+#         "id": 1,
+#         "reading_value": 1345.78,
+#         "reading_date": "2025-02-25",
+#         "previous_reading_value": 1234.56,
+#         "consumption": 111.22,
+#         "notes": "Показання лютого",
+#         "is_estimated": false,
+#         "meter": { "id": 1, "serial_number": "G-2024-001234", ... },
+#         "tariff": { "id": 1, "name": "Базовий тариф газ", ... },
+#         "photos": [
+#           {
+#             "id": 1,
+#             "original_url": "https://localhost/api/v1/meter-readings/photos/1/optimized",
+#             "optimized_url": "https://localhost/api/v1/meter-readings/photos/1/optimized",
+#             "thumbnail_url": "https://localhost/api/v1/meter-readings/photos/1/thumbnail"
+#           }
+#         ],
+#         "created_at": "2025-02-25T12:00:00.000000Z",
+#         "updated_at": "2025-02-25T12:00:00.000000Z"
+#       }
+#     ],
+#     "tariff_calculations": [
+#       {
+#         "meter_id": 1,
+#         "meter_name": "Лічильник газу кухня",
+#         "consumption": 111.22,
+#         "unit": "м³",
+#         "base_rate": 7.96,
+#         "service_fee": 0.50,
+#         "total_cost": 885.81,
+#         "currency_code": "UAH",
+#         "currency_symbol": "₴"
+#       }
+#     ]
+#   }
+# }
+POST {{host}}/meter-readings/batch
+Content-Type: multipart/form-data; boundary=boundary
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+--boundary
+Content-Disposition: form-data; name="readings[0][meter_id]"
+
+1
+--boundary
+Content-Disposition: form-data; name="readings[0][reading_value]"
+
+1345.78
+--boundary
+Content-Disposition: form-data; name="readings[0][reading_date]"
+
+2025-02-25
+--boundary
+Content-Disposition: form-data; name="readings[0][notes]"
+
+Показання лютого
+--boundary
+Content-Disposition: form-data; name="readings[0][is_estimated]"
+
+false
+--boundary
+Content-Disposition: form-data; name="photos[0][0]"; filename="reading_photo.jpg"
+Content-Type: image/jpeg
+
+< ./storage/app/test/reading_photo.jpg
+--boundary--
+
+### Create batch meter readings (JSON, without photos)
+# readings[]: { meter_id, reading_value, reading_date, notes?, is_estimated? }
+POST {{host}}/meter-readings/batch
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "readings": [
+    {
+      "meter_id": 1,
+      "reading_value": 1345.78,
+      "reading_date": "2025-02-25",
+      "notes": "Показання лютого",
+      "is_estimated": false
+    },
+    {
+      "meter_id": 2,
+      "reading_value": 4567.89,
+      "reading_date": "2025-02-25",
+      "notes": null,
+      "is_estimated": false
+    }
+  ]
+}
+
+### Get meter readings by address
+GET {{host}}/meter-readings/address/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get meter readings by address (with date filter)
+GET {{host}}/meter-readings/address/1?from=2025-01-01&to=2025-02-28
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get meter reading by ID
+# Response 200 OK:
+# {
+#   "data": {
+#     "id": 1,
+#     "reading_value": 1345.78,
+#     "reading_date": "2025-02-25",
+#     "previous_reading_value": 1234.56,
+#     "consumption": 111.22,
+#     "notes": "Показання лютого",
+#     "is_estimated": false,
+#     "meter": { ... },
+#     "tariff": { ... },
+#     "photos": [ ... ],
+#     "created_at": "2025-02-25T12:00:00.000000Z",
+#     "updated_at": "2025-02-25T12:00:00.000000Z"
+#   }
+# }
+GET {{host}}/meter-readings/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Delete meter reading
+# Response 200 OK:
+# { "message": "Meter reading deleted successfully." }
+DELETE {{host}}/meter-readings/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get meter reading photo (optimized, no auth required)
+# Response 200 OK: Binary image data
+GET {{host}}/meter-readings/photos/1/optimized
+Accept: image/*
+
+### Get meter reading photo (thumbnail, no auth required)
+GET {{host}}/meter-readings/photos/1/thumbnail
+Accept: image/*
+
+### ============================================================================
+### Legacy Meter Reading Endpoints
+### ============================================================================
+
+### Create legacy meter reading (multipart)
+POST {{host}}/meterreading
+Content-Type: multipart/form-data; boundary=boundary
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+--boundary
+Content-Disposition: form-data; name="meter_id"
+
+1
+--boundary
+Content-Disposition: form-data; name="reading_value"
+
+1400.50
+--boundary
+Content-Disposition: form-data; name="reading_date"
+
+2025-02-25
+--boundary
+Content-Disposition: form-data; name="notes"
+
+Показання через legacy API
+--boundary
+Content-Disposition: form-data; name="photo"; filename="meter_reading.jpg"
+Content-Type: image/jpeg
+
+< ./storage/app/test/meter_reading.jpg
+--boundary--
+
+### Get legacy meter reading by ID
+GET {{host}}/meterreading/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Delete legacy meter reading
+DELETE {{host}}/meterreading/1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get legacy meter reading image (optimized, no auth required)
+GET {{host}}/meterreading/images/1/optimized
+Accept: image/*
+
+### Get legacy meter reading image (thumbnail, no auth required)
+GET {{host}}/meterreading/images/1/thumbnail
+Accept: image/*
+
+### ============================================================================
+### Export Endpoints
+### ============================================================================
+
+### Export meter readings (CSV)
+# Fields: address_ids[], from_date, to_date, format (csv|pdf)
+# Response 200 OK: Binary CSV file download
+POST {{host}}/export/meter-readings
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "address_ids": [1],
+  "from_date": "2025-01-01",
+  "to_date": "2025-02-28",
+  "format": "csv"
+}
+
+### Export meter readings (PDF)
+# Response 200 OK: Binary PDF file download
+POST {{host}}/export/meter-readings
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "address_ids": [1, 2],
+  "from_date": "2025-01-01",
+  "to_date": "2025-02-28",
+  "format": "pdf"
+}
