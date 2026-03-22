@@ -23,7 +23,7 @@ class MeterReadingResource extends InertiaJsonApiResource
             'notes' => $this->notes,
             'is_estimated' => $this->is_estimated,
             'photos' => $this->getMedia('photos')->map(fn ($media) => [
-                'id' => $media->id,
+                'id' => $media->getKey(),
                 'original_url' => $media->getUrl(),
                 'optimized_url' => $media->getUrl('optimized'),
                 'thumbnail_url' => $media->getUrl('thumbnail'),

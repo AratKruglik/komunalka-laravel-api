@@ -27,7 +27,7 @@ class AddressResource extends InertiaJsonApiResource
         ];
     }
 
-    /** @return array<int|string, string> */
+    /** @return array<string, string> */
     public function toRelationships(Request $request): array
     {
         return [

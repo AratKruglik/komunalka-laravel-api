@@ -19,6 +19,7 @@
         "tailwindcss-development",
         "laravel-actions",
         "medialibrary-development",
-        "laravel-pdf"
+        "laravel-pdf",
+        "laravel-inertia-react"
     ]
 }

@@ -31,10 +31,10 @@ function resolveRelationshipData(
 function resolveRelationship(
     rel: JsonApiRelationship,
     includedMap: IncludedMap,
-): unknown {
+): Record<string, unknown> | Record<string, unknown>[] | null {
     if (rel.data === null) return null
     if (Array.isArray(rel.data)) {
-        return rel.data.map((id) => resolveRelationshipData(id, includedMap))
+        return rel.data.map((id) => resolveRelationshipData(id, includedMap)).filter(Boolean) as Record<string, unknown>[]
     }
     return resolveRelationshipData(rel.data, includedMap)
 }
@@ -77,17 +77,6 @@ export function denormalizeCollection<T = Record<string, unknown>>(
     return document.data.map((resource) => flattenResource(resource, includedMap)) as T[]
 }
 
-export function isJsonApiDocument(value: unknown): value is JsonApiDocument {
-    return (
-        typeof value === 'object' &&
-        value !== null &&
-        'data' in value &&
-        typeof (value as JsonApiDocument).data === 'object' &&
-        !Array.isArray((value as JsonApiDocument).data) &&
-        'type' in ((value as JsonApiDocument).data ?? {})
-    )
-}
-
 export function isJsonApiCollectionDocument(value: unknown): value is JsonApiCollectionDocument {
     return (
         typeof value === 'object' &&
@@ -98,12 +87,9 @@ export function isJsonApiCollectionDocument(value: unknown): value is JsonApiCol
 }
 
 export function denormalizeAuto<T = Record<string, unknown>>(
-    value: JsonApiDocument | JsonApiCollectionDocument | unknown[] | { data: unknown[] },
+    value: JsonApiCollectionDocument | unknown[],
 ): T[] {
     if (Array.isArray(value)) return value as T[]
     if (isJsonApiCollectionDocument(value)) return denormalizeCollection<T>(value)
-    if ('data' in value && Array.isArray((value as { data: unknown[] }).data)) {
-        return (value as { data: T[] }).data
-    }
     return []
 }
