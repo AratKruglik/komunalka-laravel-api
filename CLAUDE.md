@@ -1,53 +1,18 @@
-# Komunalka Laravel API
+# Claude Instructions (Index)
 
-REST API for utility management. Built with PHP 8.4, Laravel 12, PostgreSQL. All commands MUST be executed via `docker compose exec app`.
+## Claude-Specific Behavior
 
-## Workflow Orchestration
+- Use available Skills for Laravel code style, testing, architecture, Inertia, DevOps
+- If a Skill applies, prefer it over repeating rules here
 
-### 1. Plan Node Default
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately – don't keep pushing
-- Use plan mode for verification steps, not just building
-- Write detailed specs upfront to reduce ambiguity
+## IMPORTANT
 
-### 2. Subagent Strategy
-- Use subagents liberally to keep main context window clean
-- Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
-- One tack per subagent for focused execution
-
-### 3. Self-Improvement Loop
-- After ANY correction from the user: update `docs/tasks-docs/lessons.md` with the pattern
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
-
-### 4. Verification Before Done
-- Never mark a task complete without proving it works
-- Diff behavior between main and your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
-
-### 5. Demand Elegance (Balanced)
-- For non-trivial changes: pause and ask "is there a more elegant way?"
-- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
-- Skip this for simple, obvious fixes – don't over-engineer
-- Challenge your own work before presenting it
-
-### 6. Autonomous Bug Fixing
-- When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests – then resolve them
-- Zero context switching required from the user
-- Go fix failing CI tests without being told how
-
-## Task Management
-
-1. **Plan First**: Write plan to `docs/tasks-docs/todo.md` with checkable items
-2. **Verify Plan**: Check in before starting implementation
-3. **Track Progress**: Mark items complete as you go
-4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `docs/tasks-docs/todo.md`
-6. **Capture Lessons**: Update `docs/tasks-docs/lessons.md` after corrections
+1. Before writing any code, describe your approach and wait for approval.
+2. If requirements are ambiguous, ask clarifying questions before writing code.
+3. After finishing code, list edge cases and suggest test cases.
+4. If a task requires changes to more than 3 files, stop and break it into smaller tasks.
+5. When there's a bug, start by writing a test that reproduces it, then fix it.
+6. Every time I correct you, reflect on what went wrong and plan to prevent it.
 
 ## Core Principles
 
@@ -55,189 +20,147 @@ REST API for utility management. Built with PHP 8.4, Laravel 12, PostgreSQL. All
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
-## Repository structure
+## Task Management
 
-- `app/` — Base controller, service provider, repository contracts and base implementation
-- `Modules/` — Domain modules (nwidart/laravel-modules), each with models, actions, controllers, routes, resources, DTO, repositories, factories, migrations, tests
-- `bootstrap/` — `app.php` (middleware, exceptions, routing), `providers.php`
-- `config/` — Configuration files
-- `tests/` — Cross-module Pest 4 tests (`Feature/EndToEnd/`, `Feature/ApiCompatibility/`, `Feature/EndpointCoverage/`, `Feature/Performance/`)
+1. **Plan First**: Write plan to `docs/todo.md` with checkable items
+2. **Verify Plan**: Check in before starting implementation
+3. **Track Progress**: Mark items complete as you go
+4. **Explain Changes**: High-level summary at each step
+5. **Document Results**: Add review section to `docs/todo.md`
+6. **Capture Lessons**: Update `docs/lessons.md` after corrections
 
-### Modules
+## Agent Dispatch (MANDATORY)
 
-| Module | Models | Actions | Endpoints | Purpose |
-|--------|--------|---------|-----------|---------|
-| **Shared** | Currency, UtilityType + 5 legacy | 7 | 3 | Reference data |
-| **Auth** | User, RefreshToken | 16 | 22 | JWT auth, OAuth, user management |
-| **Address** | Address, AddressType, Region, UserAddress | 10 | 11 | Address CRUD with user pivot |
-| **Billing** | ServiceProvider, Tariff | 8 | 7 | Tariff calculation, providers |
-| **Meter** | Meter, MeterReading | 15 | 21 | Meters, batch readings, photos |
-| **Export** | — | 3 | 2 | CSV/PDF export |
+- **ALWAYS** follow the agent pipeline defined in `.claude/rules/workflow.md`
+- **ALWAYS** run independent pipeline steps in parallel (e.g., Security Scanner + QA + Tester can run simultaneously after Developer completes)
+- **ALWAYS** autonomously determine which agents from `.claude/agents/` should execute each part of the user's task — do NOT ask the user which agent to use
+- Available agents: `ba`, `developer`, `frontend`, `tester`, `qa`, `reviewer`, `debugger`, `security-scanner`, `dba`, `ddd-architect`, `filament`, `devops`, `ci-cd-engineer`, `integration-architect`, `laravel-refactoring-expert`, `queue-specialist`, `docs-writer`
+- For every non-trivial task: analyze → select agents → dispatch in parallel where possible → collect results → verify
 
-Module structure: `Modules/{Name}/` → `Actions/`, `DTO/`, `Http/Controllers/`, `Http/Requests/`, `Http/Resources/`, `Models/`, `Repositories/`, `routes/`, `database/`, `tests/`
+## Rules (auto-loaded from `.claude/rules/`)
 
-## Tech stack
+- `code-style.md` — PHP 8.4 strict types, Eloquent conventions, code quality tools
+- `architecture.md` — Actions pattern, Inertia.js, domain organization, database patterns
+- `testing.md` — Pest 4, mutation testing, model testing policy, test structure
+- `git-operations.md` — Commit/push rules, PR description format
+- `workflow.md` — Agent pipeline: BA → Developer → Security → QA → Tester → DocsWriter
 
-- **Runtime:** PHP 8.4 (FrankenPHP/Octane)
-- **Database:** PostgreSQL 17
-- **Caching/Queues:** Redis
-- **Testing:** Pest 4, PHPUnit 12 (361 tests, parallel mode)
-- **Static analysis:** PHPStan/Larastan level 5
-- **Code style:** Laravel Pint
-- **Architecture:** nwidart/laravel-modules, lorisleiva/laravel-actions
-- **Auth:** JWT (php-open-source-saver/jwt-auth), OAuth (laravel/socialite)
-- **Media:** spatie/laravel-medialibrary
-- **Dev tools:** Docker Compose, Boost (MCP)
+# AI Agent Guidelines
 
-## Setup
+This file contains canonical development guidelines for ALL AI coding assistants
+used in this repository (Copilot, Codex, Gemini, Claude, others).
 
-1. Start containers: `docker compose up -d`
-2. Run setup inside container: `docker compose exec app composer setup`
+If you are an AI agent:
 
-- Never use `env()` outside config files — always use `config('key')`
+- Read this file before suggesting code
+- Follow these rules unless explicitly instructed otherwise
 
-## Development
+## Build/Configuration Instructions
+
+### System Requirements
+
+- **PHP 8.4+** (Critical: The project requires PHP 8.4.0 or higher)
+- **Node.js** with Yarn 4.6.0
+- **PostgreSQL 17**
+- **Redis 7.2+**
+- **Docker & Docker Compose** (Recommended for development)
+
+### Environment Setup
+
+#### Option 1: Docker Development (Recommended)
 
 ```bash
+# Copy environment file
+cp .env.example .env
+
+# Start all services
 docker compose up -d
+
+# Install PHP dependencies
+docker compose exec app composer install
+
+# Install Node dependencies
+docker compose exec app yarn install
+
+# Generate application key
+docker compose exec app php artisan key:generate
+
+# Run migrations
+docker compose exec app php artisan migrate
+
+# Build frontend assets
+docker compose exec app yarn dev
 ```
 
-Starts server (FrankenPHP), queue worker, scheduler, and reverb. 
-- API: `http://localhost`
-- Mailpit: `http://localhost:8025`
+#### Option 2: Local Development
 
-## Testing
-
-Activate `pest-testing` skill every time you work with tests.
+Ensure PHP 8.4+ is installed, then:
 
 ```bash
-docker compose exec app php artisan test --compact
-docker compose exec app php artisan test --compact --parallel
-docker compose exec app php artisan test --compact --filter=testName
+# Install dependencies
+docker compose exec app composer install
+docker compose exec app yarn install
+
+# Setup environment
+docker compose exec app cp .env.example .env
+docker compose exec app php artisan key:generate
+
+# Configure database and run migrations
+docker compose exec app php artisan migrate
+
+# Start development servers
+docker compose exec app composer run dev  # Starts Laravel Octane, queue worker, logs, and Vite
 ```
 
-- Parallel mode works out-of-the-box (12 processes).
-- Create tests: `docker compose exec app php artisan make:test --pest {name}` (feature) or `--pest --unit` (unit). Most tests should be feature tests.
-- Use model factories with custom states. Follow existing `$this->faker` vs `fake()` conventions.
-- Always use `route()` helper with named routes in tests, never hardcode URLs.
-- Do NOT delete tests without approval.
-- Use `search-docs` tool for version-specific Pest documentation.
+### Development Scripts
 
-### Test structure
+All commands should run from a Docker container. The project includes several
+useful Composer scripts:
 
-- `Modules/*/tests/` — Module-level feature and unit tests
-- `tests/Feature/EndToEnd/` — Cross-module integration flows
-- `tests/Feature/ApiCompatibility/` — Response format, pagination, token structure
-- `tests/Feature/EndpointCoverage/` — Edge cases, security, photo serving
-- `tests/Feature/Performance/` — N+1 prevention, queue processing
+- `docker compose exec app composer run dev` - Start all development services (Octane, queue, logs,
+  Vite)
+- `docker compose exec app composer run ide-helper` - Generate IDE helper files
+- `docker compose exec app composer run phpstan` - Run static analysis
+- `docker compose exec app composer run pint` - Check code style
+- `docker compose exec app composer run pint:fix` - Fix code style issues
+- `docker compose exec app composer run rector` - Check for code modernization opportunities
+- `docker compose exec app composer run rector:fix` - Apply code modernization
 
-## Static analysis
+### CI/CD Pipeline
+
+The project uses GitHub Actions with:
+
+- **Linting**: PHPStan, Laravel Pint, Rector
+- **Testing**: Pest with coverage and mutation testing
+- **Code Coverage**: Codecov integration
+- **Parallel Execution**: Tests run in parallel for faster feedback
+
+### Environment-Specific Notes
+
+- **Local Development**: Use Docker Compose for consistent environment
+- **Testing**: Separate PostgreSQL instance for tests
+- **Production**: Optimized for Laravel Octane with FrankenPHP
+- **Debugging**: Xdebug available in development, Telescope for application
+  debugging
+
+### Common Commands
 
 ```bash
-docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+# Code quality checks
+docker compose exec app ./vendor/bin/phpstan analyse
+docker compose exec app ./vendor/bin/pint --test
+docker compose exec app ./vendor/bin/rector process --dry-run
+
+# Fix code issues
+docker compose exec app ./vendor/bin/pint
+docker compose exec app ./vendor/bin/rector process
+
+# Generate IDE helpers
+docker compose exec app php artisan ide-helper:generate
+docker compose exec app php artisan ide-helper:models
+
+# Clear caches
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan cache:clear
+docker compose exec app php artisan view:clear
 ```
-
-- Config: `phpstan.neon` (level 5, baseline in `phpstan-baseline.neon`)
-- Run after code changes to catch regressions. New code must not introduce new errors.
-
-## Code style
-
-### PHP
-
-- Always use curly braces for control structures, even single-line
-- Explicit return types and parameter type hints on all methods
-- Constructor property promotion: `public function __construct(public GitHub $github) { }`
-- No empty zero-parameter constructors (unless private)
-- Enum keys in TitleCase
-- Use `Symfony\Component\HttpFoundation\Response` constants for HTTP status codes (`Response::HTTP_UNAUTHORIZED`, `Response::HTTP_OK`, etc.) — never hardcode numeric codes
-- PHPDoc blocks over inline comments; array shape type definitions where appropriate
-
-### Formatting
-
-```bash
-docker compose exec app vendor/bin/pint --dirty --format agent
-```
-
-Run before finalizing changes.
-
-## Architecture
-
-### Laravel 12 structure
-
-- Middleware, exceptions, routing configured in `bootstrap/app.php`
-- Service providers in `bootstrap/providers.php`
-- Console commands auto-discovered from `app/Console/Commands/`
-
-### Scaffolding
-
-- Use `docker compose exec app php artisan make:*` commands with `--no-interaction` flag
-- Generic PHP classes: `docker compose exec app php artisan make:class`
-- Use `list-artisan-commands` tool to verify available parameters
-
-### Database & Eloquent
-
-- Prefer `Model::query()` over `DB::`; use eager loading to prevent N+1
-- Relationship methods with return type hints; query builder for complex operations
-- Column modifications must include all existing attributes
-- Eager loading supports native `limit()`: `$query->latest()->limit(10)`
-- Model casts via `casts()` method (not `$casts` property)
-- New models: create factories and seeders too
-
-### Controllers & validation
-
-- Form Request classes for validation (not inline). Include rules and custom error messages.
-- Check sibling Form Requests for array vs string rule convention.
-
-### API
-
-- Eloquent API Resources with API versioning
-- Named routes with `route()` for URL generation
-
-### Auth & queues
-
-- JWT authentication via `php-open-source-saver/jwt-auth` with `actingAs($user, 'api')` in tests
-- OAuth via laravel/socialite (Google, GitHub)
-- `ShouldQueue` interface for time-consuming jobs
-
-## Security
-
-- Never hardcode secrets. Use `.env` (gitignored) and `config()` to access values.
-- Do not log passwords, tokens, or secrets.
-
-## Git workflow
-
-- Branch: `feature/<short-kebab>` or `fix/<short-kebab>`
-- Commit messages: imperative mood, e.g. `fix: handle null customer id`
-- Before PR: tests and Pint must pass
-- Do not create documentation files unless explicitly requested
-
-## Do not
-
-- Create new root-level directories without approval
-- Change dependencies (`composer.json`) without approval
-- Modify `bootstrap/app.php` routing config without understanding current setup
-- Create verification scripts when tests cover the functionality
-
-## MCP Tools (Laravel Boost)
-
-Use Boost MCP tools for this project (they run inside `app` service):
-
-- `search-docs` — search version-specific Laravel/package docs
-- `database-schema` — inspect table structure
-- `database-query` — read-only database queries
-- `tinker` — execute PHP to debug or query Eloquent directly
-- `list-artisan-commands` — verify artisan command parameters
-- `get-absolute-url` — generate correct project URLs
-- `browser-logs` — read recent browser errors/exceptions
-
-## Skills
-
-- `pest-testing` — MUST activate when working with tests, TDD, assertions, coverage, or test debugging
-
-## Behaviour
-
-- Be concise — focus on what matters
-- Follow existing code conventions; check sibling files before creating/editing
-- Descriptive names: `isRegisteredForDiscounts`, not `discount()`
-- Reuse existing components before creating new ones
-- Do not create verification scripts when tests prove functionality works

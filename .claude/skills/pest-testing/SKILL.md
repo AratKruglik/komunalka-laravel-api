@@ -1,9 +1,13 @@
 ---
 name: pest-testing
-description: "Tests applications using the Pest 4 PHP framework. Activates when writing tests, creating unit or feature tests, adding assertions, testing Livewire components, browser testing, debugging test failures, working with datasets or mocking; or when the user mentions test, spec, TDD, expects, assertion, coverage, or needs to verify functionality works."
-license: MIT
-metadata:
-  author: laravel
+description: >-
+    Tests applications using the Pest 4 PHP framework. Activates when writing
+    tests, creating unit or feature tests, adding assertions, testing Livewire
+    components, browser testing, debugging test failures, working with datasets
+    or mocking; or when the user mentions test, spec, TDD, expects, assertion,
+    coverage, or needs to verify functionality works.
+
+    Українською: тестування Pest, написати тест, створи тест, юніт тест, фіча тест, assertions, датасет, мок, покриття, мутаційне тестування, TDD, додай тест, перевірка функціональності, тест Livewire
 ---
 
 # Pest Testing 4
@@ -34,37 +38,65 @@ All tests must be written using Pest. Use `php artisan make:test --pest {name}`.
 - Browser tests: `tests/Browser/` directory.
 - Do NOT remove tests without approval - these are core application code.
 
+### Models Testing Policy
+
+- DO NOT create unit tests for Laravel Eloquent models.
+- Rationale:
+    - Laravel's Eloquent ORM is extensively tested by the Laravel team
+    - Testing basic CRUD operations, relationships, and standard functionality
+      provides no value
+    - Models are excluded from code coverage metrics (see phpunit.xml)
+- What NOT to test:
+    - Basic relationships (hasOne, hasMany, belongsTo, etc.)
+    - Simple CRUD operations (create, update, delete, find)
+    - Standard Eloquent functionality
+    - Factory creation without custom logic
+    - Basic fillable/guarded attributes
+    - Standard casting functionality
+- Exceptions — What TO test:
+    - Custom business logic methods
+    - Complex accessors/mutators with business rules
+    - Custom scopes with specific logic
+    - Observer behavior and side effects
+    - Mass assignment protection (if critical)
+- Where to test model functionality instead:
+    - Feature tests via HTTP endpoints and workflows
+    - Integration tests for model interactions
+    - Observer tests for event handlers
+    - Action/Service tests for business logic
+
 ### Basic Test Structure
 
-<!-- Basic Pest Test Example -->
-```php
-it('is true', function () {
-    expect(true)->toBeTrue();
-});
-```
+<code-snippet name="Basic Pest Test Example" lang="php">
+
+it('is true', function () { expect(true)->toBeTrue(); });
+
+</code-snippet>
 
 ### Running Tests
 
-- Run minimal tests with filter before finalizing: `php artisan test --compact --filter=testName`.
+- Run minimal tests with filter before finalizing:
+  `php artisan test --compact --filter=testName`.
 - Run all tests: `php artisan test --compact`.
 - Run file: `php artisan test --compact tests/Feature/ExampleTest.php`.
 
 ## Assertions
 
-Use specific assertions (`assertSuccessful()`, `assertNotFound()`) instead of `assertStatus()`:
+Use specific assertions (`assertSuccessful()`, `assertNotFound()`) instead of
+`assertStatus()`:
 
-<!-- Pest Response Assertion -->
-```php
-it('returns all', function () {
-    $this->postJson('/api/docs', [])->assertSuccessful();
-});
-```
+<code-snippet name="Pest Response Assertion" lang="php">
 
-| Use | Instead of |
-|-----|------------|
+it('returns all', function () { $this->postJson('/api/docs',
+[])->assertSuccessful(); });
+
+</code-snippet>
+
+| Use                  | Instead of          |
+| -------------------- | ------------------- |
 | `assertSuccessful()` | `assertStatus(200)` |
-| `assertNotFound()` | `assertStatus(404)` |
-| `assertForbidden()` | `assertStatus(403)` |
+| `assertNotFound()`   | `assertStatus(404)` |
+| `assertForbidden()`  | `assertStatus(403)` |
 
 ## Mocking
 
@@ -74,43 +106,42 @@ Import mock function before use: `use function Pest\Laravel\mock;`
 
 Use datasets for repetitive tests (validation rules, etc.):
 
-<!-- Pest Dataset Example -->
-```php
+<code-snippet name="Pest Dataset Example" lang="php">
+
 it('has emails', function (string $email) {
     expect($email)->not->toBeEmpty();
-})->with([
-    'james' => 'james@laravel.com',
-    'taylor' => 'taylor@laravel.com',
-]);
-```
+})->with([ 'james' => 'james@laravel.com', 'taylor' => 'taylor@laravel.com', ]);
+
+</code-snippet>
 
 ## Pest 4 Features
 
-| Feature | Purpose |
-|---------|---------|
-| Browser Testing | Full integration tests in real browsers |
-| Smoke Testing | Validate multiple pages quickly |
-| Visual Regression | Compare screenshots for visual changes |
-| Test Sharding | Parallel CI runs |
-| Architecture Testing | Enforce code conventions |
+| Feature              | Purpose                                 |
+| -------------------- | --------------------------------------- |
+| Browser Testing      | Full integration tests in real browsers |
+| Smoke Testing        | Validate multiple pages quickly         |
+| Visual Regression    | Compare screenshots for visual changes  |
+| Test Sharding        | Parallel CI runs                        |
+| Architecture Testing | Enforce code conventions                |
 
 ### Browser Test Example
 
 Browser tests run in real browsers for full integration testing:
 
 - Browser tests live in `tests/Browser/`.
-- Use Laravel features like `Event::fake()`, `assertAuthenticated()`, and model factories.
+- Use Laravel features like `Event::fake()`, `assertAuthenticated()`, and model
+  factories.
 - Use `RefreshDatabase` for clean state per test.
-- Interact with page: click, type, scroll, select, submit, drag-and-drop, touch gestures.
+- Interact with page: click, type, scroll, select, submit, drag-and-drop, touch
+  gestures.
 - Test on multiple browsers (Chrome, Firefox, Safari) if requested.
 - Test on different devices/viewports (iPhone 14 Pro, tablets) if requested.
 - Switch color schemes (light/dark mode) when appropriate.
 - Take screenshots or pause tests for debugging.
 
-<!-- Pest Browser Test Example -->
-```php
-it('may reset the password', function () {
-    Notification::fake();
+<code-snippet name="Pest Browser Test Example" lang="php">
+
+it('may reset the password', function () { Notification::fake();
 
     $this->actingAs(User::factory()->create());
 
@@ -124,19 +155,22 @@ it('may reset the password', function () {
         ->assertSee('We have emailed your password reset link!');
 
     Notification::assertSent(ResetPassword::class);
+
 });
-```
+
+</code-snippet>
 
 ### Smoke Testing
 
 Quickly validate multiple pages have no JavaScript errors:
 
-<!-- Pest Smoke Testing Example -->
-```php
+<code-snippet name="Pest Smoke Testing Example" lang="php">
+
 $pages = visit(['/', '/about', '/contact']);
 
 $pages->assertNoJavaScriptErrors()->assertNoConsoleLogs();
-```
+
+</code-snippet>
 
 ### Visual Regression Testing
 
@@ -150,13 +184,12 @@ Split tests across parallel processes for faster CI runs.
 
 Pest 4 includes architecture testing (from Pest 3):
 
-<!-- Architecture Test Example -->
-```php
-arch('controllers')
-    ->expect('App\Http\Controllers')
-    ->toExtendNothing()
-    ->toHaveSuffix('Controller');
-```
+<code-snippet name="Architecture Test Example" lang="php">
+
+arch('controllers') ->expect('App\Http\Controllers') ->toExtendNothing()
+->toHaveSuffix('Controller');
+
+</code-snippet>
 
 ## Common Pitfalls
 
@@ -165,3 +198,7 @@ arch('controllers')
 - Forgetting datasets for repetitive validation tests
 - Deleting tests without approval
 - Forgetting `assertNoJavaScriptErrors()` in browser tests
+
+## Related Skills
+
+- **Test Master** - Testing strategies

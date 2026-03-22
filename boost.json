@@ -3,12 +3,20 @@
         "claude_code",
         "gemini"
     ],
-    "guidelines": false,
-    "herd_mcp": false,
+    "herd_mcp": true,
     "mcp": true,
     "nightwatch_mcp": false,
+    "packages": [
+        "spatie/laravel-medialibrary",
+        "lorisleiva/laravel-actions",
+        "spatie/laravel-pdf"
+    ],
     "sail": false,
     "skills": [
-        "pest-testing"
+        "socialite-development",
+        "pest-testing",
+        "laravel-actions",
+        "medialibrary-development",
+        "laravel-pdf"
     ]
 }

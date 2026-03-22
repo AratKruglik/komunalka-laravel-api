@@ -3,6 +3,8 @@ name: laravel-architecture
 description:
     Generates a Laravel architecture based on best practices for modern Laravel
     applications.
+
+    Українською: архітектура Laravel, структура проєкту, патерни Laravel, сервісний шар, екшни, доменна логіка, організація коду, спроєктуй архітектуру, створи структуру, рефакторинг архітектури, доменна структура, Action клас
 ---
 
 # Laravel Architecture
@@ -13,9 +15,7 @@ description:
 
 - **Laravel Actions**: Business logic organized in Action classes
   (`lorisleiva/laravel-actions`)
-- **Inertia.js**: Frontend built with Vue.js via Inertia.js
-- **Domain Organization**: Features organized by domain (Auth, MentorPrograms,
-  etc.)
+- **Modular Architecture**: Features organized by modules via nwidart/laravel-modules (Auth, Shared, Address, Meter, Billing, Export)
 - **Repository Pattern**: Not explicitly used, relies on Eloquent models
 - **Service Layer**: Implemented via Action classes
 - **Database Migrations**: Every change in the DB structure should be reflected
@@ -37,7 +37,19 @@ description:
 - **Database**: PostgreSQL with proper indexing
 - **Asset Optimization**: Image optimization tools included in Docker setup
 
-### Laravel 12 Structure
+### Modules Directory
+
+Code is organized into modules under `Modules/`:
+- `Modules/Auth/` — Authentication, OAuth, JWT
+- `Modules/Shared/` — Shared models (UtilityType, Currency, ServiceCategory)
+- `Modules/Address/` — Address management, Regions
+- `Modules/Meter/` — Meters, Readings, Photos
+- `Modules/Billing/` — Service Providers, Tariffs
+- `Modules/Export/` — CSV/PDF export
+
+Each module has its own `Actions/`, `Models/`, `Http/`, `routes/`, `tests/` directories.
+
+### Laravel 13 Structure
 
 - No middleware files in `app/Http/Middleware/`.
 - `bootstrap/app.php` is the file to register middleware, exceptions, and

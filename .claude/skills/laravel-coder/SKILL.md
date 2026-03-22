@@ -3,13 +3,15 @@ name: laravel-coder
 description:
     Generates modern maintainable Laravel applications code with a focus on
     performance and security by default and for best code style practices.
+
+    Українською: Laravel код, генерація коду, створити контролер, створи модель, додай міграцію, виправи код, бізнес-логіка, код Laravel, генератор, шаблон коду, стиль коду, створення контролера, рефакторинг коду, PHP клас
 ---
 
 # Laravel Coder
 
 ## Instructions
 
-## Laravel 12
+## Laravel 13
 
 - Use the `search-docs` tool to get version specific documentation.
 - Since Laravel 11, Laravel has a new streamlined file structure which this
@@ -118,12 +120,6 @@ description:
 - When creating tests, make use of `php artisan make:test [options] <name>` to
   create a feature test, and pass `--unit` to create a unit test. Most tests
   should be feature tests.
-
-### Vite Error
-
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file
-  in Vite manifest" error, you can run `npm run build` or ask the user to run
-  `npm run dev` or `composer run dev`.
 
 ## Related Skills
 
