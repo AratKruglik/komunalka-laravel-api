@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\DashboardController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,8 @@ Route::get('/health/ready', function () {
             'timestamp' => now()->toIso8601ZuluString(),
         ], 503);
     }
+});
+
+Route::middleware('auth')->group(function (): void {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 });
