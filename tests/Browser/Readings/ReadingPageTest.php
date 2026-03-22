@@ -108,9 +108,9 @@ describe('Readings Index Page', function (): void {
             ->assertInertia(fn ($page) => $page
                 ->component('Readings/Index')
                 ->has('readings.data', 1)
-                ->where('readings.data.0.reading_value', 200)
-                ->where('readings.data.0.previous_reading_value', 100)
-                ->where('readings.data.0.consumption', 100),
+                ->where('readings.data.0.attributes.reading_value', 200)
+                ->where('readings.data.0.attributes.previous_reading_value', 100)
+                ->where('readings.data.0.attributes.consumption', 100),
             );
     });
 });
@@ -363,17 +363,16 @@ describe('Readings Inertia Props Structure', function (): void {
                 ->component('Readings/Index')
                 ->has('readings.data.0', fn ($reading) => $reading
                     ->has('id')
-                    ->has('reading_value')
-                    ->has('reading_date')
-                    ->has('previous_reading_value')
-                    ->has('consumption')
-                    ->has('notes')
-                    ->has('is_estimated')
-                    ->has('meter', fn ($meter) => $meter
+                    ->has('type')
+                    ->has('attributes.reading_value')
+                    ->has('attributes.reading_date')
+                    ->has('attributes.previous_reading_value')
+                    ->has('attributes.consumption')
+                    ->has('attributes.notes')
+                    ->has('attributes.is_estimated')
+                    ->has('relationships.meter.data', fn ($meter) => $meter
                         ->has('id')
-                        ->has('serial_number')
-                        ->has('name')
-                        ->etc(),
+                        ->has('type')
                     )
                     ->etc(),
                 ),
@@ -388,16 +387,14 @@ describe('Readings Inertia Props Structure', function (): void {
                 ->component('Readings/Create')
                 ->has('meters.data.0', fn ($meter) => $meter
                     ->has('id')
-                    ->has('serial_number')
-                    ->has('name')
-                    ->has('is_active')
-                    ->has('address_id')
-                    ->has('utility_type', fn ($ut) => $ut
+                    ->has('type')
+                    ->has('attributes.serial_number')
+                    ->has('attributes.name')
+                    ->has('attributes.is_active')
+                    ->has('attributes.address_id')
+                    ->has('relationships.utilityType.data', fn ($ut) => $ut
                         ->has('id')
-                        ->has('slug')
-                        ->has('display_name')
-                        ->has('unit')
-                        ->etc(),
+                        ->has('type')
                     )
                     ->etc(),
                 ),

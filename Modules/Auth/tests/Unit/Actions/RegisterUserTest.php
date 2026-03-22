@@ -65,7 +65,7 @@ it('assigns default user role', function () {
         ->and($user->auth_provider)->toBe(AuthProvider::Local);
 });
 
-it('returns token pair with user', function () {
+it('returns created user', function () {
     $data = new RegisterUserData(
         username: 'johndoe',
         firstName: 'John',
@@ -78,10 +78,7 @@ it('returns token pair with user', function () {
     $result = app(RegisterUser::class)->handle($data);
 
     expect($result)
-        ->toHaveKeys(['user', 'access_token', 'refresh_token', 'token_type', 'expires_in'])
-        ->and($result['user'])->toBeInstanceOf(User::class)
-        ->and($result['token_type'])->toBe('bearer')
-        ->and($result['access_token'])->toBeString()->not->toBeEmpty()
-        ->and($result['refresh_token'])->toBeString()->not->toBeEmpty()
-        ->and($result['expires_in'])->toBeInt()->toBeGreaterThan(0);
+        ->toBeInstanceOf(User::class)
+        ->email->toBe('john@example.com')
+        ->username->toBe('johndoe');
 });

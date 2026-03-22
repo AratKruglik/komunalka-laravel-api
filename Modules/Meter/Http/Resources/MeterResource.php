@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Modules\Meter\Http\Resources;
 
+use App\Http\Resources\InertiaJsonApiResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Billing\Http\Resources\ServiceProviderResource;
 use Modules\Meter\Models\Meter;
 use Modules\Shared\Http\Resources\UtilityTypeResource;
 
 /** @mixin Meter */
-class MeterResource extends JsonResource
+class MeterResource extends InertiaJsonApiResource
 {
     /** @return array<string, mixed> */
-    public function toArray(Request $request): array
+    public function toAttributes(Request $request): array
     {
         return [
-            'id' => $this->id,
             'serial_number' => $this->serial_number,
             'name' => $this->name,
             'description' => $this->description,
@@ -28,11 +27,18 @@ class MeterResource extends JsonResource
             'notes' => $this->notes,
             'is_active' => $this->is_active,
             'address_id' => $this->address_id,
-            'utility_type' => new UtilityTypeResource($this->whenLoaded('utilityType')),
-            'service_provider' => new ServiceProviderResource($this->whenLoaded('serviceProvider')),
             'photo_url' => $this->getFirstMediaUrl('photo', 'optimized') ?: null,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+        ];
+    }
+
+    /** @return array<string, string> */
+    public function toRelationships(Request $request): array
+    {
+        return [
+            'utilityType' => UtilityTypeResource::class,
+            'serviceProvider' => ServiceProviderResource::class,
         ];
     }
 }

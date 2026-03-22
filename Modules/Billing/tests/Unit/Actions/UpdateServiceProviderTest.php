@@ -12,12 +12,12 @@ use Modules\Shared\Models\UtilityType;
 it('updates a service provider', function () {
     $user = User::factory()->create();
     $address = Address::factory()->create();
-    $user->addresses()->attach($address->id, ['is_primary' => true]);
+    $user->addresses()->attach($address->getKey(), ['is_primary' => true]);
     $utilityType = UtilityType::factory()->create();
 
     $provider = ServiceProvider::factory()->create([
-        'address_id' => $address->id,
-        'utility_type_id' => $utilityType->id,
+        'address_id' => $address->getKey(),
+        'utility_type_id' => $utilityType->getKey(),
         'name' => 'Стара назва',
     ]);
 
@@ -30,12 +30,12 @@ it('updates a service provider', function () {
         email: 'new@email.ua',
         website: 'https://new.ua',
         isActive: false,
-        utilityTypeId: $newUtilityType->id,
+        utilityTypeId: $newUtilityType->getKey(),
     );
 
-    $updated = app(UpdateServiceProvider::class)->handle($user->id, $provider, $data);
+    $updated = app(UpdateServiceProvider::class)->handle($provider, $data);
 
     expect($updated->name)->toBe('Нова назва')
         ->and($updated->is_active)->toBeFalse()
-        ->and($updated->utility_type_id)->toBe($newUtilityType->id);
+        ->and($updated->utility_type_id)->toBe($newUtilityType->getKey());
 });

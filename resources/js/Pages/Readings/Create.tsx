@@ -4,8 +4,10 @@ import { Plus } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { PageSectionHeader } from '@/Components/pages'
 import { Button, Card, CardContent, FormMessage, Label, Select } from '@/Components/ui'
+import { denormalizeCollection, denormalizeAuto } from '@/lib/jsonapi'
 import type { PageProps, Meter, Reading } from '@/types'
 import type { ApiServiceProvider } from '@/types/api'
+import type { JsonApiCollectionDocument } from '@/types/jsonapi'
 import {
   toAddressReadingsSnapshotViewModel,
   type AddressReadingsSnapshotViewModel,
@@ -129,10 +131,10 @@ interface InertiaServiceProvider {
 }
 
 interface Props extends PageProps {
-  addresses: { data: InertiaAddress[] }
-  meters: { data: InertiaMeter[] } | never[]
-  readings: { data: InertiaReading[] } | never[]
-  serviceProviders: { data: InertiaServiceProvider[] } | never[]
+  addresses: JsonApiCollectionDocument
+  meters: JsonApiCollectionDocument | never[]
+  readings: JsonApiCollectionDocument | never[]
+  serviceProviders: JsonApiCollectionDocument | never[]
   selectedAddressId: number | null
 }
 
@@ -148,11 +150,6 @@ type MeterFormState = Record<
     }
   }
 >
-
-function getDataArray<T>(value: { data: T[] } | never[]): T[] {
-  if (Array.isArray(value)) return value
-  return value.data
-}
 
 function toMeter(m: InertiaMeter): Meter {
   return {
@@ -296,10 +293,10 @@ export default function Create({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const generatedPreviews = useRef<Record<string, string>>({})
 
-  const addressList = getDataArray(addresses)
-  const rawMeters = getDataArray(meters)
-  const rawReadings = getDataArray(readings)
-  const rawProviders = getDataArray(serviceProviders)
+  const addressList = useMemo(() => denormalizeCollection<InertiaAddress>(addresses), [addresses])
+  const rawMeters = useMemo(() => denormalizeAuto<InertiaMeter>(meters), [meters])
+  const rawReadings = useMemo(() => denormalizeAuto<InertiaReading>(readings), [readings])
+  const rawProviders = useMemo(() => denormalizeAuto<InertiaServiceProvider>(serviceProviders), [serviceProviders])
 
   const meterList = useMemo(() => rawMeters.map(toMeter), [rawMeters])
   const readingList = useMemo(() => rawReadings.map(toReading), [rawReadings])

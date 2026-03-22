@@ -1,4 +1,5 @@
 import type { PageProps } from '@/types'
+import type { JsonApiCollectionDocument, JsonApiDocument } from '@/types/jsonapi'
 
 export interface AddressRegion {
     id: number
@@ -27,33 +28,17 @@ export interface AddressItem {
     updated_at: string
 }
 
-export interface PaginatedAddresses {
-    data: AddressItem[]
-    links: {
-        first: string | null
-        last: string | null
-        prev: string | null
-        next: string | null
-    }
-    meta: {
-        current_page: number
-        last_page: number
-        per_page: number
-        total: number
-    }
-}
-
 export interface IndexPageProps extends PageProps {
-    addresses: PaginatedAddresses
+    addresses: JsonApiCollectionDocument
 }
 
 export interface CreatePageProps extends PageProps {
-    regions: { data: AddressRegion[] }
-    addressTypes: { data: AddressTypeItem[] }
+    regions: JsonApiCollectionDocument
+    addressTypes: JsonApiCollectionDocument
 }
 
 export interface EditPageProps extends PageProps {
-    address: { data: AddressItem }
-    regions: { data: AddressRegion[] }
-    addressTypes: { data: AddressTypeItem[] }
+    address: JsonApiDocument
+    regions: JsonApiCollectionDocument
+    addressTypes: JsonApiCollectionDocument
 }

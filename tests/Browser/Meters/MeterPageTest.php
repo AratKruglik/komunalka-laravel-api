@@ -116,8 +116,8 @@ describe('Meters Index Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Meters/Index')
                 ->has('meters.data', 2)
-                ->where('meters.data', fn ($meters) => collect($meters)->contains('is_active', true)
-                    && collect($meters)->contains('is_active', false)),
+                ->where('meters.data', fn ($meters) => collect($meters)->contains('attributes.is_active', true)
+                    && collect($meters)->contains('attributes.is_active', false)),
             );
     });
 
@@ -135,7 +135,7 @@ describe('Meters Index Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Meters/Index')
                 ->has('meters.data', 1)
-                ->where('meters.data.0.serial_number', $longSerial),
+                ->where('meters.data.0.attributes.serial_number', $longSerial),
             );
     });
 });
@@ -155,8 +155,8 @@ describe('Meters Create Page', function (): void {
                 ->has('addresses.data', 1)
                 ->has('utilityTypes.data')
                 ->has('serviceProviders.data', 1)
-                ->where('addresses.data.0.id', $this->address->getKey())
-                ->where('serviceProviders.data.0.id', $provider->getKey()),
+                ->where('addresses.data.0.id', (string) $this->address->getKey())
+                ->where('serviceProviders.data.0.id', (string) $provider->getKey()),
             );
     });
 
@@ -245,11 +245,11 @@ describe('Meters Edit Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Meters/Edit')
-                ->where('meter.data.id', $meter->getKey())
-                ->where('meter.data.name', 'Лічильник води')
-                ->where('meter.data.serial_number', 'W-555')
-                ->where('meter.data.location', 'Ванна кімната')
-                ->where('meter.data.address_id', $this->address->getKey())
+                ->where('meter.data.id', (string) $meter->getKey())
+                ->where('meter.data.attributes.name', 'Лічильник води')
+                ->where('meter.data.attributes.serial_number', 'W-555')
+                ->where('meter.data.attributes.location', 'Ванна кімната')
+                ->where('meter.data.attributes.address_id', $this->address->getKey())
                 ->has('addresses.data')
                 ->has('utilityTypes.data')
                 ->has('serviceProviders.data'),

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
@@ -13,6 +13,8 @@ import {
     Select,
 } from '@/Components/ui';
 import { MeterCard } from './Components/MeterCard';
+import { denormalizeCollection } from '@/lib/jsonapi';
+import type { JsonApiCollectionDocument } from '@/types/jsonapi';
 import type { PageProps } from '@/types';
 
 interface MeterItem {
@@ -43,16 +45,18 @@ interface AddressItem {
 }
 
 interface Props extends PageProps {
-    meters: { data: MeterItem[] };
-    addresses: { data: AddressItem[] };
+    meters: JsonApiCollectionDocument;
+    addresses: JsonApiCollectionDocument;
     selectedAddressId: number | null;
 }
 
-export default function Index({ meters, addresses, selectedAddressId }: Props) {
+export default function Index({ meters: metersDocument, addresses: addressesDocument, selectedAddressId }: Props) {
+    const meters = useMemo(() => denormalizeCollection<MeterItem>(metersDocument), [metersDocument]);
+    const addresses = useMemo(() => denormalizeCollection<AddressItem>(addressesDocument), [addressesDocument]);
     const [deleteTarget, setDeleteTarget] = useState<MeterItem | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const addressOptions = addresses.data.map((address) => {
+    const addressOptions = addresses.map((address) => {
         const apartment = address.apartment_number ? `, кв. ${address.apartment_number}` : '';
         return {
             value: address.id,
@@ -113,7 +117,7 @@ export default function Index({ meters, addresses, selectedAddressId }: Props) {
                             </Select>
                         </div>
 
-                        {meters.data.length === 0 ? (
+                        {meters.length === 0 ? (
                             <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800">
                                 <p className="text-gray-600 dark:text-slate-300">
                                     {selectedAddressId
@@ -129,7 +133,7 @@ export default function Index({ meters, addresses, selectedAddressId }: Props) {
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                {meters.data.map((meter) => (
+                                {meters.map((meter) => (
                                     <MeterCard
                                         key={meter.id}
                                         meter={meter}

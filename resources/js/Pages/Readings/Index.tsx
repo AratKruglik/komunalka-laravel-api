@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Head, router } from '@inertiajs/react'
 import { Plus, Trash2 } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
@@ -14,7 +14,9 @@ import {
   Badge,
   ConfirmDialog,
 } from '@/Components/ui'
+import { denormalizeCollection, denormalizeAuto } from '@/lib/jsonapi'
 import type { PageProps } from '@/types'
+import type { JsonApiCollectionDocument } from '@/types/jsonapi'
 
 interface InertiaAddress {
   id: number
@@ -40,16 +42,11 @@ interface InertiaReading {
 }
 
 interface Props extends PageProps {
-  addresses: { data: InertiaAddress[] }
-  readings: { data: InertiaReading[] } | never[]
+  addresses: JsonApiCollectionDocument
+  readings: JsonApiCollectionDocument | never[]
   filters: {
     address_id: number | null
   }
-}
-
-function getDataArray<T>(value: { data: T[] } | never[]): T[] {
-  if (Array.isArray(value)) return value
-  return value.data
 }
 
 const dateFormatter = new Intl.DateTimeFormat('uk-UA', {
@@ -72,8 +69,8 @@ function formatAddressLabel(address: InertiaAddress): string {
 
 export default function Index({ addresses, readings, filters }: Props) {
   const [deletingId, setDeletingId] = useState<number | null>(null)
-  const addressList = addresses.data
-  const readingList = getDataArray(readings)
+  const addressList = useMemo(() => denormalizeCollection<InertiaAddress>(addresses), [addresses])
+  const readingList = useMemo(() => denormalizeAuto<InertiaReading>(readings), [readings])
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     router.visit(`/readings?address_id=${event.target.value}`, {

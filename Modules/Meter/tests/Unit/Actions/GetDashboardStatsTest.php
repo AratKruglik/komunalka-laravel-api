@@ -36,7 +36,8 @@ describe('GetDashboardStats', function (): void {
             'consumption' => 80.0,
         ]);
 
-        $result = GetDashboardStats::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetDashboardStats::run($addressIds);
 
         expect($result)
             ->toBeArray()
@@ -49,7 +50,8 @@ describe('GetDashboardStats', function (): void {
     it('returns zeros for user without data', function (): void {
         $user = User::factory()->create();
 
-        $result = GetDashboardStats::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetDashboardStats::run($addressIds);
 
         expect($result)
             ->toBeArray()
@@ -75,7 +77,8 @@ describe('GetDashboardStats', function (): void {
             'utility_type_id' => $utilityType->getKey(),
         ]);
 
-        $result = GetDashboardStats::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetDashboardStats::run($addressIds);
 
         expect($result)->meterCount->toBe(1);
     });
@@ -98,7 +101,8 @@ describe('GetDashboardStats', function (): void {
             'consumption' => 100.0,
         ]);
 
-        $result = GetDashboardStats::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetDashboardStats::run($addressIds);
 
         expect($result)
             ->addressCount->toBe(0)
@@ -129,7 +133,8 @@ describe('GetDashboardStats', function (): void {
             'consumption' => 200.0,
         ]);
 
-        $result = GetDashboardStats::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetDashboardStats::run($addressIds);
 
         expect($result)->totalMonthlyConsumption->toBe(50.0);
     });

@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { Head, Link } from '@inertiajs/react'
 import { ChevronRight } from 'lucide-react'
+import { denormalizeCollection } from '@/lib/jsonapi'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { ProviderForm } from './Components/ProviderForm'
-import type { CreatePageProps } from './types'
+import type { AddressItem, CreatePageProps, CurrencyItem, UtilityTypeItem } from './types'
 
 const breadcrumbs = [
     { label: 'Головна', href: '/' },
@@ -11,6 +13,10 @@ const breadcrumbs = [
 ]
 
 export default function Create({ addresses, utilityTypes, currencies }: CreatePageProps) {
+    const addressesList = useMemo(() => denormalizeCollection<AddressItem>(addresses), [addresses])
+    const utilityTypesList = useMemo(() => denormalizeCollection<UtilityTypeItem>(utilityTypes), [utilityTypes])
+    const currenciesList = useMemo(() => denormalizeCollection<CurrencyItem>(currencies), [currencies])
+
     return (
         <AuthenticatedLayout
             pageTitle="Додати провайдера"
@@ -49,9 +55,9 @@ export default function Create({ addresses, utilityTypes, currencies }: CreatePa
                 </nav>
 
                 <ProviderForm
-                    addresses={addresses.data}
-                    utilityTypes={utilityTypes.data}
-                    currencies={currencies.data}
+                    addresses={addressesList}
+                    utilityTypes={utilityTypesList}
+                    currencies={currenciesList}
                     submitUrl="/providers"
                     submitMethod="post"
                     title="Новий провайдер"

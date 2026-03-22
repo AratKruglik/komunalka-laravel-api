@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { Head, Link } from '@inertiajs/react'
 import { ChevronRight } from 'lucide-react'
+import { denormalize, denormalizeCollection } from '@/lib/jsonapi'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { ProviderForm } from './Components/ProviderForm'
-import type { EditPageProps } from './types'
+import type { AddressItem, CurrencyItem, EditPageProps, ProviderItem, UtilityTypeItem } from './types'
 
 const breadcrumbs = [
     { label: 'Головна', href: '/' },
@@ -11,7 +13,10 @@ const breadcrumbs = [
 ]
 
 export default function Edit({ provider, addresses, utilityTypes, currencies }: EditPageProps) {
-    const providerData = provider.data
+    const providerData = useMemo(() => denormalize<ProviderItem>(provider), [provider])
+    const addressesList = useMemo(() => denormalizeCollection<AddressItem>(addresses), [addresses])
+    const utilityTypesList = useMemo(() => denormalizeCollection<UtilityTypeItem>(utilityTypes), [utilityTypes])
+    const currenciesList = useMemo(() => denormalizeCollection<CurrencyItem>(currencies), [currencies])
 
     return (
         <AuthenticatedLayout
@@ -51,9 +56,9 @@ export default function Edit({ provider, addresses, utilityTypes, currencies }: 
                 </nav>
 
                 <ProviderForm
-                    addresses={addresses.data}
-                    utilityTypes={utilityTypes.data}
-                    currencies={currencies.data}
+                    addresses={addressesList}
+                    utilityTypes={utilityTypesList}
+                    currencies={currenciesList}
                     provider={providerData}
                     submitUrl={`/providers/${providerData.id}`}
                     submitMethod="put"

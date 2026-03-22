@@ -1,5 +1,9 @@
 import { Head, usePage } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
+import { denormalizeCollection } from '@/lib/jsonapi';
+import { useAuthUser } from '@/lib/useAuthUser';
+import type { PageProps } from '@/types';
+import type { JsonApiCollectionDocument } from '@/types/jsonapi';
 import { WelcomeHeader } from './Components/WelcomeHeader';
 import { ConsumptionChart } from './Components/ConsumptionChart';
 import { ExpenseDistribution } from './Components/ExpenseDistribution';
@@ -51,19 +55,12 @@ interface Address {
     is_primary: boolean;
 }
 
-interface DashboardPageProps {
+interface DashboardPageProps extends PageProps {
     stats: Stats;
     consumptionHistory: ConsumptionDataPoint[];
     expenseDistribution: ExpenseItem[];
-    recentReadings: { data: MeterReadingData[] };
-    addresses: { data: Address[] };
-    auth: {
-        user: {
-            name: string;
-            first_name: string | null;
-            username: string;
-        };
-    };
+    recentReadings: JsonApiCollectionDocument;
+    addresses: JsonApiCollectionDocument;
 }
 
 function formatAddressLabel(address: Address): string {
@@ -75,24 +72,36 @@ function formatAddressLabel(address: Address): string {
 }
 
 export default function Index() {
-    const { stats, consumptionHistory, expenseDistribution, recentReadings, addresses, auth } =
+    const { consumptionHistory, expenseDistribution, recentReadings, addresses } =
         usePage<DashboardPageProps>().props;
 
+    const user = useAuthUser();
+
+    const addressList = useMemo(
+        () => denormalizeCollection<Address>(addresses),
+        [addresses],
+    );
+
+    const readingList = useMemo(
+        () => denormalizeCollection<MeterReadingData>(recentReadings),
+        [recentReadings],
+    );
+
     const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>(
-        addresses.data.find((a) => a.is_primary)?.id ?? addresses.data[0]?.id,
+        addressList.find((a) => a.is_primary)?.id ?? addressList[0]?.id,
     );
 
     const addressOptions = useMemo(
         () =>
-            addresses.data.map((address) => ({
+            addressList.map((address) => ({
                 id: address.id,
                 label: formatAddressLabel(address),
                 description: address.city,
             })),
-        [addresses.data],
+        [addressList],
     );
 
-    const userName = auth.user.first_name ?? auth.user.username ?? 'Користувач';
+    const userName = user?.first_name ?? user?.username ?? 'Користувач';
 
     return (
         <>
@@ -110,7 +119,7 @@ export default function Index() {
                 </section>
 
                 <section className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
-                    <RecentReadingsTable readings={recentReadings.data} />
+                    <RecentReadingsTable readings={readingList} />
                     <ExpenseDistribution data={expenseDistribution} />
                 </section>
 

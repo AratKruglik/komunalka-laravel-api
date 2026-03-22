@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Head } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { MeterForm } from './Components/MeterForm';
+import { denormalize, denormalizeCollection } from '@/lib/jsonapi';
+import type { JsonApiCollectionDocument, JsonApiDocument } from '@/types/jsonapi';
 import type { PageProps } from '@/types';
 
 interface UtilityTypeItem {
@@ -42,25 +45,35 @@ interface ServiceProviderItem {
 }
 
 interface Props extends PageProps {
-    meter: { data: MeterData };
-    addresses: { data: AddressItem[] };
-    utilityTypes: { data: UtilityTypeItem[] };
-    serviceProviders: { data: ServiceProviderItem[] };
+    meter: JsonApiDocument;
+    addresses: JsonApiCollectionDocument;
+    utilityTypes: JsonApiCollectionDocument;
+    serviceProviders: JsonApiCollectionDocument;
 }
 
-export default function Edit({ meter, addresses, utilityTypes, serviceProviders }: Props) {
+export default function Edit({
+    meter: meterDocument,
+    addresses: addressesDocument,
+    utilityTypes: utilityTypesDocument,
+    serviceProviders: serviceProvidersDocument,
+}: Props) {
+    const meter = useMemo(() => denormalize<MeterData>(meterDocument), [meterDocument]);
+    const addresses = useMemo(() => denormalizeCollection<AddressItem>(addressesDocument), [addressesDocument]);
+    const utilityTypes = useMemo(() => denormalizeCollection<UtilityTypeItem>(utilityTypesDocument), [utilityTypesDocument]);
+    const serviceProviders = useMemo(() => denormalizeCollection<ServiceProviderItem>(serviceProvidersDocument), [serviceProvidersDocument]);
+
     return (
         <AuthenticatedLayout
             pageTitle="Редагування лічильника"
             pageSubtitle="Змініть дані лічильника та збережіть зміни"
         >
-            <Head title={`Редагування: ${meter.data.name}`} />
+            <Head title={`Редагування: ${meter.name}`} />
 
             <MeterForm
-                meter={meter.data}
-                addresses={addresses.data}
-                utilityTypes={utilityTypes.data}
-                serviceProviders={serviceProviders.data}
+                meter={meter}
+                addresses={addresses}
+                utilityTypes={utilityTypes}
+                serviceProviders={serviceProviders}
             />
         </AuthenticatedLayout>
     );

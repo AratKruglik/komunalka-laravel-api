@@ -10,6 +10,7 @@ import {
   type TopbarUser,
 } from '@/Components/navigation/AuthenticatedTopbar'
 import { Alert, AlertDescription } from '@/Components/ui'
+import { useAuthUser } from '@/lib/useAuthUser'
 import type { PageProps } from '@/types'
 
 interface AuthenticatedLayoutProps {
@@ -27,25 +28,26 @@ export function AuthenticatedLayout({
   notificationsCount = 0,
   sidebarSections,
 }: AuthenticatedLayoutProps) {
-  const { auth, flash } = usePage<PageProps>().props
+  const { flash } = usePage<PageProps>().props
+  const authUser = useAuthUser()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const user = useMemo<TopbarUser>(() => {
-    if (auth.user) {
-      const fullName = [auth.user.firstName, auth.user.lastName]
+    if (authUser) {
+      const fullName = [authUser.first_name, authUser.last_name]
         .filter(Boolean)
-        .join(' ') || auth.user.username
+        .join(' ') || authUser.username
       return {
         name: fullName,
-        email: auth.user.email,
-        avatarUrl: auth.user.avatarThumbnailUrl ?? undefined,
+        email: authUser.email,
+        avatarUrl: authUser.avatar_thumbnail_url ?? undefined,
       }
     }
     return {
       name: 'Користувач',
       email: '',
     }
-  }, [auth.user])
+  }, [authUser])
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((previous) => !previous)

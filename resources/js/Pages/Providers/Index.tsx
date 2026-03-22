@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Head, Link, router } from '@inertiajs/react'
 import { Building2, MapPin, Pencil, Plus, Trash2 } from 'lucide-react'
+import { denormalizeCollection } from '@/lib/jsonapi'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { Button, ConfirmDialog } from '@/Components/ui'
 import type { IndexPageProps, ProviderItem } from './types'
@@ -11,6 +12,8 @@ interface DeleteDialogState {
 }
 
 export default function Index({ providers }: IndexPageProps) {
+    const providersList = useMemo(() => denormalizeCollection<ProviderItem>(providers), [providers])
+
     const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
         isOpen: false,
         provider: null,
@@ -78,9 +81,9 @@ export default function Index({ providers }: IndexPageProps) {
                     </Link>
                 </div>
 
-                {providers.data.length > 0 ? (
+                {providersList.length > 0 ? (
                     <div className="space-y-4 px-3.5 pb-5 sm:px-5 sm:pb-6 lg:px-6">
-                        {providers.data.map((provider) => (
+                        {providersList.map((provider) => (
                             <ProviderCard
                                 key={provider.id}
                                 provider={provider}

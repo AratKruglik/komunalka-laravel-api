@@ -1,4 +1,5 @@
 import type { PageProps } from '@/types'
+import type { JsonApiCollectionDocument, JsonApiDocument } from '@/types/jsonapi'
 
 export interface UtilityTypeItem {
     id: number
@@ -53,18 +54,18 @@ export interface AddressItem {
 }
 
 export interface IndexPageProps extends PageProps {
-    providers: { data: ProviderItem[] }
+    providers: JsonApiCollectionDocument
 }
 
 export interface CreatePageProps extends PageProps {
-    addresses: { data: AddressItem[] }
-    utilityTypes: { data: UtilityTypeItem[] }
-    currencies: { data: CurrencyItem[] }
+    addresses: JsonApiCollectionDocument
+    utilityTypes: JsonApiCollectionDocument
+    currencies: JsonApiCollectionDocument
 }
 
 export interface EditPageProps extends PageProps {
-    provider: { data: ProviderItem }
-    addresses: { data: AddressItem[] }
-    utilityTypes: { data: UtilityTypeItem[] }
-    currencies: { data: CurrencyItem[] }
+    provider: JsonApiDocument
+    addresses: JsonApiCollectionDocument
+    utilityTypes: JsonApiCollectionDocument
+    currencies: JsonApiCollectionDocument
 }

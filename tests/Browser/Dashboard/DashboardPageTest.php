@@ -39,8 +39,8 @@ describe('Dashboard Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard/Index')
-                ->where('auth.user.data.first_name', 'Олексій')
-                ->where('auth.user.data.username', 'oleksii'),
+                ->where('auth.user.data.attributes.first_name', 'Олексій')
+                ->where('auth.user.data.attributes.username', 'oleksii'),
             );
     });
 
@@ -102,10 +102,10 @@ describe('Dashboard Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard/Index')
                 ->has('recentReadings.data', 1)
-                ->where('recentReadings.data.0.reading_value', 1500.50)
-                ->where('recentReadings.data.0.consumption', 120.5)
-                ->where('recentReadings.data.0.meter.name', 'Лічильник електро')
-                ->where('recentReadings.data.0.meter.utility_type.slug', 'electricity'),
+                ->where('recentReadings.data.0.attributes.reading_value', 1500.50)
+                ->where('recentReadings.data.0.attributes.consumption', 120.5)
+                ->has('recentReadings.data.0.relationships.meter.data.id')
+                ->where('recentReadings.data.0.relationships.meter.data.type', 'meters'),
             );
     });
 

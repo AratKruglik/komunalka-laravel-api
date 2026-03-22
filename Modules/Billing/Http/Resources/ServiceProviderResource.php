@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Http\Resources;
 
+use App\Http\Resources\InertiaJsonApiResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Shared\Http\Resources\UtilityTypeResource;
 
 /** @mixin ServiceProvider */
-class ServiceProviderResource extends JsonResource
+class ServiceProviderResource extends InertiaJsonApiResource
 {
     /** @return array<string, mixed> */
-    public function toArray(Request $request): array
+    public function toAttributes(Request $request): array
     {
         return [
-            'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'phone' => $this->phone,
@@ -24,10 +23,17 @@ class ServiceProviderResource extends JsonResource
             'website' => $this->website,
             'is_active' => $this->is_active,
             'address_id' => $this->address_id,
-            'utility_type' => new UtilityTypeResource($this->whenLoaded('utilityType')),
-            'tariffs' => TariffResource::collection($this->whenLoaded('tariffs')),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+        ];
+    }
+
+    /** @return array<string, string> */
+    public function toRelationships(Request $request): array
+    {
+        return [
+            'utilityType' => UtilityTypeResource::class,
+            'tariffs' => TariffResource::class,
         ];
     }
 }

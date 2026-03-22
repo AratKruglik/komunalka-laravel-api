@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm, usePage } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Camera, Mail, Phone, User } from 'lucide-react';
 import {
     Button,
@@ -13,21 +13,20 @@ import {
     Label,
     PhotoDropzone,
 } from '@/Components/ui';
-import type { PageProps } from '@/types';
+import { useAuthUser } from '@/lib/useAuthUser';
 
 export function ProfileTab() {
-    const { auth } = usePage<PageProps>().props;
-    const user = auth.user;
+    const user = useAuthUser();
 
     const { data, setData, put, processing, errors } = useForm({
-        first_name: user?.firstName ?? '',
-        last_name: user?.lastName ?? '',
-        phone_number: user?.phoneNumber ?? '',
+        first_name: user?.first_name ?? '',
+        last_name: user?.last_name ?? '',
+        phone_number: user?.phone_number ?? '',
         avatar: null as File | null,
     });
 
     const [avatarPreview, setAvatarPreview] = useState<string | null>(
-        user?.avatarOptimizedUrl ?? null,
+        user?.avatar_optimized_url ?? null,
     );
 
     const handleAvatarSelected = (files: FileList | null) => {
@@ -42,7 +41,7 @@ export function ProfileTab() {
 
     const handleAvatarClear = () => {
         setData('avatar', null);
-        setAvatarPreview(user?.avatarOptimizedUrl ?? null);
+        setAvatarPreview(user?.avatar_optimized_url ?? null);
     };
 
     const handleSubmit = (event: React.FormEvent) => {

@@ -7,8 +7,8 @@ use Modules\Auth\Actions\LoginUser;
 use Modules\Auth\DTO\LoginData;
 use Modules\Auth\Models\User;
 
-it('returns token pair for valid credentials', function () {
-    User::factory()->create([
+it('returns authenticated user for valid credentials', function () {
+    $user = User::factory()->create([
         'email' => 'john@example.com',
         'password' => 'password123',
     ]);
@@ -18,9 +18,8 @@ it('returns token pair for valid credentials', function () {
     $result = app(LoginUser::class)->handle($data);
 
     expect($result)
-        ->toHaveKeys(['user', 'access_token', 'refresh_token', 'token_type', 'expires_in'])
-        ->and($result['user'])->toBeInstanceOf(User::class)
-        ->and($result['token_type'])->toBe('bearer');
+        ->toBeInstanceOf(User::class)
+        ->getKey()->toBe($user->getKey());
 });
 
 it('throws validation exception for invalid password', function () {

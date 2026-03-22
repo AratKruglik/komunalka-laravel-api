@@ -43,8 +43,8 @@ describe('Settings Page Rendering', function (): void {
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Settings/Index')
-                ->where('auth.user.data.first_name', 'Олексій')
-                ->where('auth.user.data.last_name', 'Петренко'),
+                ->where('auth.user.data.attributes.first_name', 'Олексій')
+                ->where('auth.user.data.attributes.last_name', 'Петренко'),
             );
     });
 

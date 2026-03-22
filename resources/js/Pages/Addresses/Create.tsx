@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { Head, Link } from '@inertiajs/react'
 import { ChevronRight } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
+import { denormalizeCollection } from '@/lib/jsonapi'
 import { AddressForm } from './Components/AddressForm'
-import type { CreatePageProps } from './types'
+import type { CreatePageProps, AddressRegion, AddressTypeItem } from './types'
 
 const breadcrumbs = [
     { label: 'Головна', href: '/' },
@@ -11,6 +13,9 @@ const breadcrumbs = [
 ]
 
 export default function Create({ regions, addressTypes }: CreatePageProps) {
+    const regionList = useMemo(() => denormalizeCollection<AddressRegion>(regions), [regions])
+    const addressTypeList = useMemo(() => denormalizeCollection<AddressTypeItem>(addressTypes), [addressTypes])
+
     return (
         <AuthenticatedLayout
             pageTitle="Додати адресу"
@@ -49,8 +54,8 @@ export default function Create({ regions, addressTypes }: CreatePageProps) {
                 </nav>
 
                 <AddressForm
-                    regions={regions.data}
-                    addressTypes={addressTypes.data}
+                    regions={regionList}
+                    addressTypes={addressTypeList}
                     submitUrl="/addresses"
                     submitMethod="post"
                     title="Додати нову адресу"

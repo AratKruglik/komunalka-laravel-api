@@ -1,8 +1,9 @@
-import type { User } from './auth'
+import type { JsonApiDocument } from './jsonapi'
 
 export interface PageProps {
+  [key: string]: unknown
   auth: {
-    user: User | null
+    user: JsonApiDocument | null
   }
   flash: {
     success?: string
@@ -14,3 +15,4 @@ export * from './entities'
 export * from './auth'
 export * from './api'
 export * from './providers'
+export * from './jsonapi'

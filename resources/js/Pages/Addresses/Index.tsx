@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Head, Link, router } from '@inertiajs/react'
 import { Plus } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { Button, ConfirmDialog } from '@/Components/ui'
+import { denormalizeCollection } from '@/lib/jsonapi'
 import { AddressCard } from './Components/AddressCard'
 import type { IndexPageProps, AddressItem } from './types'
 
@@ -13,6 +14,8 @@ interface DeleteDialogState {
 }
 
 export default function Index({ addresses }: IndexPageProps) {
+    const addressList = useMemo(() => denormalizeCollection<AddressItem>(addresses), [addresses])
+
     const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
         isOpen: false,
         addressId: null,
@@ -73,9 +76,9 @@ export default function Index({ addresses }: IndexPageProps) {
                     </Link>
                 </div>
 
-                {addresses.data.length > 0 ? (
+                {addressList.length > 0 ? (
                     <div className="grid gap-4 px-3.5 pb-5 sm:gap-5 sm:px-5 sm:pb-6 md:grid-cols-2 lg:gap-6 lg:px-6 xl:grid-cols-3 2xl:grid-cols-4">
-                        {addresses.data.map((address) => (
+                        {addressList.map((address) => (
                             <AddressCard
                                 key={address.id}
                                 address={address}

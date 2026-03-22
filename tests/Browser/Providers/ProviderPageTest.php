@@ -49,9 +49,9 @@ describe('Providers Index Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Providers/Index')
                 ->has('providers.data', 1)
-                ->where('providers.data.0.name', 'Київенерго')
-                ->has('providers.data.0.tariffs', 1)
-                ->where('providers.data.0.tariffs.0.name', 'Денний тариф'),
+                ->where('providers.data.0.attributes.name', 'Київенерго')
+                ->has('providers.data.0.relationships.tariffs.data', 1)
+                ->where('providers.data.0.relationships.tariffs.data.0.type', 'tariffs'),
             );
     });
 
@@ -102,16 +102,18 @@ describe('Providers Create Page', function (): void {
                 ->has('utilityTypes.data', fn (Assert $items) => $items
                     ->each(fn (Assert $item) => $item
                         ->has('id')
-                        ->has('display_name')
-                        ->has('unit')
+                        ->has('type')
+                        ->has('attributes.display_name')
+                        ->has('attributes.unit')
                         ->etc(),
                     ),
                 )
                 ->has('currencies.data', fn (Assert $items) => $items
                     ->each(fn (Assert $item) => $item
                         ->has('id')
-                        ->has('code')
-                        ->has('symbol')
+                        ->has('type')
+                        ->has('attributes.code')
+                        ->has('attributes.symbol')
                         ->etc(),
                     ),
                 ),
@@ -304,13 +306,13 @@ describe('Providers Edit Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Providers/Edit')
-                ->where('provider.data.name', 'Київенерго')
-                ->where('provider.data.description', 'Опис провайдера')
-                ->where('provider.data.phone', '+380441111111')
-                ->where('provider.data.email', 'test@provider.ua')
-                ->where('provider.data.website', 'https://provider.ua')
-                ->has('provider.data.tariffs', 1)
-                ->where('provider.data.tariffs.0.name', 'Базовий')
+                ->where('provider.data.attributes.name', 'Київенерго')
+                ->where('provider.data.attributes.description', 'Опис провайдера')
+                ->where('provider.data.attributes.phone', '+380441111111')
+                ->where('provider.data.attributes.email', 'test@provider.ua')
+                ->where('provider.data.attributes.website', 'https://provider.ua')
+                ->has('provider.data.relationships.tariffs.data', 1)
+                ->where('provider.data.relationships.tariffs.data.0.type', 'tariffs')
                 ->has('addresses.data', 1)
                 ->has('utilityTypes.data')
                 ->has('currencies.data'),
@@ -444,12 +446,16 @@ describe('Providers Edit Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Providers/Edit')
                 ->has('provider.data', fn (Assert $data) => $data
-                    ->whereType('id', 'integer')
-                    ->whereType('name', 'string')
-                    ->whereType('is_active', 'boolean')
-                    ->whereType('address_id', 'integer')
-                    ->has('utility_type')
-                    ->has('tariffs')
+                    ->whereType('id', 'string')
+                    ->has('type')
+                    ->has('attributes', fn (Assert $attrs) => $attrs
+                        ->whereType('name', 'string')
+                        ->whereType('is_active', 'boolean')
+                        ->whereType('address_id', 'integer')
+                        ->etc(),
+                    )
+                    ->has('relationships.utilityType')
+                    ->has('relationships.tariffs')
                     ->etc(),
                 ),
             );

@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { Head, Link } from '@inertiajs/react'
 import { ChevronRight } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
+import { denormalize, denormalizeCollection } from '@/lib/jsonapi'
 import { AddressForm } from './Components/AddressForm'
-import type { EditPageProps } from './types'
+import type { EditPageProps, AddressItem, AddressRegion, AddressTypeItem } from './types'
 
 const breadcrumbs = [
     { label: 'Головна', href: '/' },
@@ -11,7 +13,9 @@ const breadcrumbs = [
 ]
 
 export default function Edit({ address, regions, addressTypes }: EditPageProps) {
-    const addressData = address.data
+    const addressData = useMemo(() => denormalize<AddressItem>(address), [address])
+    const regionList = useMemo(() => denormalizeCollection<AddressRegion>(regions), [regions])
+    const addressTypeList = useMemo(() => denormalizeCollection<AddressTypeItem>(addressTypes), [addressTypes])
 
     return (
         <AuthenticatedLayout
@@ -51,8 +55,8 @@ export default function Edit({ address, regions, addressTypes }: EditPageProps) 
                 </nav>
 
                 <AddressForm
-                    regions={regions.data}
-                    addressTypes={addressTypes.data}
+                    regions={regionList}
+                    addressTypes={addressTypeList}
                     address={addressData}
                     submitUrl={`/addresses/${addressData.id}`}
                     submitMethod="put"

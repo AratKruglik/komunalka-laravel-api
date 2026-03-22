@@ -32,9 +32,9 @@ describe('Address Index Page', function (): void {
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Index')
                 ->has('addresses.data', 1)
-                ->where('addresses.data.0.street', 'Хрещатик')
-                ->where('addresses.data.0.building_number', '22')
-                ->where('addresses.data.0.city', 'Київ')
+                ->where('addresses.data.0.attributes.street', 'Хрещатик')
+                ->where('addresses.data.0.attributes.building_number', '22')
+                ->where('addresses.data.0.attributes.city', 'Київ')
             );
     });
 
@@ -75,7 +75,7 @@ describe('Address Index Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Index')
-                ->where('addresses.data.0.is_primary', true)
+                ->where('addresses.data.0.attributes.is_primary', true)
             );
     });
 });
@@ -266,13 +266,13 @@ describe('Address Edit Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Edit')
-                ->where('address.data.city', 'Київ')
-                ->where('address.data.street', 'Хрещатик')
-                ->where('address.data.building_number', '22')
-                ->where('address.data.apartment_number', '15')
-                ->where('address.data.zip_code', '01001')
-                ->where('address.data.notes', 'Центр міста')
-                ->where('address.data.is_primary', true)
+                ->where('address.data.attributes.city', 'Київ')
+                ->where('address.data.attributes.street', 'Хрещатик')
+                ->where('address.data.attributes.building_number', '22')
+                ->where('address.data.attributes.apartment_number', '15')
+                ->where('address.data.attributes.zip_code', '01001')
+                ->where('address.data.attributes.notes', 'Центр міста')
+                ->where('address.data.attributes.is_primary', true)
                 ->has('regions.data')
                 ->has('addressTypes.data')
             );
@@ -420,26 +420,25 @@ describe('Address Card Display', function (): void {
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Index')
                 ->has('addresses.data.0', fn (AssertableInertia $item) => $item
-                    ->where('id', $address->getKey())
-                    ->where('city', 'Львів')
-                    ->where('street', 'Площа Ринок')
-                    ->where('building_number', '1')
-                    ->where('apartment_number', '5')
-                    ->where('zip_code', '79008')
-                    ->where('notes', 'Історичний центр')
-                    ->where('is_primary', true)
-                    ->has('region', fn (AssertableInertia $r) => $r
-                        ->where('id', $region->getKey())
-                        ->where('name', 'Львівська')
+                    ->where('id', (string) $address->getKey())
+                    ->where('type', 'addresses')
+                    ->where('attributes.city', 'Львів')
+                    ->where('attributes.street', 'Площа Ринок')
+                    ->where('attributes.building_number', '1')
+                    ->where('attributes.apartment_number', '5')
+                    ->where('attributes.zip_code', '79008')
+                    ->where('attributes.notes', 'Історичний центр')
+                    ->where('attributes.is_primary', true)
+                    ->has('attributes.created_at')
+                    ->has('attributes.updated_at')
+                    ->has('relationships.region.data', fn (AssertableInertia $r) => $r
+                        ->where('id', (string) $region->getKey())
+                        ->where('type', 'regions')
                     )
-                    ->has('address_type', fn (AssertableInertia $t) => $t
-                        ->where('id', $addressType->getKey())
-                        ->where('name', 'Квартира')
-                        ->where('icon', 'apartment')
-                        ->etc()
+                    ->has('relationships.addressType.data', fn (AssertableInertia $t) => $t
+                        ->where('id', (string) $addressType->getKey())
+                        ->where('type', 'address_types')
                     )
-                    ->has('created_at')
-                    ->has('updated_at')
                 )
             );
     });

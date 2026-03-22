@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Head } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { MeterForm } from './Components/MeterForm';
+import { denormalizeCollection } from '@/lib/jsonapi';
+import type { JsonApiCollectionDocument } from '@/types/jsonapi';
 import type { PageProps } from '@/types';
 
 interface AddressItem {
@@ -25,12 +28,20 @@ interface ServiceProviderItem {
 }
 
 interface Props extends PageProps {
-    addresses: { data: AddressItem[] };
-    utilityTypes: { data: UtilityTypeItem[] };
-    serviceProviders: { data: ServiceProviderItem[] };
+    addresses: JsonApiCollectionDocument;
+    utilityTypes: JsonApiCollectionDocument;
+    serviceProviders: JsonApiCollectionDocument;
 }
 
-export default function Create({ addresses, utilityTypes, serviceProviders }: Props) {
+export default function Create({
+    addresses: addressesDocument,
+    utilityTypes: utilityTypesDocument,
+    serviceProviders: serviceProvidersDocument,
+}: Props) {
+    const addresses = useMemo(() => denormalizeCollection<AddressItem>(addressesDocument), [addressesDocument]);
+    const utilityTypes = useMemo(() => denormalizeCollection<UtilityTypeItem>(utilityTypesDocument), [utilityTypesDocument]);
+    const serviceProviders = useMemo(() => denormalizeCollection<ServiceProviderItem>(serviceProvidersDocument), [serviceProvidersDocument]);
+
     return (
         <AuthenticatedLayout
             pageTitle="Додати лічильник"
@@ -39,9 +50,9 @@ export default function Create({ addresses, utilityTypes, serviceProviders }: Pr
             <Head title="Додати лічильник" />
 
             <MeterForm
-                addresses={addresses.data}
-                utilityTypes={utilityTypes.data}
-                serviceProviders={serviceProviders.data}
+                addresses={addresses}
+                utilityTypes={utilityTypes}
+                serviceProviders={serviceProviders}
             />
         </AuthenticatedLayout>
     );

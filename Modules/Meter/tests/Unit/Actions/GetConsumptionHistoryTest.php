@@ -29,7 +29,8 @@ describe('GetConsumptionHistory', function (): void {
             'consumption' => 100.0,
         ]);
 
-        $result = GetConsumptionHistory::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetConsumptionHistory::run($addressIds);
 
         expect($result)->toHaveCount(1)
             ->and($result->first())
@@ -59,7 +60,8 @@ describe('GetConsumptionHistory', function (): void {
             'consumption' => 50.0,
         ]);
 
-        $result = GetConsumptionHistory::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetConsumptionHistory::run($addressIds);
 
         expect($result)->toHaveCount(1)
             ->and($result->first())
@@ -73,7 +75,8 @@ describe('GetConsumptionHistory', function (): void {
     it('returns empty collection for user without data', function (): void {
         $user = User::factory()->create();
 
-        $result = GetConsumptionHistory::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetConsumptionHistory::run($addressIds);
 
         expect($result)->toBeEmpty();
     });
@@ -96,7 +99,8 @@ describe('GetConsumptionHistory', function (): void {
             'consumption' => 100.0,
         ]);
 
-        $result = GetConsumptionHistory::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetConsumptionHistory::run($addressIds);
 
         expect($result)->toBeEmpty();
     });
@@ -130,7 +134,8 @@ describe('GetConsumptionHistory', function (): void {
             'consumption' => 30.0,
         ]);
 
-        $result = GetConsumptionHistory::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetConsumptionHistory::run($addressIds);
 
         expect($result)->toHaveCount(2);
 
@@ -160,7 +165,8 @@ describe('GetConsumptionHistory', function (): void {
             'consumption' => 200.0,
         ]);
 
-        $result = GetConsumptionHistory::run($user, months: 6);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetConsumptionHistory::run($addressIds, months: 6);
 
         expect($result)->toHaveCount(1);
     });

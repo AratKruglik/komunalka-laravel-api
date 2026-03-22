@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\Address\Http\Resources;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\InertiaJsonApiResource;
 use Modules\Address\Models\Region;
 
 /** @mixin Region */
-class RegionResource extends JsonResource
+class RegionResource extends InertiaJsonApiResource
 {
-    /** @return array<string, mixed> */
-    public function toArray(Request $request): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-        ];
-    }
+    /** @var list<string> */
+    public $attributes = [
+        'name',
+    ];
 }

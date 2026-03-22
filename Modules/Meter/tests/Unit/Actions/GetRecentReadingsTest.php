@@ -28,7 +28,8 @@ describe('GetRecentReadings', function (): void {
             'reading_date' => CarbonImmutable::now(),
         ]);
 
-        $result = GetRecentReadings::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetRecentReadings::run($addressIds);
 
         expect($result)->toHaveCount(1)
             ->and($result->first()->relationLoaded('meter'))->toBeTrue()
@@ -56,7 +57,8 @@ describe('GetRecentReadings', function (): void {
             'reading_date' => CarbonImmutable::now(),
         ]);
 
-        $result = GetRecentReadings::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetRecentReadings::run($addressIds);
 
         expect($result->first()->getKey())->toBe($newerReading->getKey())
             ->and($result->last()->getKey())->toBe($olderReading->getKey());
@@ -65,7 +67,8 @@ describe('GetRecentReadings', function (): void {
     it('returns empty collection for user without data', function (): void {
         $user = User::factory()->create();
 
-        $result = GetRecentReadings::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetRecentReadings::run($addressIds);
 
         expect($result)->toBeEmpty();
     });
@@ -87,7 +90,8 @@ describe('GetRecentReadings', function (): void {
             'reading_date' => CarbonImmutable::now(),
         ]);
 
-        $result = GetRecentReadings::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetRecentReadings::run($addressIds);
 
         expect($result)->toBeEmpty();
     });
@@ -108,7 +112,8 @@ describe('GetRecentReadings', function (): void {
             'reading_date' => CarbonImmutable::now(),
         ]);
 
-        $result = GetRecentReadings::run($user, limit: 3);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetRecentReadings::run($addressIds, limit: 3);
 
         expect($result)->toHaveCount(3);
     });
@@ -129,7 +134,8 @@ describe('GetRecentReadings', function (): void {
             'reading_date' => CarbonImmutable::now(),
         ]);
 
-        $result = GetRecentReadings::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetRecentReadings::run($addressIds);
 
         expect($result)->toHaveCount(10);
     });

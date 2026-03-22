@@ -38,7 +38,8 @@ describe('GetExpenseDistribution', function (): void {
             'consumption' => 100.0,
         ]);
 
-        $result = GetExpenseDistribution::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetExpenseDistribution::run($addressIds);
 
         expect($result)->toHaveCount(1)
             ->and($result->first())
@@ -72,7 +73,8 @@ describe('GetExpenseDistribution', function (): void {
             'consumption' => 100.0,
         ]);
 
-        $result = GetExpenseDistribution::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetExpenseDistribution::run($addressIds);
 
         expect($result)->toHaveCount(1)
             ->and($result->first())
@@ -87,7 +89,8 @@ describe('GetExpenseDistribution', function (): void {
     it('returns empty collection for user without data', function (): void {
         $user = User::factory()->create();
 
-        $result = GetExpenseDistribution::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetExpenseDistribution::run($addressIds);
 
         expect($result)->toBeEmpty();
     });
@@ -118,7 +121,8 @@ describe('GetExpenseDistribution', function (): void {
             'consumption' => 200.0,
         ]);
 
-        $result = GetExpenseDistribution::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetExpenseDistribution::run($addressIds);
 
         expect($result)->toBeEmpty();
     });
@@ -164,7 +168,8 @@ describe('GetExpenseDistribution', function (): void {
             'consumption' => 100.0,
         ]);
 
-        $result = GetExpenseDistribution::run($user);
+        $addressIds = $user->addresses()->pluck('addresses.id');
+        $result = GetExpenseDistribution::run($addressIds);
 
         expect($result)->toHaveCount(2);
 
