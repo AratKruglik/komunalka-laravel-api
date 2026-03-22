@@ -1,0 +1,449 @@
+import { type ReactNode, useMemo } from 'react'
+import { useForm, router } from '@inertiajs/react'
+import { Plus, Trash2 } from 'lucide-react'
+import { PageSectionHeader } from '@/Components/pages'
+import {
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
+    FormMessage,
+    Input,
+    Label,
+    Select,
+    Textarea,
+} from '@/Components/ui'
+import type { AddressItem, CurrencyItem, ProviderItem, UtilityTypeItem } from '../types'
+
+interface ProviderFormProps {
+    addresses: AddressItem[]
+    utilityTypes: UtilityTypeItem[]
+    currencies: CurrencyItem[]
+    provider?: ProviderItem
+    submitUrl: string
+    submitMethod: 'post' | 'put'
+    title: string
+    description: string
+    submitLabel: string
+}
+
+interface TariffFormData {
+    utility_type_id: string
+    currency_id: string
+    name: string
+    base_rate: string
+    service_fee: string
+    effective_from: string
+    effective_to: string
+    notes: string
+}
+
+interface FormData {
+    address_id: string
+    utility_type_id: string
+    name: string
+    description: string
+    phone: string
+    email: string
+    website: string
+    is_active: boolean
+    tariffs: TariffFormData[]
+}
+
+function createEmptyTariff(utilityTypeId: string, currencyId: string): TariffFormData {
+    return {
+        utility_type_id: utilityTypeId,
+        currency_id: currencyId,
+        name: 'Базовий тариф',
+        base_rate: '',
+        service_fee: '0',
+        effective_from: new Date().toISOString().split('T')[0],
+        effective_to: '',
+        notes: '',
+    }
+}
+
+export function ProviderForm({
+    addresses,
+    utilityTypes,
+    currencies,
+    provider,
+    submitUrl,
+    submitMethod,
+    title,
+    description,
+    submitLabel,
+}: ProviderFormProps) {
+    const defaultCurrencyId = currencies.length > 0 ? String(currencies[0].id) : ''
+
+    const initialTariffs: TariffFormData[] = provider?.tariffs?.length
+        ? provider.tariffs.map((t) => ({
+              utility_type_id: String(t.utility_type?.id ?? provider.utility_type?.id ?? ''),
+              currency_id: String(t.currency?.id ?? defaultCurrencyId),
+              name: t.name,
+              base_rate: String(t.base_rate),
+              service_fee: String(t.service_fee ?? '0'),
+              effective_from: t.effective_from ? String(t.effective_from).split('T')[0] : '',
+              effective_to: t.effective_to ? String(t.effective_to).split('T')[0] : '',
+              notes: t.notes ?? '',
+          }))
+        : [createEmptyTariff(provider?.utility_type ? String(provider.utility_type.id) : '', defaultCurrencyId)]
+
+    const form = useForm<FormData>({
+        address_id: provider ? String(provider.address_id) : (addresses.length > 0 ? String(addresses[0].id) : ''),
+        utility_type_id: provider?.utility_type ? String(provider.utility_type.id) : '',
+        name: provider?.name ?? '',
+        description: provider?.description ?? '',
+        phone: provider?.phone ?? '',
+        email: provider?.email ?? '',
+        website: provider?.website ?? '',
+        is_active: provider?.is_active ?? true,
+        tariffs: initialTariffs,
+    })
+
+    const selectedUtilityType = useMemo(() => {
+        return utilityTypes.find((ut) => String(ut.id) === form.data.utility_type_id)
+    }, [utilityTypes, form.data.utility_type_id])
+
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault()
+        if (submitMethod === 'post') {
+            form.post(submitUrl)
+        } else {
+            form.put(submitUrl)
+        }
+    }
+
+    const handleCancel = () => {
+        router.visit('/providers')
+    }
+
+    const addTariff = () => {
+        form.setData('tariffs', [
+            ...form.data.tariffs,
+            createEmptyTariff(form.data.utility_type_id, defaultCurrencyId),
+        ])
+    }
+
+    const removeTariff = (index: number) => {
+        form.setData(
+            'tariffs',
+            form.data.tariffs.filter((_, i) => i !== index),
+        )
+    }
+
+    const updateTariff = (index: number, field: keyof TariffFormData, value: string) => {
+        const updated = [...form.data.tariffs]
+        updated[index] = { ...updated[index], [field]: value }
+        form.setData('tariffs', updated)
+    }
+
+    const formatAddressDisplay = (address: AddressItem): string => {
+        const parts = [address.city, address.street, address.building_number]
+        if (address.apartment_number) {
+            parts.push(`кв. ${address.apartment_number}`)
+        }
+        return parts.join(', ')
+    }
+
+    return (
+        <form className="space-y-4" onSubmit={handleSubmit}>
+            <Card className="border border-gray-200 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+                <PageSectionHeader
+                    title={title}
+                    description={description}
+                    titleClassName="text-2xl font-bold text-dark dark:text-slate-100"
+                />
+
+                <CardContent className="space-y-8">
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <FormField
+                            id="address_id"
+                            label="Адреса"
+                            required
+                            error={form.errors.address_id}
+                        >
+                            <Select
+                                id="address_id"
+                                value={form.data.address_id}
+                                onChange={(e) => form.setData('address_id', e.target.value)}
+                                isInvalid={Boolean(form.errors.address_id)}
+                                disabled={Boolean(provider)}
+                            >
+                                <option value="" disabled>
+                                    Оберіть адресу
+                                </option>
+                                {addresses.map((address) => (
+                                    <option key={address.id} value={address.id}>
+                                        {formatAddressDisplay(address)}
+                                        {address.is_primary ? ' (основна)' : ''}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormField>
+
+                        <FormField
+                            id="utility_type_id"
+                            label="Тип послуги"
+                            required
+                            error={form.errors.utility_type_id}
+                        >
+                            <Select
+                                id="utility_type_id"
+                                value={form.data.utility_type_id}
+                                onChange={(e) => form.setData('utility_type_id', e.target.value)}
+                                isInvalid={Boolean(form.errors.utility_type_id)}
+                            >
+                                <option value="" disabled>
+                                    Оберіть тип послуги
+                                </option>
+                                {utilityTypes.map((ut) => (
+                                    <option key={ut.id} value={ut.id}>
+                                        {ut.display_name}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormField>
+                    </div>
+
+                    <FormField
+                        id="name"
+                        label="Назва провайдера"
+                        required
+                        error={form.errors.name}
+                    >
+                        <Input
+                            id="name"
+                            placeholder="Наприклад, Київводоканал"
+                            value={form.data.name}
+                            onChange={(e) => form.setData('name', e.target.value)}
+                            isInvalid={Boolean(form.errors.name)}
+                        />
+                    </FormField>
+
+                    {submitMethod === 'post' && (
+                        <div className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">
+                                        Тарифи провайдера
+                                    </p>
+                                    <p className="text-sm text-gray-500 dark:text-slate-400">
+                                        Додайте денний, нічний чи інші плани
+                                    </p>
+                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    tone="primary"
+                                    size="sm"
+                                    className="gap-2"
+                                    onClick={addTariff}
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    Додати тариф
+                                </Button>
+                            </div>
+
+                            <div className="space-y-3">
+                                {form.data.tariffs.map((tariff, index) => (
+                                    <div
+                                        key={index}
+                                        className="rounded-lg border border-gray-200 bg-white p-4 shadow-md dark:border-slate-700 dark:bg-slate-800"
+                                    >
+                                        <div className="flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-3 text-sm font-semibold text-gray-800 dark:text-slate-100">
+                                                <span className="grid size-9 place-items-center rounded-full bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-100">
+                                                    {index + 1}
+                                                </span>
+                                                <span>{tariff.name || 'Новий тариф'}</span>
+                                            </div>
+                                            {form.data.tariffs.length > 1 && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    tone="neutral"
+                                                    size="sm"
+                                                    className="text-sm"
+                                                    onClick={() => removeTariff(index)}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    Видалити
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        <div className="grid gap-4 pt-2 md:grid-cols-3 md:gap-6">
+                                            <FormField
+                                                id={`tariff-name-${index}`}
+                                                label="Назва тарифу"
+                                                required
+                                            >
+                                                <Input
+                                                    id={`tariff-name-${index}`}
+                                                    placeholder="Наприклад: Денний, Нічний"
+                                                    value={tariff.name}
+                                                    onChange={(e) => updateTariff(index, 'name', e.target.value)}
+                                                />
+                                            </FormField>
+
+                                            <FormField
+                                                id={`tariff-rate-${index}`}
+                                                label="Базова ставка"
+                                                required
+                                            >
+                                                <Input
+                                                    id={`tariff-rate-${index}`}
+                                                    type="number"
+                                                    placeholder="12.45"
+                                                    step="0.01"
+                                                    min="0"
+                                                    inputMode="decimal"
+                                                    value={tariff.base_rate}
+                                                    onChange={(e) => updateTariff(index, 'base_rate', e.target.value)}
+                                                    endAdornment={
+                                                        <span className="text-sm font-medium text-gray-600 dark:text-slate-200">
+                                                            грн/{selectedUtilityType?.unit ?? 'од.'}
+                                                        </span>
+                                                    }
+                                                />
+                                            </FormField>
+
+                                            <FormField
+                                                id={`tariff-fee-${index}`}
+                                                label="Абонплата"
+                                            >
+                                                <Input
+                                                    id={`tariff-fee-${index}`}
+                                                    type="number"
+                                                    placeholder="0"
+                                                    step="0.01"
+                                                    min="0"
+                                                    inputMode="decimal"
+                                                    value={tariff.service_fee}
+                                                    onChange={(e) => updateTariff(index, 'service_fee', e.target.value)}
+                                                    endAdornment={
+                                                        <span className="text-sm font-medium text-gray-600 dark:text-slate-200">
+                                                            грн
+                                                        </span>
+                                                    }
+                                                />
+                                            </FormField>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <FormField
+                            id="phone"
+                            label="Телефон підтримки"
+                            error={form.errors.phone}
+                        >
+                            <Input
+                                id="phone"
+                                type="tel"
+                                inputMode="tel"
+                                placeholder="+380 44 123 45 67"
+                                value={form.data.phone}
+                                onChange={(e) => form.setData('phone', e.target.value)}
+                                isInvalid={Boolean(form.errors.phone)}
+                            />
+                        </FormField>
+
+                        <FormField
+                            id="email"
+                            label="E-mail для звернень"
+                            error={form.errors.email}
+                        >
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="support@example.com"
+                                value={form.data.email}
+                                onChange={(e) => form.setData('email', e.target.value)}
+                                isInvalid={Boolean(form.errors.email)}
+                            />
+                        </FormField>
+                    </div>
+
+                    <FormField
+                        id="website"
+                        label="Офіційний сайт"
+                        error={form.errors.website}
+                    >
+                        <Input
+                            id="website"
+                            type="url"
+                            placeholder="https://..."
+                            value={form.data.website}
+                            onChange={(e) => form.setData('website', e.target.value)}
+                            isInvalid={Boolean(form.errors.website)}
+                        />
+                    </FormField>
+
+                    <FormField
+                        id="description"
+                        label="Нотатки"
+                        error={form.errors.description}
+                    >
+                        <Textarea
+                            id="description"
+                            rows={4}
+                            placeholder="Додаткові деталі про провайдера або тариф"
+                            value={form.data.description}
+                            onChange={(e) => form.setData('description', e.target.value)}
+                            isInvalid={Boolean(form.errors.description)}
+                        />
+                    </FormField>
+
+                    <p className="text-sm text-gray-500 dark:text-slate-400">
+                        <span className="text-red-500">*</span> Обов&apos;язкові поля
+                    </p>
+                </CardContent>
+
+                <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        tone="neutral"
+                        onClick={handleCancel}
+                        disabled={form.processing}
+                    >
+                        Скасувати
+                    </Button>
+                    <Button
+                        type="submit"
+                        loading={form.processing}
+                        loadingText="Збереження..."
+                    >
+                        {submitLabel}
+                    </Button>
+                </CardFooter>
+            </Card>
+        </form>
+    )
+}
+
+interface FormFieldProps {
+    id: string
+    label: string
+    children: ReactNode
+    required?: boolean
+    error?: string
+}
+
+function FormField({ id, label, required, error, children }: FormFieldProps) {
+    return (
+        <div className="space-y-2">
+            <Label htmlFor={id} className="flex items-center gap-1 text-dark dark:text-slate-100">
+                {label}
+                {required ? <span className="text-red-500">*</span> : null}
+            </Label>
+            {children}
+            {error ? <FormMessage variant="error">{error}</FormMessage> : null}
+        </div>
+    )
+}
