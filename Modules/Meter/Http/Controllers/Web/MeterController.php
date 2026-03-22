@@ -34,7 +34,7 @@ class MeterController extends Controller
 {
     public function index(Request $request): Response
     {
-        $userId = $request->user()->id;
+        $userId = (int) $request->user()->getKey();
         $addressId = $request->query('address_id');
 
         $meters = $addressId
@@ -53,7 +53,7 @@ class MeterController extends Controller
 
     public function create(Request $request): Response
     {
-        $userId = $request->user()->id;
+        $userId = (int) $request->user()->getKey();
         $pagination = AddressPaginationData::fromRequest($request);
 
         return Inertia::render('Meters/Create', [
@@ -65,14 +65,14 @@ class MeterController extends Controller
 
     public function store(StoreMeterRequest $request): RedirectResponse
     {
-        CreateMeter::run($request->user()->id, CreateMeterData::fromRequest($request));
+        CreateMeter::run((int) $request->user()->getKey(), CreateMeterData::fromRequest($request));
 
         return redirect()->route('meters.index')->with('success', 'Лічильник створено');
     }
 
     public function edit(string $id, Request $request): Response
     {
-        $userId = $request->user()->id;
+        $userId = (int) $request->user()->getKey();
         $meter = GetMeter::run($userId, (int) $id);
         $pagination = AddressPaginationData::fromRequest($request);
 
@@ -86,21 +86,21 @@ class MeterController extends Controller
 
     public function update(UpdateMeterRequest $request, string $id): RedirectResponse
     {
-        UpdateMeter::run($request->user()->id, (int) $id, UpdateMeterData::fromRequest($request));
+        UpdateMeter::run((int) $request->user()->getKey(), (int) $id, UpdateMeterData::fromRequest($request));
 
         return redirect()->route('meters.index')->with('success', 'Лічильник оновлено');
     }
 
     public function destroy(string $id, Request $request): RedirectResponse
     {
-        DeleteMeter::run($request->user()->id, (int) $id);
+        DeleteMeter::run((int) $request->user()->getKey(), (int) $id);
 
         return redirect()->route('meters.index')->with('success', 'Лічильник видалено');
     }
 
     public function uploadPhoto(UploadMeterPhotoRequest $request, string $meterId): RedirectResponse
     {
-        $meter = GetMeter::run($request->user()->id, (int) $meterId);
+        $meter = GetMeter::run((int) $request->user()->getKey(), (int) $meterId);
         UploadMeterPhoto::run($meter, $request->file('photo'));
 
         return redirect()->back()->with('success', 'Фото завантажено');

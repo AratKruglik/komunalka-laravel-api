@@ -1,4 +1,4 @@
-import { Fragment, useMemo, type ReactNode } from 'react'
+import { Fragment, useMemo } from 'react'
 import { useForm, router } from '@inertiajs/react'
 import {
     BriefcaseBusiness,
@@ -15,13 +15,12 @@ import {
     CardContent,
     CardFooter,
     Checkbox,
-    FormMessage,
     Input,
-    Label,
     RadioCard,
     Select,
     Textarea,
 } from '@/Components/ui'
+import { FormField } from '@/Components/ui/FormField'
 import type { AddressItem, AddressRegion, AddressTypeItem } from '../types'
 
 type StepStatus = 'completed' | 'current' | 'upcoming'
@@ -346,26 +345,6 @@ export function AddressForm({
     )
 }
 
-interface FormFieldProps {
-    id: string
-    label: string
-    children: ReactNode
-    required?: boolean
-    error?: string
-}
-
-function FormField({ id, label, required, error, children }: FormFieldProps) {
-    return (
-        <div className="space-y-2">
-            <Label htmlFor={id} className="flex items-center gap-1 text-dark dark:text-slate-100">
-                {label}
-                {required ? <span className="text-red-500">*</span> : null}
-            </Label>
-            {children}
-            {error ? <FormMessage variant="error">{error}</FormMessage> : null}
-        </div>
-    )
-}
 
 interface FormStepperProps {
     steps: Step[]

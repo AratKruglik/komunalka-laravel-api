@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Meter\Actions;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\Models\User;
 use Modules\Meter\Models\Meter;
 use Modules\Meter\Models\MeterReading;
 
@@ -15,6 +15,7 @@ class GetDashboardStats
     use AsAction;
 
     /**
+     * @param  Collection<int, int>  $addressIds
      * @return array{
      *     addressCount: int,
      *     meterCount: int,
@@ -22,30 +23,28 @@ class GetDashboardStats
      *     totalMonthlyConsumption: float,
      * }
      */
-    public function handle(User $user): array
+    public function handle(Collection $addressIds): array
     {
-        $addressIds = $user->addresses()->pluck('addresses.id');
-
-        $meterCount = Meter::query()
+        $meterIds = Meter::query()
             ->whereIn('address_id', $addressIds)
             ->active()
-            ->count();
+            ->pluck('id');
 
         $lastReading = MeterReading::query()
-            ->whereHas('meter', fn ($q) => $q->whereIn('address_id', $addressIds))
+            ->whereIn('meter_id', $meterIds)
             ->orderByDesc('reading_date')
             ->first(['reading_date']);
 
         $startOfMonth = CarbonImmutable::now()->startOfMonth();
 
         $totalMonthlyConsumption = MeterReading::query()
-            ->whereHas('meter', fn ($q) => $q->whereIn('address_id', $addressIds))
+            ->whereIn('meter_id', $meterIds)
             ->where('reading_date', '>=', $startOfMonth)
             ->sum('consumption');
 
         return [
             'addressCount' => $addressIds->count(),
-            'meterCount' => $meterCount,
+            'meterCount' => $meterIds->count(),
             'lastReadingDate' => $lastReading?->reading_date?->toDateString(),
             'totalMonthlyConsumption' => (float) $totalMonthlyConsumption,
         ];

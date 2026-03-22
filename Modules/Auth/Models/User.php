@@ -7,7 +7,6 @@ namespace Modules\Auth\Models;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Address\Models\Address;
@@ -65,12 +64,6 @@ class User extends Authenticatable implements HasMedia
             ->using(UserAddress::class)
             ->withPivot('is_primary')
             ->withTimestamps();
-    }
-
-    /** @return HasMany<RefreshToken, $this> */
-    public function refreshTokens(): HasMany
-    {
-        return $this->hasMany(RefreshToken::class);
     }
 
     public function isAdmin(): bool

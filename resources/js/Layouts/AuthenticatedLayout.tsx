@@ -109,7 +109,7 @@ export function AuthenticatedLayout({
 
           <footer className="border-t border-gray-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-3 px-3 py-4 text-sm text-gray-500 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
-              <p className="text-xs sm:text-sm">&copy; 2024 Комуналка. Всі права захищені.</p>
+              <p className="text-xs sm:text-sm">&copy; {new Date().getFullYear()} Комуналка. Всі права захищені.</p>
               <div className="flex flex-wrap gap-3 text-xs sm:gap-4 sm:text-sm">
                 <a href="#" className="transition-colors hover:text-gray-900 dark:text-slate-300 dark:hover:text-white">
                   Умови використання

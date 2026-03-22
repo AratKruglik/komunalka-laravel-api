@@ -3,6 +3,8 @@
 namespace Modules\Auth\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
+use Modules\Auth\Repositories\UserRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -26,13 +28,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->bind(
-            \Modules\Auth\Repositories\Contracts\UserRepositoryInterface::class,
-            \Modules\Auth\Repositories\UserRepository::class,
-        );
-
-        $this->app->bind(
-            \Modules\Auth\Repositories\Contracts\RefreshTokenRepositoryInterface::class,
-            \Modules\Auth\Repositories\RefreshTokenRepository::class,
+            UserRepositoryInterface::class,
+            UserRepository::class,
         );
     }
 

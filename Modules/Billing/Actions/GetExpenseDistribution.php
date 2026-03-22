@@ -8,18 +8,17 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\Models\User;
 
 class GetExpenseDistribution
 {
     use AsAction;
 
     /**
+     * @param  Collection<int, int>  $addressIds
      * @return Collection<int, array{type: string, displayName: string, amount: float, percentage: float}>
      */
-    public function handle(User $user): Collection
+    public function handle(Collection $addressIds): Collection
     {
-        $addressIds = $user->addresses()->pluck('addresses.id');
 
         $startDate = CarbonImmutable::now()->subMonths(12)->startOfMonth();
 

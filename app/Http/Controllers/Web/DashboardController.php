@@ -20,12 +20,13 @@ class DashboardController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
+        $addressIds = $user->addresses()->pluck('addresses.id');
 
         return Inertia::render('Dashboard/Index', [
-            'stats' => GetDashboardStats::run($user),
-            'consumptionHistory' => GetConsumptionHistory::run($user),
-            'expenseDistribution' => GetExpenseDistribution::run($user),
-            'recentReadings' => MeterReadingResource::collection(GetRecentReadings::run($user)),
+            'stats' => GetDashboardStats::run($addressIds),
+            'consumptionHistory' => GetConsumptionHistory::run($addressIds),
+            'expenseDistribution' => GetExpenseDistribution::run($addressIds),
+            'recentReadings' => MeterReadingResource::collection(GetRecentReadings::run($addressIds)),
             'addresses' => AddressResource::collection(
                 $user->addresses()->with(['region', 'addressType'])->get(),
             ),

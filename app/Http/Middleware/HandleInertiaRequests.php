@@ -17,9 +17,9 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'auth' => [
-                'user' => $request->user()
-                    ? new UserResource($request->user())
+            'auth' => fn () => [
+                'user' => ($user = $request->user())
+                    ? new UserResource($user)
                     : null,
             ],
             'flash' => [

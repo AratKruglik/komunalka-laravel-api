@@ -8,18 +8,17 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Modules\Auth\Models\User;
 
 class GetConsumptionHistory
 {
     use AsAction;
 
     /**
+     * @param  Collection<int, int>  $addressIds
      * @return Collection<int, array{month: string, utilityType: string, value: float}>
      */
-    public function handle(User $user, int $months = 6): Collection
+    public function handle(Collection $addressIds, int $months = 12): Collection
     {
-        $addressIds = $user->addresses()->pluck('addresses.id');
 
         $startDate = CarbonImmutable::now()->subMonths($months)->startOfMonth();
 

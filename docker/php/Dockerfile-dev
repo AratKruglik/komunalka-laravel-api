@@ -85,13 +85,20 @@ RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ex
 RUN echo "pcov.enabled=1" >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini && \
     echo "pcov.directory=/var/www" >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
 
+# Install Node.js 22 and pnpm
+COPY --from=node:22-alpine /usr/lib /usr/lib
+COPY --from=node:22-alpine /usr/local/lib /usr/local/lib
+COPY --from=node:22-alpine /usr/local/include /usr/local/include
+COPY --from=node:22-alpine /usr/local/bin /usr/local/bin
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Copy supervisor configuration
 COPY docker/php/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set working directory
 WORKDIR /var/www
 
-EXPOSE 80 443 443/udp
+EXPOSE 80 443 443/udp 5173
 
 # Use supervisor as entrypoint to manage multiple processes
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]

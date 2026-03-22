@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Auth\Http\Controllers\Web;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Auth\Enums\AuthProvider;
@@ -24,17 +25,22 @@ class OAuthController
         return Socialite::driver($authProvider->value)->redirect();
     }
 
-    public function callback(string $provider): RedirectResponse
+    public function callback(string $provider, Request $request): RedirectResponse
     {
         $authProvider = AuthProvider::from($provider);
 
-        $socialiteUser = Socialite::driver($authProvider->value)->user();
+        try {
+            $socialiteUser = Socialite::driver($authProvider->value)->user();
+        } catch (\Throwable) {
+            return redirect()->route('login')->with('error', 'Помилка авторизації через провайдер. Спробуйте ще раз.');
+        }
+
         $user = $this->oAuthService->findOrCreateUser($socialiteUser, $authProvider);
 
         $user->update(['last_login_at' => now()]);
 
         Auth::login($user);
-        request()->session()->regenerate();
+        $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));
     }
