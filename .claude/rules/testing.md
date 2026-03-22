@@ -38,6 +38,7 @@ Where to test model functionality instead:
 
 ```
 tests/
+├── Browser/          # Pest 4 browser tests (page rendering, forms, navigation)
 ├── Feature/          # Integration tests (Auth, MentorPrograms, Pages)
 ├── Unit/             # Unit tests (Actions, Models, Observers, Support)
 ├── Pest.php          # Pest configuration
@@ -53,6 +54,7 @@ docker compose exec app php artisan test                    # all tests
 docker compose exec app php artisan test --coverage         # with coverage
 docker compose exec app php artisan test --mutate --covered-only --parallel --min=100  # mutation
 docker compose exec app php artisan test tests/Unit/ExampleTest.php  # specific file
+docker compose exec app php artisan test tests/Browser/     # browser tests
 ```
 
 ## Test Configuration
@@ -104,3 +106,63 @@ Enforced rules (`tests/Unit/ArchTest.php`):
 - Models must extend Eloquent Model
 - Page actions must have 'Page' suffix
 - Enums must be proper enum classes
+
+## Browser Testing (Pest 4)
+
+Browser tests verify page rendering, form submissions, and navigation via Pest 4 Browser Tests.
+
+### Structure
+
+```
+tests/Browser/
+├── DashboardTest.php
+├── MeterReadingTest.php
+└── AuthFlowTest.php
+```
+
+### Running Browser Tests
+
+```bash
+docker compose exec app php artisan test tests/Browser/
+```
+
+### Writing Browser Tests
+
+```php
+<?php
+
+declare(strict_types=1);
+
+describe('Dashboard Page', function (): void {
+    it('renders the dashboard with meters', function (): void {
+        $user = User::factory()->create();
+        Meter::factory()->count(3)->for($user)->create();
+
+        $this->actingAs($user)
+            ->visit('/dashboard')
+            ->assertSee('Dashboard')
+            ->assertSee('Meters')
+            ->assertNoJavaScriptErrors();
+    });
+
+    it('submits a meter reading form', function (): void {
+        $user = User::factory()->create();
+        $meter = Meter::factory()->for($user)->create();
+
+        $this->actingAs($user)
+            ->visit('/meters/' . $meter->getKey() . '/readings/create')
+            ->fill('value', '150.5')
+            ->fill('reading_date', '2026-03-22')
+            ->click('Submit')
+            ->assertSee('Reading saved');
+    });
+});
+```
+
+### What to Test with Browser Tests
+
+- Page rendering with correct content
+- Form submissions and validation display
+- Navigation between Inertia pages
+- JavaScript error detection (`assertNoJavaScriptErrors()`)
+- Authenticated vs unauthenticated access

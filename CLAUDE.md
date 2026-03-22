@@ -34,13 +34,13 @@
 - **ALWAYS** follow the agent pipeline defined in `.claude/rules/workflow.md`
 - **ALWAYS** run independent pipeline steps in parallel (e.g., Security Scanner + QA + Tester can run simultaneously after Developer completes)
 - **ALWAYS** autonomously determine which agents from `.claude/agents/` should execute each part of the user's task — do NOT ask the user which agent to use
-- Available agents: `ba`, `developer`, `frontend`, `tester`, `qa`, `reviewer`, `debugger`, `security-scanner`, `dba`, `ddd-architect`, `filament`, `devops`, `ci-cd-engineer`, `integration-architect`, `laravel-refactoring-expert`, `queue-specialist`, `docs-writer`
+- Available agents: `ba`, `developer`, `tester`, `qa`, `reviewer`, `debugger`, `security-scanner`, `dba`, `ddd-architect`, `devops`, `ci-cd-engineer`, `integration-architect`, `laravel-refactoring-expert`, `queue-specialist`, `docs-writer`
 - For every non-trivial task: analyze → select agents → dispatch in parallel where possible → collect results → verify
 
 ## Rules (auto-loaded from `.claude/rules/`)
 
 - `code-style.md` — PHP 8.4 strict types, Eloquent conventions, code quality tools
-- `architecture.md` — Actions pattern, Inertia.js, domain organization, database patterns
+- `architecture.md` — Actions pattern, Inertia.js + React, domain organization, database patterns
 - `testing.md` — Pest 4, mutation testing, model testing policy, test structure
 - `git-operations.md` — Commit/push rules, PR description format
 - `workflow.md` — Agent pipeline: BA → Developer → Security → QA → Tester → DocsWriter

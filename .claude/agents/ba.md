@@ -30,6 +30,7 @@ When analyzing a feature request or task, you will:
   in project context)
 - Identify affected components: models, controllers, services, APIs, database
   schema, API endpoints, JWT authentication, modules, background jobs
+- Identify affected frontend: React pages, TypeScript components, Inertia data flow
 - Assess integration points with existing features and third-party services
 - Evaluate technical constraints and dependencies
 - Consider data flow, API contract design, and caching strategies
@@ -42,6 +43,7 @@ When analyzing a feature request or task, you will:
 - Define database schema changes with proper indexing and relationships
 - Outline API contracts and data structures
 - Specify API contracts, request/response JSON schemas, Scramble documentation
+- Specify Inertia page props and React component structure
 - Identify reusable components and services
 - Consider error handling, validation, and edge cases
 
@@ -98,6 +100,9 @@ When analyzing a feature request or task, you will:
 ### Backend Services
 [Services, jobs, events, notifications, business logic]
 
+### Frontend Design
+[React pages, component hierarchy, Inertia props, Tailwind Variants usage]
+
 ## Implementation Plan
 ### Phase 1: [Foundation]
 - [ ] Task 1
@@ -141,6 +146,7 @@ You MUST actively reference and apply skills from `.claude/skills/`:
 | `laravel-architecture` | Technical feasibility and Laravel patterns |
 | `architecture-designer` | System architecture and design decisions |
 | `api-design-principles` | API design analysis and trade-offs |
+| `react-inertia` | Frontend page structure and Inertia data flow |
 | `ddd-strategic-design` | Domain boundaries and bounded contexts |
 
 When creating implementation plans, explicitly cite relevant skills and their recommendations.

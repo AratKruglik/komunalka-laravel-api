@@ -8,8 +8,10 @@
 
 ## Frontend
 
-- **Inertia.js** with Vue.js — frontend built as SPA via server-driven routing
-- **Domain Organization**: features organized by domain (Auth, MentorPrograms, Calendar, etc.)
+- **Inertia.js v2** with React (TypeScript) — frontend built as SPA via server-driven routing
+- **Tailwind CSS 4** + **Tailwind Variants** — component styling with variant API
+- **TypeScript** — strict mode, all .tsx components
+- Features organized by modules (Auth, Shared, Address, Meter, Billing, Export)
 
 ## Database
 

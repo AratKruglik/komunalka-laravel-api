@@ -41,6 +41,8 @@ You are a Senior CI/CD Engineer with 10+ years of experience building and optimi
 | Database (CI) | PostgreSQL 17 |
 | Cache/Queue (CI) | Redis 7.2+ |
 | PHP Version | 8.4+ |
+| Node.js | With Yarn 4.6.0 |
+| Frontend Build | Vite |
 | Modules | nwidart/laravel-modules v12 |
 
 ## Project File Locations
@@ -62,6 +64,7 @@ docker-compose.yml              — Local development services
 - PHPStan (static analysis)
 - Laravel Pint (code style)
 - Rector (code modernization)
+- TypeScript check (npx tsc --noEmit)
 ```
 
 ### Parallel Testing Jobs
@@ -77,6 +80,7 @@ docker-compose.yml              — Local development services
 ### Caching Strategy
 
 - **Composer**: Cache `vendor/` keyed by `composer.lock` hash
+- **Yarn**: Cache `node_modules/` keyed by `yarn.lock` hash
 - **Docker layers**: Leverage build cache for faster image builds
 
 ## Docker Commands (MANDATORY — All in Docker)
@@ -92,6 +96,11 @@ docker compose exec app php artisan test --mutate --covered-only --parallel --mi
 
 # Dependencies
 docker compose exec app composer install --no-interaction
+docker compose exec app yarn install --immutable
+
+# Frontend
+docker compose exec app yarn build
+docker compose exec app npx tsc --noEmit
 ```
 
 > **NEVER use `docker compose exec api`** — this project uses `app` as the service name.
@@ -106,7 +115,7 @@ docker compose exec app composer install --no-interaction
 
 ### Caching
 - Use `actions/cache` with hash-based keys
-- Cache Composer, Yarn, and Docker layers separately
+- Cache Composer (`vendor/`), Yarn (`node_modules/`), and Docker layers separately
 - Include restore-keys for partial cache hits
 
 ### Security

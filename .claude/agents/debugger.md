@@ -110,6 +110,13 @@ You are a Senior Debugging Specialist with 12+ years of experience in root-cause
 - **CORS Errors**: Check `config/cors.php` allowed origins
 - **Missing Auth Header**: Check JWT middleware and `Authorization: Bearer` header
 
+### Inertia / React Issues
+- **Prop Type Mismatch**: Server sends different shape than TypeScript interface expects
+- **Inertia Redirects**: Check `Inertia::render()` vs `redirect()` usage in Actions
+- **Shared Data**: Missing data in `HandleInertiaRequests` middleware
+- **React Hydration**: Server/client mismatch → check conditional rendering
+- **Tailwind Variants Config**: Missing `tv()` import or wrong variant keys
+
 ### Queue/Job Failures
 - **Timeout**: Job takes too long → increase `$timeout` or optimize
 - **Serialization**: Pass IDs, not model instances to jobs

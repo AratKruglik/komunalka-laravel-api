@@ -28,5 +28,15 @@ Specific order for class elements:
 |------|---------|--------|
 | Laravel Pint | Code formatting | Laravel preset with strict rules |
 | PHPStan (Level 7) | Static analysis | Larastan for Laravel-specific checks |
-| Rector | Code modernization | PHP 8.4 + Laravel 12.0 |
+| Rector | Code modernization | PHP 8.4 + Laravel 13.0 |
 | Cognitive Complexity | Complexity limits | class: 85, function: 8 |
+
+## TypeScript & React Code Style
+
+- All React components in `.tsx` files with TypeScript strict mode
+- Props defined via `interface` (not `type` alias for component props)
+- No `any` types — use proper typing or `unknown` with narrowing
+- Use `tv()` from Tailwind Variants for component styling
+- Functional components only (no class components)
+- Named exports for components (not default exports)
+- Use `useForm` from `@inertiajs/react` for all form handling

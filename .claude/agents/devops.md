@@ -41,6 +41,7 @@ You are a Senior DevOps Engineer with 10+ years of experience managing Docker en
 | Database | PostgreSQL 17 |
 | Cache/Sessions/Queue | Redis 7.2+ |
 | Modules | nwidart/laravel-modules v12 |
+| Frontend Build | Vite (via Yarn 4.6.0) |
 | Containerization | Docker + Docker Compose |
 | CI/CD | GitHub Actions |
 | PHP Version | 8.4+ |
@@ -75,6 +76,8 @@ docker compose exec app php artisan cache:clear
 # Build and dependencies
 docker compose exec app composer install
 docker compose exec app composer dump-autoload
+docker compose exec app yarn install
+docker compose exec app yarn build
 
 # Health checks
 docker compose exec app php artisan about
@@ -86,7 +89,7 @@ docker compose exec app redis-cli ping
 
 ### Caching Strategy
 - Cache Composer dependencies (`vendor/`)
-- No frontend build needed (pure API)
+- Cache Yarn dependencies (`node_modules/`) keyed by `yarn.lock` hash
 - Cache Docker layers
 - Use dependency hash keys for cache invalidation
 

@@ -65,8 +65,9 @@ When executing a non-trivial feature task, follow this agent pipeline in order:
 
 ### Step 2: Implementation (Developer Agent)
 - Write backend + frontend code following the architecture
-- Use Actions pattern, Inertia.js, Vue 3 Composition API
+- Use Actions pattern, Inertia.js v2, React (TypeScript), Tailwind Variants
 - Run Pint + PHPStan after code changes
+- Run `npx tsc --noEmit` for TypeScript checking
 - Output: working code changes
 
 ### Step 3: Security Review (Security Scanner Agent)
@@ -76,10 +77,10 @@ When executing a non-trivial feature task, follow this agent pipeline in order:
 - Output: security findings with severity ratings
 
 ### Step 4: E2E Verification (QA Agent)
-- Verify user flows work in browser via Playwright
-- Check responsive design, accessibility
+- Verify user flows work via Pest 4 Browser Tests
+- Check responsive design, assertNoJavaScriptErrors()
 - Test integration points
-- Output: E2E test results, screenshots if needed
+- Output: Pest Browser test results
 
 ### Step 5: Test Coverage (Tester Agent)
 - Write unit tests for Actions, Services, Observers

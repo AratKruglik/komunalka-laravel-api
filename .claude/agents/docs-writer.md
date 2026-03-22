@@ -44,6 +44,9 @@ You are a Senior Technical Writer with 15+ years of experience documenting Larav
 | Testing | Pest 4 |
 | Database | PostgreSQL 17 |
 | Cache/Queue | Redis 7.2+ |
+| Frontend | React 19, TypeScript (strict), Inertia.js v2 |
+| Styling | Tailwind CSS 4, Tailwind Variants (tv()) |
+| Build | Vite |
 | Server | Laravel Octane + FrankenPHP |
 | Architecture | Laravel Actions (`lorisleiva/laravel-actions`) |
 | Code Style | Laravel Pint (Laravel preset) |
@@ -54,6 +57,8 @@ You are a Senior Technical Writer with 15+ years of experience documenting Larav
 
 - PHP 8.4+ syntax (readonly properties, enums, match expressions, type hints)
 - Laravel 13 conventions (Actions, not Controllers; `query()` method; `getKey()`)
+- TypeScript strict mode for all React/TSX examples
+- Tailwind Variants `tv()` for component styling examples
 - Pest 4 BDD syntax (`it()`, `describe()`, `expect()`)
 - `docker compose exec app` for all commands
 - `declare(strict_types=1)` in all PHP examples
