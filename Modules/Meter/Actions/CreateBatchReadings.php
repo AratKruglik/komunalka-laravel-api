@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Meter\Actions;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
@@ -13,6 +14,7 @@ use Modules\Billing\Actions\GetEffectiveTariff;
 use Modules\Billing\DTO\TariffCalculationResult;
 use Modules\Meter\DTO\BatchReadingData;
 use Modules\Meter\DTO\BatchReadingResult;
+use Modules\Meter\Http\Requests\BatchMeterReadingRequest;
 use Modules\Meter\Models\MeterReading;
 use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
 use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
@@ -87,7 +89,7 @@ class CreateBatchReadings
                     );
 
                     if ($tariff !== null) {
-                        $meterReading->tariff_id = $tariff->id;
+                        $meterReading->tariff_id = $tariff->getKey();
                         $meterReading->save();
                     }
                 }
@@ -113,5 +115,17 @@ class CreateBatchReadings
 
             return new BatchReadingResult($readings, $tariffCalculations);
         });
+    }
+
+    public function asController(BatchMeterReadingRequest $request): RedirectResponse
+    {
+        $this->handle(
+            (int) $request->user()->getKey(),
+            BatchReadingData::fromRequest($request),
+        );
+
+        return redirect()
+            ->route('readings.index')
+            ->with('success', 'Показання успішно збережено!');
     }
 }

@@ -8,6 +8,7 @@ use Modules\Meter\Models\Meter;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function (): void {
+    $this->withoutVite();
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
@@ -21,10 +22,13 @@ describe('MeterController', function (): void {
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.meter.index'))
-            ->assertSuccessful()
-            ->assertJsonCount(2, 'data');
+        $this->actingAs($this->user)
+            ->get(route('meters.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Meters/Index')
+                ->has('meters.data', 2),
+            );
     });
 
     it('filters meters by address', function (): void {
@@ -40,43 +44,28 @@ describe('MeterController', function (): void {
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.meter.by-address', $this->address->getKey()))
-            ->assertSuccessful()
-            ->assertJsonCount(2, 'data');
+        $this->actingAs($this->user)
+            ->get(route('meters.index', ['address_id' => $this->address->getKey()]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Meters/Index')
+                ->has('meters.data', 2),
+            );
     });
 
-    it('returns only active meters', function (): void {
-        Meter::factory()->create([
-            'address_id' => $this->address->getKey(),
-            'utility_type_id' => $this->utilityType->getKey(),
-            'is_active' => true,
-        ]);
-
-        Meter::factory()->inactive()->create([
-            'address_id' => $this->address->getKey(),
-            'utility_type_id' => $this->utilityType->getKey(),
-        ]);
-
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.meter.active'))
-            ->assertSuccessful()
-            ->assertJsonCount(1, 'data');
-    });
-
-    it('renders show with meter data', function (): void {
+    it('renders edit page with meter data', function (): void {
         $meter = Meter::factory()->create([
             'address_id' => $this->address->getKey(),
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.meter.show', $meter->getKey()))
-            ->assertSuccessful()
-            ->assertJsonPath('data.id', $meter->getKey())
-            ->assertJsonStructure([
-                'data' => ['id', 'serial_number', 'name', 'is_active', 'address_id', 'utility_type'],
-            ]);
+        $this->actingAs($this->user)
+            ->get(route('meters.edit', $meter->getKey()))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Meters/Edit')
+                ->has('meter'),
+            );
     });
 
     it('creates meter and redirects', function (): void {
@@ -89,11 +78,10 @@ describe('MeterController', function (): void {
             'is_active' => true,
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.meter.store'), $payload)
-            ->assertCreated()
-            ->assertJsonPath('data.name', 'Лічильник газу')
-            ->assertJsonPath('data.address_id', $this->address->getKey());
+        $this->actingAs($this->user)
+            ->post(route('meters.store'), $payload)
+            ->assertRedirect(route('meters.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('meters', [
             'name' => 'Лічильник газу',
@@ -111,10 +99,9 @@ describe('MeterController', function (): void {
         ];
         unset($payload[$field]);
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.meter.store'), $payload)
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors($field);
+        $this->actingAs($this->user)
+            ->post(route('meters.store'), $payload)
+            ->assertSessionHasErrors($field);
     })->with(['address_id', 'utility_type_id', 'serial_number', 'name', 'initial_reading']);
 
     it('updates meter and redirects', function (): void {
@@ -124,10 +111,10 @@ describe('MeterController', function (): void {
             'name' => 'Старий лічильник',
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->putJson(route('api.meter.update', $meter->getKey()), ['name' => 'Новий лічильник'])
-            ->assertSuccessful()
-            ->assertJsonPath('data.name', 'Новий лічильник');
+        $this->actingAs($this->user)
+            ->put(route('meters.update', $meter->getKey()), ['name' => 'Новий лічильник'])
+            ->assertRedirect(route('meters.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('meters', [
             'id' => $meter->getKey(),
@@ -141,23 +128,22 @@ describe('MeterController', function (): void {
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->deleteJson(route('api.meter.destroy', $meter->getKey()))
-            ->assertSuccessful();
+        $this->actingAs($this->user)
+            ->delete(route('meters.destroy', $meter->getKey()))
+            ->assertRedirect(route('meters.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseMissing('meters', ['id' => $meter->getKey()]);
     });
 
     it('requires authentication', function (string $method, string $routeName, array $params): void {
-        $this->{$method}(route($routeName, $params))->assertUnauthorized();
+        $this->{$method}(route($routeName, $params))->assertRedirect(route('login'));
     })->with([
-        ['getJson', 'api.meter.index', []],
-        ['getJson', 'api.meter.active', []],
-        ['getJson', 'api.meter.show', [1]],
-        ['getJson', 'api.meter.by-address', [1]],
-        ['postJson', 'api.meter.store', []],
-        ['putJson', 'api.meter.update', [1]],
-        ['deleteJson', 'api.meter.destroy', [1]],
+        ['get', 'meters.index', []],
+        ['get', 'meters.edit', [1]],
+        ['post', 'meters.store', []],
+        ['put', 'meters.update', [1]],
+        ['delete', 'meters.destroy', [1]],
     ]);
 
     it('prevents access to other users meters', function (): void {
@@ -166,16 +152,16 @@ describe('MeterController', function (): void {
             'address_id' => $otherAddress->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.meter.show', $meter->getKey()))
+        $this->actingAs($this->user)
+            ->get(route('meters.edit', $meter->getKey()))
             ->assertNotFound();
 
-        $this->actingAs($this->user, 'api')
-            ->putJson(route('api.meter.update', $meter->getKey()), ['name' => 'Updated'])
+        $this->actingAs($this->user)
+            ->put(route('meters.update', $meter->getKey()), ['name' => 'Updated'])
             ->assertNotFound();
 
-        $this->actingAs($this->user, 'api')
-            ->deleteJson(route('api.meter.destroy', $meter->getKey()))
+        $this->actingAs($this->user)
+            ->delete(route('meters.destroy', $meter->getKey()))
             ->assertNotFound();
     });
 
@@ -190,8 +176,8 @@ describe('MeterController', function (): void {
             'initial_reading' => 0,
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.meter.store'), $payload)
+        $this->actingAs($this->user)
+            ->post(route('meters.store'), $payload)
             ->assertNotFound();
     });
 });

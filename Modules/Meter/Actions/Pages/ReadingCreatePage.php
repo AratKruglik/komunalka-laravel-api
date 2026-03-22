@@ -2,28 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Modules\Meter\Http\Controllers\Web;
+namespace Modules\Meter\Actions\Pages;
 
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
 use Modules\Billing\Http\Resources\ServiceProviderResource;
 use Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface;
-use Modules\Meter\Actions\CreateBatchReadings;
-use Modules\Meter\Actions\DeleteMeterReading;
-use Modules\Meter\Actions\GetReadingsByAddress;
-use Modules\Meter\DTO\BatchReadingData;
-use Modules\Meter\Http\Requests\BatchMeterReadingRequest;
 use Modules\Meter\Http\Resources\MeterReadingResource;
 use Modules\Meter\Http\Resources\MeterResource;
 use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
 use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
 
-class ReadingController
+class ReadingCreatePage
 {
+    use AsAction;
+
     public function __construct(
         private readonly AddressRepositoryInterface $addressRepository,
         private readonly UserAddressRepositoryInterface $userAddressRepository,
@@ -32,32 +29,9 @@ class ReadingController
         private readonly ServiceProviderRepositoryInterface $serviceProviderRepository,
     ) {}
 
-    public function index(Request $request): Response
+    public function handle(Request $request): Response
     {
-        $userId = $request->user()->getKey();
-        $addressId = $request->integer('address_id');
-
-        $addresses = $this->addressRepository->getForUser($userId, perPage: 100);
-
-        $readings = [];
-        if ($addressId > 0 && $this->userAddressRepository->userOwnsAddress($userId, $addressId)) {
-            $readings = MeterReadingResource::collection(
-                app(GetReadingsByAddress::class)->handle($userId, $addressId),
-            );
-        }
-
-        return Inertia::render('Readings/Index', [
-            'addresses' => $addresses,
-            'readings' => $readings,
-            'filters' => [
-                'address_id' => $addressId ?: null,
-            ],
-        ]);
-    }
-
-    public function create(Request $request): Response
-    {
-        $userId = $request->user()->getKey();
+        $userId = (int) $request->user()->getKey();
         $addressId = $request->integer('address_id');
 
         $addresses = $this->addressRepository->getForUser($userId, perPage: 100);
@@ -88,27 +62,8 @@ class ReadingController
         ]);
     }
 
-    public function store(BatchMeterReadingRequest $request): RedirectResponse
+    public function asController(Request $request): Response
     {
-        CreateBatchReadings::run(
-            $request->user()->getKey(),
-            BatchReadingData::fromRequest($request),
-        );
-
-        return redirect()
-            ->route('readings.index')
-            ->with('success', 'Показання успішно збережено!');
-    }
-
-    public function destroy(string $id, Request $request): RedirectResponse
-    {
-        DeleteMeterReading::run(
-            $request->user()->getKey(),
-            (int) $id,
-        );
-
-        return redirect()
-            ->back()
-            ->with('success', 'Показання успішно видалено.');
+        return $this->handle($request);
     }
 }

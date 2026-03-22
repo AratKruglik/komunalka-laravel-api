@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Actions;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\RegisterUserData;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
+use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
 
@@ -36,5 +39,15 @@ class RegisterUser
         ]);
 
         return $user;
+    }
+
+    public function asController(RegisterRequest $request): RedirectResponse
+    {
+        $user = $this->handle(RegisterUserData::fromRequest($request));
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard');
     }
 }

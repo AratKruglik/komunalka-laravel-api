@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Actions;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
 use Modules\Billing\DTO\CreateServiceProviderData;
+use Modules\Billing\Http\Requests\StoreServiceProviderRequest;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface;
 use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;
@@ -43,7 +45,7 @@ class CreateServiceProvider
 
             foreach ($data->tariffs as $tariffData) {
                 $this->tariffRepository->create([
-                    'service_provider_id' => $provider->id,
+                    'service_provider_id' => $provider->getKey(),
                     'utility_type_id' => $tariffData->utilityTypeId,
                     'currency_id' => $tariffData->currencyId,
                     'name' => $tariffData->name,
@@ -57,5 +59,15 @@ class CreateServiceProvider
 
             return $provider->load(['utilityType', 'tariffs.currency', 'tariffs.utilityType']);
         });
+    }
+
+    public function asController(StoreServiceProviderRequest $request): RedirectResponse
+    {
+        $this->handle(
+            (int) $request->user()->getKey(),
+            CreateServiceProviderData::fromRequest($request),
+        );
+
+        return redirect()->route('providers.index')->with('success', 'Провайдера створено');
     }
 }

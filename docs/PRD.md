@@ -1,25 +1,23 @@
-# PRD: Komunalka API — Міграція з .NET на Laravel
+# PRD: Komunalka — Full-Stack веб-додаток для управління комунальними послугами
 
 ## 1. Огляд проєкту
 
 ### 1.1 Мета
 
-Повна міграція REST API для управління комунальними послугами з .NET 8 / Entity Framework Core на Laravel 12 / PHP 8.4 зі збереженням 100% функціональної сумісності, тієї самої схеми бази даних PostgreSQL та ідентичних API-контрактів.
+Komunalka — повноцінний full-stack веб-додаток для обліку комунальних послуг: лічильників, показників споживання, постачальників, тарифів та адрес. Побудований на Laravel 13 + Inertia.js v2 + React 19 з серверним рендерингом сторінок через Inertia і сесійною автентифікацією.
 
 ### 1.2 Контекст
 
-Існуюче API побудоване на ASP.NET Core 8 з Entity Framework Core, PostgreSQL, JWT-автентифікацією, OAuth (Google, GitHub), обробкою зображень та експортом даних. API обслуговує мобільний/веб додаток для обліку комунальних показників.
+Додаток пройшов міграцію з REST API (Laravel + JWT) на full-stack SPA архітектуру з Inertia.js. Фронтенд більше не є окремим клієнтом — React-сторінки рендеряться безпосередньо через `Inertia::render()`, маршрути — виключно web, автентифікація — сесійна (database driver).
 
 ### 1.3 Критерії успіху
 
-- Всі 60+ ендпоінтів відтворені з ідентичними URL, методами, параметрами
-- Існуюча база даних PostgreSQL використовується без змін схеми
-- Ідентичний формат JSON-відповідей (Laravel-сумісний формат пагінації вже використовується в .NET)
-- JWT-автентифікація з refresh token flow
-- OAuth інтеграція (Google, GitHub)
-- Обробка зображень (оптимізація, thumbnails)
-- Експорт даних (CSV, PDF)
-- Тестове покриття Pest 4
+- Повний CRUD для адрес, лічильників, показників та постачальників послуг
+- Сесійна автентифікація з підтримкою OAuth (Google, GitHub) через Laravel Socialite
+- Dashboard зі статистикою споживання, розподілом витрат та останніми показниками
+- Завантаження фото лічильників через spatie/laravel-medialibrary
+- Експорт показників у CSV та PDF
+- Тестове покриття: Browser tests + Feature tests + Unit tests (Pest 4)
 
 ---
 
@@ -29,49 +27,45 @@
 
 | Модуль | Опис | Entities |
 |--------|------|----------|
-| **Auth** | Автентифікація, авторизація, OAuth | User, RefreshToken |
-| **Address** | Управління адресами | Address, AddressType, Region, UserAddress |
-| **Meter** | Лічильники та показники | Meter, MeterReading, MeterReadingPhoto, MeterReadingImage |
-| **Billing** | Постачальники, тарифи, розрахунки | ServiceProvider, Tariff, Currency, UtilityType |
-| **Export** | Експорт даних | — (використовує моделі Meter/Billing) |
-| **Shared** | Спільні компоненти | ServiceCategory, ServiceCounter, ServiceCounterMeasurement, ServiceCounterValue, AddressesServiceCategory |
+| **Auth** | Автентифікація, OAuth, налаштування профілю | User |
+| **Address** | Управління адресами користувача | Address, AddressType, Region, UserAddress |
+| **Meter** | Лічильники та показники споживання | Meter, MeterReading |
+| **Billing** | Постачальники послуг та тарифи | ServiceProvider, Tariff |
+| **Export** | Генерація звітів | — (використовує моделі Meter/Billing) |
+| **Shared** | Спільні довідники | UtilityType, Currency, ServiceCategory, ServiceCounter, ServiceCounterMeasurement, ServiceCounterValue, AddressServiceCategory |
 
-### 2.2 Повний перелік entities (19)
+### 2.2 Повний перелік entities (16)
 
 #### Auth Module
-1. **User** — id, username, first_name, last_name, phone_number, password, email (unique), role, auth_provider, external_id, email_verified, last_login_at, avatar_optimized_path, avatar_thumbnail_path, avatar_mime_type, avatar_size_in_bytes, avatar_width, avatar_height, created_at, updated_at
-2. **RefreshToken** — id, token, expiry_date, is_used, is_revoked, created_at, user_id (FK)
+1. **User** — id, username, first_name, last_name, phone_number, password, email (unique), role, auth_provider, external_id, email_verified, last_login_at, created_at, updated_at
 
 #### Address Module
-3. **Address** — id, region_id (FK), city, street, building_number, apartment_number, zip_code, notes, address_type_id (FK), created_at, updated_at, deleted_at (soft delete)
-4. **AddressType** — id, name, description, icon, created_at, updated_at
-5. **Region** — id, name, created_at, updated_at
-6. **UserAddress** (pivot: address_user) — id, user_id (FK), address_id (FK), is_primary, created_at, updated_at
+2. **Address** — id, region_id (FK), city, street, building_number, apartment_number, zip_code, notes, address_type_id (FK), created_at, updated_at, deleted_at (soft delete)
+3. **AddressType** — id, name, description, icon, created_at, updated_at
+4. **Region** — id, name, created_at, updated_at
+5. **UserAddress** (pivot: address_user) — id, user_id (FK), address_id (FK), is_primary, created_at, updated_at
 
 #### Meter Module
-7. **Meter** — id, address_id (FK), utility_type_id (FK), serial_number, name, description, model_name, location, photo_path, installation_date, initial_reading, service_provider_id (FK nullable), notes, is_active, created_at, updated_at
-8. **MeterReading** — id, meter_id (FK), reading_value, reading_date, previous_reading_value, consumption, notes, is_estimated, tariff_id (FK nullable), created_at, updated_at
-9. **MeterReadingPhoto** — id, meter_reading_id (FK), optimized_path, thumbnail_path, optimized_size_in_bytes, thumbnail_size_in_bytes, width, height, mime_type, is_processed, created_at, updated_at
-10. **MeterReadingImage** — id, service_counter_value_id (FK), optimized_path, thumbnail_path, optimized_size_in_bytes, thumbnail_size_in_bytes, width, height, mime_type, is_processed, created_at, updated_at
+6. **Meter** — id, address_id (FK), utility_type_id (FK), serial_number, name, description, model_name, location, photo_path, installation_date, initial_reading, service_provider_id (FK nullable), notes, is_active, created_at, updated_at
+7. **MeterReading** — id, meter_id (FK), reading_value, reading_date, previous_reading_value, consumption, notes, is_estimated, tariff_id (FK nullable), created_at, updated_at
 
 #### Billing Module
-11. **ServiceProvider** — id, name, description, phone, email, website, address_id (FK), utility_type_id (FK), is_active, created_at, updated_at
-12. **Tariff** — id, service_provider_id (FK), utility_type_id (FK), currency_id (FK), name, base_rate, service_fee, effective_from, effective_to, notes, created_at, updated_at
-13. **Currency** — id, code, name, symbol, created_at, updated_at
-14. **UtilityType** — id, slug, display_name, unit, description, is_active, created_at, updated_at
+8. **ServiceProvider** — id, name, description, phone, email, website, address_id (FK), utility_type_id (FK), is_active, created_at, updated_at
+9. **Tariff** — id, service_provider_id (FK), utility_type_id (FK), currency_id (FK), name, base_rate, service_fee, effective_from, effective_to, notes, created_at, updated_at
 
 #### Shared Module
-15. **ServiceCategory** — id, name, created_at, updated_at
-16. **ServiceCounter** — id, address_id, service_category_id (FK), serial_number, service_counter_measurement_id (FK), created_at, updated_at
-17. **ServiceCounterMeasurement** — id, name, measurement, created_at, updated_at
-18. **ServiceCounterValue** — id, service_counter_id (FK), value, created_at, updated_at
-19. **AddressesServiceCategory** (pivot: address_service_category) — id, address_id (FK), service_category_id (FK), created_at, updated_at
+10. **UtilityType** — id, slug, display_name, unit, description, is_active, created_at, updated_at
+11. **Currency** — id, code, name, symbol, created_at, updated_at
+12. **ServiceCategory** — id, name, created_at, updated_at
+13. **ServiceCounter** — id, address_id (FK), service_category_id (FK), serial_number, service_counter_measurement_id (FK), created_at, updated_at
+14. **ServiceCounterMeasurement** — id, name, measurement, created_at, updated_at
+15. **ServiceCounterValue** — id, service_counter_id (FK), value, created_at, updated_at
+16. **AddressServiceCategory** (pivot: address_service_category) — id, address_id (FK), service_category_id (FK), created_at, updated_at
 
 ### 2.3 Ключові зв'язки
 
 ```
 User (1) ←→ (M) UserAddress (M) ←→ (1) Address
-User (1) → (M) RefreshToken
 
 Address (M) → (1) Region
 Address (M) → (1) AddressType
@@ -82,14 +76,13 @@ Address (1) → (M) ServiceCounter
 ServiceProvider (1) → (M) Meter
 ServiceProvider (1) → (M) Tariff
 ServiceProvider (M) → (1) UtilityType
-ServiceProvider (M) → (1) Address
 
 Meter (M) → (1) UtilityType
 Meter (M) → (1) ServiceProvider (nullable)
 Meter (1) → (M) MeterReading
 
-MeterReading (1) → (M) MeterReadingPhoto
 MeterReading (M) → (1) Tariff (nullable)
+MeterReading (1) → (M) Media (spatie/laravel-medialibrary, collection: photos)
 
 Tariff (M) → (1) ServiceProvider
 Tariff (M) → (1) UtilityType
@@ -98,123 +91,84 @@ Tariff (M) → (1) Currency
 ServiceCounter (M) → (1) ServiceCategory
 ServiceCounter (M) → (1) ServiceCounterMeasurement
 ServiceCounter (1) → (M) ServiceCounterValue
-ServiceCounterValue (1) → (M) MeterReadingImage
+
+User (1) → (M) Media (spatie/laravel-medialibrary, collection: avatar)
 ```
 
 ---
 
-## 3. API Endpoints — повний перелік
+## 3. Web Routes — повний перелік
 
-### 3.1 Auth Module (10 ендпоінтів)
+### 3.1 Загальні маршрути
 
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| POST | /api/v1/auth/register | - | Реєстрація нового користувача |
-| POST | /api/v1/auth/login | - | Вхід (email + password) |
-| POST | /api/v1/auth/refresh-token | - | Оновлення JWT токена |
-| POST | /api/v1/auth/revoke-token | JWT | Відкликання refresh token |
-| GET | /api/v1/auth/validate-token | JWT | Перевірка валідності JWT |
-| POST | /api/v1/auth/oauth/login | - | Вхід через OAuth провайдер |
-| GET | /api/v1/auth/oauth/{provider}/authorize | - | Отримання OAuth URL |
-| POST | /api/v1/auth/oauth/callback | - | Обробка OAuth callback |
-| POST | /api/v1/auth/oauth/link | JWT | Прив'язка OAuth до акаунту |
-| DELETE | /api/v1/auth/oauth/unlink/{provider} | JWT | Відв'язка OAuth |
+| Method | URL | Middleware | Опис |
+|--------|-----|------------|------|
+| GET | /health | — | Health check |
+| GET | /health/ready | — | Перевірка підключення до БД |
+| GET | / | auth | Dashboard — головна сторінка |
 
-### 3.2 Users Module (7 ендпоінтів)
+### 3.2 Auth Module
 
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/users | JWT | Список всіх користувачів |
-| GET | /api/v1/users/{id} | JWT | Профіль користувача |
-| POST | /api/v1/users | JWT | Створення користувача |
-| PUT | /api/v1/users/{id} | JWT | Оновлення профілю (multipart) |
-| DELETE | /api/v1/users/{id} | JWT | Видалення користувача |
-| GET | /api/v1/users/{id}/avatar | - | Аватар (оптимізований) |
-| GET | /api/v1/users/{id}/avatar/thumbnail | - | Аватар (thumbnail) |
+**Гостьові маршрути (guest middleware):**
 
-### 3.3 Address Module (7 ендпоінтів)
+| Method | URL | Опис |
+|--------|-----|------|
+| GET | /login | Форма входу |
+| POST | /login | Обробка входу |
+| GET | /register | Форма реєстрації |
+| POST | /register | Обробка реєстрації |
+| GET | /auth/{provider}/redirect | Редирект до OAuth провайдера |
+| GET | /auth/{provider}/callback | Обробка OAuth callback |
 
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/address | JWT | Адреси поточного користувача (пагінація) |
-| GET | /api/v1/address/{id} | JWT | Деталі адреси |
-| POST | /api/v1/address | JWT | Створення адреси |
-| PUT | /api/v1/address/{id} | JWT | Оновлення адреси |
-| DELETE | /api/v1/address/{id} | JWT | Видалення адреси |
-| GET | /api/v1/addresstype | JWT | Типи адрес |
-| GET | /api/v1/addresstype/{id} | JWT | Тип адреси за ID |
+**Автентифіковані маршрути (auth middleware):**
 
-### 3.4 Region Module (2 ендпоінти)
+| Method | URL | Опис |
+|--------|-----|------|
+| POST | /logout | Вихід із системи |
+| GET | /settings | Сторінка налаштувань (вкладки) |
+| PUT | /settings/profile | Оновлення профілю |
+| PUT | /settings/password | Зміна паролю |
+| DELETE | /settings/account | Видалення акаунту |
+| GET | /settings/oauth/{provider}/link | Прив'язка OAuth провайдера |
+| DELETE | /settings/oauth/{provider} | Відв'язка OAuth провайдера |
 
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/region | JWT | Список регіонів |
-| GET | /api/v1/region/{id} | JWT | Регіон за ID |
+### 3.3 Address Module (auth middleware)
 
-### 3.5 Meter Module (8 ендпоінтів)
+| Method | URL | Опис |
+|--------|-----|------|
+| GET | /addresses | Список адрес |
+| GET | /addresses/create | Форма створення адреси |
+| POST | /addresses | Збереження нової адреси |
+| GET | /addresses/{address}/edit | Форма редагування |
+| PUT/PATCH | /addresses/{address} | Оновлення адреси |
+| DELETE | /addresses/{address} | Видалення адреси |
 
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/meter | JWT | Всі лічильники |
-| GET | /api/v1/meter/{id} | JWT | Лічильник за ID |
-| GET | /api/v1/meter/address/{addressId} | JWT | Лічильники за адресою |
-| GET | /api/v1/meter/active | JWT | Активні лічильники |
-| POST | /api/v1/meter | JWT | Створення лічильника (JSON) |
-| POST | /api/v1/meter/{id}/photo | JWT | Завантаження фото лічильника |
-| PUT | /api/v1/meter/{id} | JWT | Оновлення лічильника |
-| DELETE | /api/v1/meter/{id} | JWT | Видалення лічильника |
+### 3.4 Meter Module (auth middleware)
 
-### 3.6 Meter Reading Module (11 ендпоінтів)
+| Method | URL | Опис |
+|--------|-----|------|
+| GET | /meters | Список лічильників |
+| GET | /meters/create | Форма створення лічильника |
+| POST | /meters | Збереження нового лічильника |
+| GET | /meters/{meter}/edit | Форма редагування |
+| PUT/PATCH | /meters/{meter} | Оновлення лічильника |
+| DELETE | /meters/{meter} | Видалення лічильника |
+| POST | /meters/{meter}/photo | Завантаження фото лічильника |
+| GET | /readings | Список показників |
+| GET | /readings/create | Форма внесення показника |
+| POST | /readings | Збереження показника |
+| DELETE | /readings/{reading} | Видалення показника |
 
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| POST | /api/v1/meter-readings/batch | JWT | Пакетне створення показників (multipart) |
-| GET | /api/v1/meter-readings/address/{addressId} | JWT | Показники за адресою (date range) |
-| GET | /api/v1/meter-readings/{id} | JWT | Показник за ID |
-| DELETE | /api/v1/meter-readings/{id} | JWT | Видалення показника |
-| GET | /api/v1/meter-readings/photos/{id}/optimized | - | Фото показника (оптимізоване) |
-| GET | /api/v1/meter-readings/photos/{id}/thumbnail | - | Фото показника (thumbnail) |
-| POST | /api/v1/meterreading | JWT | Створення показника (legacy, multipart) |
-| GET | /api/v1/meterreading/{id} | JWT | Показник за ID (legacy) |
-| GET | /api/v1/meterreading/images/{id}/optimized | - | Зображення (legacy) |
-| GET | /api/v1/meterreading/images/{id}/thumbnail | - | Thumbnail (legacy) |
-| DELETE | /api/v1/meterreading/{id} | JWT | Видалення (legacy) |
+### 3.5 Billing Module (auth middleware)
 
-### 3.7 Service Provider Module (6 ендпоінтів)
-
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/service-providers | JWT | Постачальники для адрес користувача |
-| GET | /api/v1/service-providers/{id} | JWT | Постачальник за ID (з тарифами) |
-| GET | /api/v1/service-providers/address/{addressId} | JWT | Постачальники за адресою |
-| POST | /api/v1/service-providers | JWT | Створення постачальника (з тарифами) |
-| PUT | /api/v1/service-providers/{id} | JWT | Оновлення постачальника |
-| DELETE | /api/v1/service-providers/{id} | JWT | Видалення постачальника |
-
-### 3.8 Utility Type Module (2 ендпоінти)
-
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/utility-types | - | Типи послуг (публічний) |
-| GET | /api/v1/utility-types/{id} | - | Тип послуги за ID (публічний) |
-
-### 3.9 Currency Module (5 ендпоінтів)
-
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| GET | /api/v1/currency | - | Список валют (публічний) |
-| GET | /api/v1/currency/{id} | - | Валюта за ID (публічний) |
-| POST | /api/v1/currency | - | Створення валюти |
-| PUT | /api/v1/currency/{id} | - | Оновлення валюти |
-| DELETE | /api/v1/currency/{id} | - | Видалення валюти |
-
-### 3.10 Export Module (1 ендпоінт)
-
-| Method | URL | Auth | Опис |
-|--------|-----|------|------|
-| POST | /api/v1/export/meter-readings | JWT | Експорт показників (CSV/PDF) |
-
-**Загалом: ~59 ендпоінтів**
+| Method | URL | Опис |
+|--------|-----|------|
+| GET | /providers | Список постачальників |
+| GET | /providers/create | Форма створення |
+| POST | /providers | Збереження постачальника |
+| GET | /providers/{provider}/edit | Форма редагування |
+| PUT/PATCH | /providers/{provider} | Оновлення постачальника |
+| DELETE | /providers/{provider} | Видалення постачальника |
 
 ---
 
@@ -222,39 +176,45 @@ ServiceCounterValue (1) → (M) MeterReadingImage
 
 ### 4.1 Автентифікація
 
-- **Локальна**: email + password (BCrypt), JWT токен (30 хв), refresh token (7 днів)
-- **OAuth**: Google (ID token + auth code flow), GitHub (access token + auth code flow)
-- **OAuth flow**: авто-створення користувача, авто-лінк для існуючих без паролю
-- **Refresh**: валідація is_used, is_revoked, expiry_date
-- **Security**: запобігання OAuth-юзерам входити через password, CSRF state для OAuth
+- **Локальна**: email + password (BCrypt), сесія через database driver (lifetime 120 хв)
+- **OAuth**: Google та GitHub через Laravel Socialite — web redirect flow
+- **OAuth flow**: редирект до провайдера → callback → автоматичне створення або прив'язка існуючого акаунту → сесія
+- **Settings**: прив'язка/відв'язка OAuth провайдерів для наявного акаунту
 
 ### 4.2 Multi-tenancy через UserAddress
 
-- Всі запити до даних фільтруються через user_id → UserAddress → Address
-- ForbiddenResult якщо користувач не має доступу до адреси
+- Всі дані (адреси, лічильники, показники, постачальники) фільтруються через user_id → UserAddress → Address
 - Один primary address на користувача (unique filtered index)
+- Перевірка належності ресурсів при кожному запиті
 
-### 4.3 Пакетні показники лічильників
+### 4.3 Dashboard статистика
 
-- Валідація: лічильник належить адресі, активний, reading >= previous
-- Автоматичне визначення тарифу за датою (EffectiveFrom <= date <= EffectiveTo)
-- Розрахунок: consumption = current - previous, cost = consumption × BaseRate + ServiceFee
-- Асинхронна обробка фото (optimized 800px + thumbnail 200px, JPEG 85%)
+- Загальна статистика: кількість лічильників, остання дата показників, споживання за місяць
+- Графік споживання (CompactionChart) — за допомогою Recharts
+- Розподіл витрат (ExpenseDistribution) — за типами послуг
+- Остання таблиця показників (RecentReadingsTable)
+- Швидкі дії (QuickActions)
 
-### 4.4 Обробка зображень
+### 4.4 Показники лічильників
 
-- Формати: JPEG, PNG, WebP + HEIC/HEIF (через ImageMagick)
-- EXIF: авто-орієнтація, видалення метаданих
-- Два типи: meter reading photos (10MB max) та avatars (2MB max)
-- Фонова обробка через Channel-based queue
+- Валідація: лічильник належить адресі користувача, є активним, нове значення >= попереднього
+- Автоматичне визначення тарифу за датою (effective_from <= date <= effective_to)
+- Розрахунок: consumption = current - previous, cost = consumption × base_rate + service_fee
 
-### 4.5 Експорт
+### 4.5 Обробка зображень
 
-- CSV: RFC 4180, proper escaping
-- PDF: A4 landscape, 8-column table (QuestPDF)
+- Фото лічильників і аватари — через spatie/laravel-medialibrary
+- Конверсії: optimized (800px, JPEG 85%) та thumbnail (200px, JPEG 85%)
+- Фонова обробка через Laravel Queue (Redis)
+- HEIC/HEIF підтримка через imagick
+
+### 4.6 Експорт
+
+- **CSV**: league/csv, RFC 4180
+- **PDF**: spatie/laravel-pdf
 - Фільтрація за датами та адресами
 
-### 4.6 Seed Data
+### 4.7 Seed Data
 
 - **Регіони**: 25 областей України
 - **Типи адрес**: Квартира, Приватний будинок, Офіс
@@ -262,63 +222,40 @@ ServiceCounterValue (1) → (M) MeterReadingImage
 
 ---
 
-## 5. Формат відповідей API
+## 5. Inertia Rendering
 
-### 5.1 Успішна відповідь
+### 5.1 Принцип роботи
 
-```json
-{
-  "data": { ... }
-}
+Додаток використовує Inertia.js v2 як міст між Laravel (backend) та React (frontend). Сервер повертає не JSON API, а Inertia-відповіді, які React рендерить як SPA.
+
+```php
+// Приклад Action як Inertia-контролер
+return Inertia::render('Meters/Index', [
+    'meters' => MeterResource::collection($meters),
+    'filters' => $request->only(['search', 'address_id']),
+]);
 ```
 
-### 5.2 Пагінована відповідь
+### 5.2 Структура сторінок (React TSX)
 
-```json
-{
-  "data": [...],
-  "links": {
-    "first": "...",
-    "last": "...",
-    "prev": null,
-    "next": "..."
-  },
-  "meta": {
-    "current_page": 1,
-    "from": 1,
-    "last_page": 5,
-    "path": "/api/v1/address",
-    "per_page": 15,
-    "to": 15,
-    "total": 73
-  }
-}
-```
+| Модуль | Сторінки |
+|--------|---------|
+| **Auth** | Login.tsx, Register.tsx |
+| **Dashboard** | Index.tsx (ConsumptionChart, ExpenseDistribution, RecentReadingsTable, QuickActions) |
+| **Meters** | Index.tsx, Create.tsx, Edit.tsx |
+| **Readings** | Index.tsx, Create.tsx |
+| **Addresses** | Index.tsx, Create.tsx, Edit.tsx |
+| **Providers** | Index.tsx, Create.tsx, Edit.tsx |
+| **Settings** | Index.tsx (ProfileTab, SecurityTab, AppearanceTab, AccountTab) |
+| **Layouts** | AuthenticatedLayout.tsx, GuestLayout.tsx |
 
-### 5.3 Помилка
+### 5.3 Форми
 
-```json
-{
-  "statusCode": 404,
-  "message": "Address not found",
-  "details": null,
-  "timestamp": "2025-01-01T00:00:00Z",
-  "path": "/api/v1/address/999"
-}
-```
+Всі форми використовують `useForm` з `@inertiajs/react` — автоматична обробка помилок валідації, стан завантаження, CSRF-захист.
 
-### 5.4 Помилка валідації
+### 5.4 Навігація
 
-```json
-{
-  "statusCode": 422,
-  "message": "Data validation error",
-  "errors": {
-    "email": ["The email field is required."],
-    "password": ["Password must be at least 8 characters."]
-  }
-}
-```
+Маршрути генеруються на фронтенді через Ziggy (`tightenco/ziggy`) — типізовані URL без хардкоду рядків.
 
 ---
 
@@ -326,71 +263,174 @@ ServiceCounterValue (1) → (M) MeterReadingImage
 
 | Вимога | Деталі |
 |--------|--------|
-| **Runtime** | PHP 8.4, FrankenPHP/Octane |
-| **Database** | PostgreSQL 17 (існуюча схема) |
-| **Cache/Queue** | Redis |
-| **Testing** | Pest 4, PHPUnit 12 |
-| **Code style** | Laravel Pint |
+| **Runtime** | PHP 8.2+, Laravel Octane + FrankenPHP |
+| **Frontend** | React 19, TypeScript (strict mode), Inertia.js v2 |
+| **Стилізація** | Tailwind CSS v4, Tailwind Variants (`tv()`) |
+| **Збірка** | Vite 8 |
+| **Database** | PostgreSQL 17 |
+| **Cache/Queue** | Redis 7.2+ |
+| **Testing** | Pest 4 (Browser, Feature, Unit) |
+| **Code style** | Laravel Pint, PHPStan level 7, Rector |
 | **Containers** | Docker Compose |
-| **API versioning** | /api/v1/* |
-| **Rate limiting** | Laravel built-in throttle |
 | **Health checks** | /health, /health/ready |
-| **CORS** | Configurable origins |
-| **Logging** | Laravel Log (Serilog-equivalent structured logging) |
+| **Real-time** | Laravel Reverb (WebSockets) |
+| **Logging** | Laravel Pail (structured log viewer) |
 
 ---
 
-## 7. Залежності (Laravel-еквіваленти)
+## 7. Залежності
 
-| .NET пакет | Laravel еквівалент |
-|------------|-------------------|
-| Entity Framework Core | Eloquent ORM (built-in) |
-| System.IdentityModel.Tokens.Jwt | tymon/jwt-auth або Laravel Passport/Sanctum + custom JWT |
-| Google.Apis.Auth | Laravel Socialite (Google) |
-| HttpClient (GitHub) | Laravel Socialite (GitHub) |
-| AutoMapper | Eloquent API Resources |
-| Serilog | Laravel Log (Monolog) |
-| AspNetCoreRateLimit | Laravel Rate Limiting (built-in) |
-| SixLabors.ImageSharp | spatie/laravel-medialibrary (image conversions) |
-| Magick.NET (HEIC) | spatie/laravel-medialibrary + imagick driver |
-| QuestPDF | barryvdh/laravel-dompdf або spatie/laravel-pdf |
-| BCrypt.Net | Laravel Hash (BCrypt, built-in) |
-| DotNetEnv | Laravel .env (built-in) |
-| Swagger/OpenAPI | knuckleswtf/scribe або l5-swagger |
+### PHP (composer.json)
+
+| Пакет | Призначення |
+|-------|-------------|
+| `laravel/framework: ^13.0` | Framework |
+| `inertiajs/inertia-laravel: ^2.0` | Inertia.js server-side adapter |
+| `laravel/octane: ^2.13` | High-performance application server |
+| `laravel/reverb: ^1.7` | WebSockets (real-time) |
+| `laravel/socialite: ^5.24` | OAuth (Google, GitHub) |
+| `lorisleiva/laravel-actions: ^2.9` | Actions pattern |
+| `nwidart/laravel-modules: ^12.0` | Модульна архітектура |
+| `spatie/laravel-medialibrary: ^11.20` | Управління медіа-файлами |
+| `spatie/laravel-pdf: ^2.2` | Генерація PDF |
+| `league/csv: ^9.28` | Генерація CSV |
+| `tightenco/ziggy: ^2.6` | Маршрути Laravel для JS |
+| `laravel/tinker: ^3.0` | REPL для розробки |
+
+### PHP dev (composer.json)
+
+| Пакет | Призначення |
+|-------|-------------|
+| `pestphp/pest: ^4.4` | Тестовий фреймворк |
+| `pestphp/pest-plugin-laravel: ^4.0` | Laravel інтеграція для Pest |
+| `larastan/larastan: ^3.9` | PHPStan для Laravel |
+| `laravel/pint: ^1.24` | Форматування коду |
+| `laravel/boost: ^2.3` | Dev utilities |
+| `laravel/pail: ^1.2.2` | Log viewer |
+
+### JavaScript (package.json)
+
+| Пакет | Призначення |
+|-------|-------------|
+| `@inertiajs/react: ^2.3.18` | Inertia.js React adapter |
+| `react: ^19.2.4` | UI бібліотека |
+| `react-hook-form: ^7.72.0` | Управління формами |
+| `recharts: ^3.8.0` | Графіки та чарти |
+| `lucide-react: ^0.577.0` | Іконки |
+| `tailwind-variants: ^3.2.2` | Variant-based стилізація |
+| `tailwind-merge: ^3.5.0` | Об'єднання Tailwind класів |
+| `tailwindcss: ^4.2.2` | CSS framework |
+| `typescript: ~5.9.3` | TypeScript |
+| `vite: ^8.0.1` | Збірка фронтенду |
 
 ---
 
 ## 8. Архітектурні патерни
 
-### 8.1 Repository Pattern
+### 8.1 Actions (lorisleiva/laravel-actions)
 
-Кожен модуль містить Repository layer з interface + Eloquent implementation:
-- `Contracts/EntityRepositoryInterface.php` — контракт
-- `EntityRepository.php` — Eloquent реалізація
-- Base `RepositoryInterface` + `EloquentRepository` в `app/Repositories/`
-- Actions інжектять Repositories через interface binding
+Вся бізнес-логіка реалізована через Action класи — один клас, один бізнес-процес (~50+ Actions):
 
-### 8.2 DTO Pattern (Data Transfer Objects)
+```
+Auth: LoginUser, RegisterUser, CreateUser, UpdateUser, DeleteUser,
+      GetUser, GetAllUsers, GetUserAvatar, LinkOAuthProvider, UnlinkOAuthProvider
 
-Typed readonly PHP classes для передачі даних між шарами:
-- `final readonly class CreateAddressData` — input для Actions
-- Factory method `fromRequest()` для конвертації з Form Request
-- Response serialization — через Laravel API Resources (не DTO)
+Address: CreateAddress, UpdateAddress, DeleteAddress, PatchAddress,
+         GetUserAddresses, GetUserAddress, GetAllRegions, GetRegion,
+         GetAllAddressTypes, GetAddressType
 
-### 8.3 Media Management (spatie/laravel-medialibrary)
+Meter: CreateMeter, UpdateMeter, DeleteMeter, GetMeter, GetAllMeters,
+       GetActiveMeters, GetMetersByAddress, CreateBatchReadings,
+       DeleteMeterReading, GetMeterReading, GetReadingsByAddress,
+       GetConsumptionHistory, GetRecentReadings, GetDashboardStats,
+       UploadMeterPhoto, CreateServiceCounterValue, DeleteServiceCounterValue
 
-Замість окремих MeterReadingPhoto/MeterReadingImage моделей та custom ImageService:
-- **MeterReading** — media collection `photos` (multiple), conversions: optimized (800px), thumbnail (200px)
-- **User** — media collection `avatar` (singleFile), conversions: optimized, thumbnail
+Billing: CreateServiceProvider, UpdateServiceProvider, DeleteServiceProvider,
+         GetServiceProvider, GetUserServiceProviders, GetServiceProvidersByAddress,
+         CalculateTariffCost, GetEffectiveTariff, GetExpenseDistribution
+
+Shared: CreateCurrency, UpdateCurrency, DeleteCurrency, GetCurrency,
+        GetAllCurrencies, GetUtilityType, GetActiveUtilityTypes
+
+Export: ExportMeterReadings, ExportToCsv, ExportToPdf
+```
+
+### 8.2 Repository Pattern
+
+Використовується в модулях Auth та Address для абстракції доступу до даних:
+
+```
+Modules/Auth/Repositories/
+├── Contracts/UserRepositoryInterface.php
+└── UserRepository.php
+
+Modules/Address/Repositories/
+├── Contracts/AddressRepositoryInterface.php
+└── AddressRepository.php
+```
+
+### 8.3 DTO Pattern
+
+Typed readonly PHP класи для передачі структурованих даних між шарами:
+
+```php
+final readonly class CreateAddressData
+{
+    public function __construct(
+        public int $regionId,
+        public string $city,
+        public string $street,
+        public string $buildingNumber,
+        public ?string $apartmentNumber,
+        public string $zipCode,
+        public ?string $notes,
+        public bool $isPrimary,
+        public int $addressTypeId,
+    ) {}
+
+    public static function fromRequest(StoreAddressRequest $request): self
+    {
+        return new self(
+            regionId: $request->validated('region_id'),
+            // ...
+        );
+    }
+}
+```
+
+### 8.4 Потік даних
+
+```
+HTTP Request (web route)
+    ↓
+Form Request (validation)
+    ↓
+DTO::fromRequest() (typed data object)
+    ↓
+Controller → Action::handle(DTO)
+    ↓
+Action (business logic, Eloquent / Repository)
+    ↓
+Model (Eloquent entity)
+    ↓
+Inertia::render('Page/Name', $props)
+    ↓
+React TSX Component (SPA rendering)
+```
+
+### 8.5 Media Management (spatie/laravel-medialibrary)
+
+Фото лічильників та аватари зберігаються через polymorphic media relation:
+
+- **MeterReading** — media collection `photos` (multiple files), конверсії: optimized (800px), thumbnail (200px)
+- **User** — media collection `avatar` (singleFile), конверсії: optimized, thumbnail
 - Queued conversions через Laravel Queue (Redis)
-- HEIC/HEIF підтримка через imagick
 
 ---
 
 ## 9. Out of Scope
 
-- Зміна схеми бази даних (використовуємо існуючу)
-- Нові фічі, яких немає в .NET API
-- Frontend/mobile додатки
-- CI/CD pipeline (окремий етап)
+- Мобільні клієнти (REST API)
+- Публічний API (ендпоінти /api/*)
+- CI/CD pipeline (окремий процес)
 - Моніторинг та алертинг

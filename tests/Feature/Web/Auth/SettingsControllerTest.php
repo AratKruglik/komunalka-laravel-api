@@ -6,6 +6,7 @@ use Modules\Auth\Models\User;
 
 describe('SettingsController', function (): void {
     beforeEach(function (): void {
+        $this->withoutVite();
         $this->user = User::factory()->create();
     });
 

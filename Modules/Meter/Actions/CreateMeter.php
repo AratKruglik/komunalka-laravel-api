@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Meter\Actions;
 
+use Illuminate\Http\RedirectResponse;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
 use Modules\Meter\DTO\CreateMeterData;
+use Modules\Meter\Http\Requests\StoreMeterRequest;
 use Modules\Meter\Models\Meter;
 use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,5 +43,12 @@ class CreateMeter
         ]);
 
         return $meter->load(['utilityType', 'serviceProvider']);
+    }
+
+    public function asController(StoreMeterRequest $request): RedirectResponse
+    {
+        $this->handle((int) $request->user()->getKey(), CreateMeterData::fromRequest($request));
+
+        return redirect()->route('meters.index')->with('success', 'Лічильник створено');
     }
 }

@@ -2,20 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Modules\Auth\Http\Controllers\Web;
+namespace Modules\Auth\Actions;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Lorisleiva\Actions\Concerns\AsAction;
 
-class LogoutController
+class LogoutUser
 {
-    public function destroy(Request $request): RedirectResponse
+    use AsAction;
+
+    public function handle(Request $request): void
     {
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+    }
+
+    public function asController(Request $request): RedirectResponse
+    {
+        $this->handle($request);
 
         return redirect()->route('login');
     }

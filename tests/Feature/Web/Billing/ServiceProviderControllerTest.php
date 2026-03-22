@@ -10,6 +10,7 @@ use Modules\Shared\Models\Currency;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function (): void {
+    $this->withoutVite();
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
@@ -23,28 +24,16 @@ describe('ServiceProviderController', function (): void {
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.service-providers.index'))
-            ->assertSuccessful()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonStructure([
-                'data' => [['id', 'name', 'is_active', 'address_id', 'utility_type']],
-            ]);
+        $this->actingAs($this->user)
+            ->get(route('providers.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Providers/Index')
+                ->has('providers.data', 2),
+            );
     });
 
-    it('lists providers by address', function (): void {
-        ServiceProvider::factory()->count(2)->create([
-            'address_id' => $this->address->getKey(),
-            'utility_type_id' => $this->utilityType->getKey(),
-        ]);
-
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.service-providers.by-address', $this->address->getKey()))
-            ->assertSuccessful()
-            ->assertJsonCount(2, 'data');
-    });
-
-    it('renders show with provider and tariffs', function (): void {
+    it('renders edit page with provider and tariffs', function (): void {
         $provider = ServiceProvider::factory()->create([
             'address_id' => $this->address->getKey(),
             'utility_type_id' => $this->utilityType->getKey(),
@@ -57,12 +46,13 @@ describe('ServiceProviderController', function (): void {
             'currency_id' => $currency->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.service-providers.show', $provider->getKey()))
-            ->assertSuccessful()
-            ->assertJsonPath('data.id', $provider->getKey())
-            ->assertJsonPath('data.utility_type.id', $this->utilityType->getKey())
-            ->assertJsonCount(1, 'data.tariffs');
+        $this->actingAs($this->user)
+            ->get(route('providers.edit', $provider->getKey()))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Providers/Edit')
+                ->has('provider'),
+            );
     });
 
     it('creates provider', function (): void {
@@ -77,12 +67,10 @@ describe('ServiceProviderController', function (): void {
             'is_active' => true,
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.service-providers.store'), $payload)
-            ->assertSuccessful()
-            ->assertJsonPath('data.name', 'Київенерго')
-            ->assertJsonPath('data.address_id', $this->address->getKey())
-            ->assertJsonPath('data.utility_type.id', $this->utilityType->getKey());
+        $this->actingAs($this->user)
+            ->post(route('providers.store'), $payload)
+            ->assertRedirect(route('providers.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('service_providers', ['name' => 'Київенерго']);
     });
@@ -107,12 +95,12 @@ describe('ServiceProviderController', function (): void {
             ],
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.service-providers.store'), $payload)
-            ->assertSuccessful()
-            ->assertJsonPath('data.name', 'Газпостач')
-            ->assertJsonCount(1, 'data.tariffs');
+        $this->actingAs($this->user)
+            ->post(route('providers.store'), $payload)
+            ->assertRedirect(route('providers.index'))
+            ->assertSessionHas('success');
 
+        $this->assertDatabaseHas('service_providers', ['name' => 'Газпостач']);
         $this->assertDatabaseHas('tariffs', ['name' => 'Базовий тариф']);
     });
 
@@ -124,10 +112,9 @@ describe('ServiceProviderController', function (): void {
         ];
         unset($payload[$field]);
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.service-providers.store'), $payload)
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors($field);
+        $this->actingAs($this->user)
+            ->post(route('providers.store'), $payload)
+            ->assertSessionHasErrors($field);
     })->with(['address_id', 'utility_type_id', 'name']);
 
     it('validates email and website formats', function (): void {
@@ -139,10 +126,9 @@ describe('ServiceProviderController', function (): void {
             'website' => 'not-a-url',
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.service-providers.store'), $payload)
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors(['email', 'website']);
+        $this->actingAs($this->user)
+            ->post(route('providers.store'), $payload)
+            ->assertSessionHasErrors(['email', 'website']);
     });
 
     it('updates provider', function (): void {
@@ -162,12 +148,10 @@ describe('ServiceProviderController', function (): void {
             'utility_type_id' => $newUtilityType->getKey(),
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->putJson(route('api.service-providers.update', $provider->getKey()), $payload)
-            ->assertSuccessful()
-            ->assertJsonPath('data.name', 'Оновлена назва')
-            ->assertJsonPath('data.is_active', false)
-            ->assertJsonPath('data.utility_type.id', $newUtilityType->getKey());
+        $this->actingAs($this->user)
+            ->put(route('providers.update', $provider->getKey()), $payload)
+            ->assertRedirect(route('providers.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('service_providers', [
             'id' => $provider->getKey(),
@@ -186,23 +170,23 @@ describe('ServiceProviderController', function (): void {
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->deleteJson(route('api.service-providers.destroy', $provider->getKey()))
-            ->assertSuccessful();
+        $this->actingAs($this->user)
+            ->delete(route('providers.destroy', $provider->getKey()))
+            ->assertRedirect(route('providers.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseMissing('service_providers', ['id' => $provider->getKey()]);
         $this->assertDatabaseMissing('tariffs', ['id' => $tariff->getKey()]);
     });
 
     it('requires authentication', function (string $method, string $routeName, array $params): void {
-        $this->{$method}(route($routeName, $params))->assertUnauthorized();
+        $this->{$method}(route($routeName, $params))->assertRedirect(route('login'));
     })->with([
-        ['getJson', 'api.service-providers.index', []],
-        ['getJson', 'api.service-providers.show', [1]],
-        ['getJson', 'api.service-providers.by-address', [1]],
-        ['postJson', 'api.service-providers.store', []],
-        ['putJson', 'api.service-providers.update', [1]],
-        ['deleteJson', 'api.service-providers.destroy', [1]],
+        ['get', 'providers.index', []],
+        ['get', 'providers.edit', [1]],
+        ['post', 'providers.store', []],
+        ['put', 'providers.update', [1]],
+        ['delete', 'providers.destroy', [1]],
     ]);
 
     it('prevents access to other users providers', function (): void {
@@ -214,19 +198,19 @@ describe('ServiceProviderController', function (): void {
             'address_id' => $otherAddress->getKey(),
         ]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.service-providers.show', $provider->getKey()))
+        $this->actingAs($this->user)
+            ->get(route('providers.edit', $provider->getKey()))
             ->assertNotFound();
 
-        $this->actingAs($this->user, 'api')
-            ->putJson(route('api.service-providers.update', $provider->getKey()), [
+        $this->actingAs($this->user)
+            ->put(route('providers.update', $provider->getKey()), [
                 'name' => 'Test',
                 'utility_type_id' => $this->utilityType->getKey(),
             ])
             ->assertNotFound();
 
-        $this->actingAs($this->user, 'api')
-            ->deleteJson(route('api.service-providers.destroy', $provider->getKey()))
+        $this->actingAs($this->user)
+            ->delete(route('providers.destroy', $provider->getKey()))
             ->assertNotFound();
     });
 
@@ -239,8 +223,8 @@ describe('ServiceProviderController', function (): void {
             'name' => 'Test Provider',
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.service-providers.store'), $payload)
+        $this->actingAs($this->user)
+            ->post(route('providers.store'), $payload)
             ->assertNotFound();
     });
 });

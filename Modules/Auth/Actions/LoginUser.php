@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Actions;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\LoginData;
 use Modules\Auth\Enums\AuthProvider;
+use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
 
@@ -41,5 +44,15 @@ class LoginUser
         $user->update(['last_login_at' => now()]);
 
         return $user;
+    }
+
+    public function asController(LoginRequest $request): RedirectResponse
+    {
+        $user = $this->handle(LoginData::fromRequest($request));
+
+        Auth::login($user, $request->boolean('remember'));
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('dashboard'));
     }
 }

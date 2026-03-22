@@ -1,4 +1,4 @@
-# ADR: Архітектурні рішення для міграції Komunalka API
+# ADR: Архітектурні рішення Komunalka
 
 ## ADR-001: Модульна архітектура (DDD) з nwidart/laravel-modules
 
@@ -6,10 +6,10 @@
 Прийнято
 
 ### Контекст
-.NET проєкт організований за класичним layered pattern (Controllers → Services → Repositories → Models). При міграції на Laravel маємо можливість покращити архітектуру, впровадивши Domain-Driven Design через модульну структуру.
+Додаток організований за принципом bounded contexts. Використання nwidart/laravel-modules дозволяє ізолювати домени, тестувати їх незалежно та контролювати зв'язки між модулями.
 
 ### Рішення
-Використовуємо `nwidart/laravel-modules` для організації коду в bounded contexts:
+Використовуємо `nwidart/laravel-modules` для організації коду в шість доменів:
 
 ```
 Modules/
@@ -25,45 +25,37 @@ Modules/
 
 ```
 Modules/Auth/
-├── app/
-│   ├── Actions/                ← lorisleiva/laravel-actions
-│   │   ├── LoginUser.php
-│   │   ├── RegisterUser.php
-│   │   └── ...
-│   ├── DTOs/                   ← Data Transfer Objects (readonly)
-│   │   ├── LoginData.php
-│   │   ├── RegisterUserData.php
-│   │   └── ...
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   └── AuthController.php
-│   │   ├── Requests/           ← Form Request validation
-│   │   │   ├── LoginRequest.php
-│   │   │   └── RegisterRequest.php
-│   │   └── Resources/          ← API Resources (response serialization)
-│   │       └── AuthResponse.php
-│   ├── Models/
-│   │   ├── User.php
-│   │   └── RefreshToken.php
-│   ├── Providers/
-│   │   ├── AuthServiceProvider.php   ← bind Repository interfaces
-│   │   └── RouteServiceProvider.php
-│   ├── Repositories/           ← Repository pattern
-│   │   ├── Contracts/
-│   │   │   ├── UserRepositoryInterface.php
-│   │   │   └── RefreshTokenRepositoryInterface.php
-│   │   ├── UserRepository.php
-│   │   └── RefreshTokenRepository.php
-│   └── Services/               ← складна логіка, що не вписується в Action
-│       ├── JwtService.php
-│       └── OAuthService.php
+├── Actions/                    ← lorisleiva/laravel-actions
+│   ├── LoginUser.php
+│   ├── RegisterUser.php
+│   └── ...
+├── DTOs/                       ← Data Transfer Objects (readonly)
+│   ├── LoginData.php
+│   └── RegisterUserData.php
+├── Http/
+│   ├── Controllers/
+│   │   └── Web/                ← Inertia controllers
+│   │       ├── LoginController.php
+│   │       └── RegisterController.php
+│   └── Requests/               ← Form Request validation
+│       ├── LoginRequest.php
+│       └── RegisterRequest.php
+├── Models/
+│   └── User.php
+├── Providers/
+│   ├── AuthServiceProvider.php
+│   └── RouteServiceProvider.php
+├── Repositories/               ← Repository pattern (де потрібно)
+│   ├── Contracts/
+│   │   └── UserRepositoryInterface.php
+│   └── UserRepository.php
 ├── config/
 ├── database/
 │   ├── factories/
 │   ├── migrations/
 │   └── seeders/
 ├── routes/
-│   └── api.php
+│   └── web.php                 ← виключно web маршрути
 ├── tests/
 │   ├── Feature/
 │   ├── Unit/
@@ -74,23 +66,21 @@ Modules/Auth/
 ### Потік даних через шари
 
 ```
-HTTP Request
+HTTP Request (web route)
     ↓
 Form Request (validation)
     ↓
 DTO::fromRequest() (typed data object)
     ↓
-Controller → Action::run(DTO)
+Controller → Action::handle(DTO)
     ↓
-Action::handle() (business logic, calls Repositories)
-    ↓
-Repository (data access via Eloquent)
+Action (business logic, Eloquent / Repository)
     ↓
 Model (Eloquent entity)
     ↓
-API Resource (response serialization)
+Inertia::render('Page/Name', $props)
     ↓
-JSON Response
+React TSX Component
 ```
 
 ### Наслідки
@@ -98,13 +88,12 @@ JSON Response
 **Позитивні:**
 - Чітке розділення bounded contexts
 - Незалежна розробка та тестування модулів
-- Легше масштабування команди
+- Легше масштабування
 - Можливість вимкнути/увімкнути модуль
 
 **Негативні:**
 - Складніша початкова настройка
 - Глибші namespace (`Modules\Auth\Actions\LoginUser`)
-- Потрібна ручна реєстрація Actions для модулів
 - Factory discovery потребує override `newFactory()` на моделях
 
 ---
@@ -115,48 +104,37 @@ JSON Response
 Прийнято
 
 ### Контекст
-.NET проєкт використовує Service + Repository pattern. В Laravel Eloquent вже є Active Record (ORM), що робить окремий Repository layer зайвим. Service classes в .NET часто занадто великі (MeterReadingService — 300+ рядків).
+Laravel Eloquent вже є Active Record ORM, що робить окремий Service layer зайвим. Action класи забезпечують принцип єдиної відповідальності та легку тестованість.
 
 ### Рішення
 Використовуємо `lorisleiva/laravel-actions` як основний патерн для бізнес-логіки. Кожна Action — один бізнес-процес.
 
-**Mapping .NET Services → Laravel Actions:**
+**Приклади Actions по модулях:**
 
-| .NET Service Method | Laravel Action |
-|---|---|
-| AddressService.CreateAsync() | Modules\Address\Actions\CreateAddress |
-| AddressService.UpdateAsync() | Modules\Address\Actions\UpdateAddress |
-| AddressService.DeleteAsync() | Modules\Address\Actions\DeleteAddress |
-| AddressService.GetForUserAsync() | Modules\Address\Actions\GetUserAddresses |
-| AuthService.AuthenticateAsync() | Modules\Auth\Actions\LoginUser |
-| AuthService.RegisterAsync() | Modules\Auth\Actions\RegisterUser |
-| AuthService.RefreshTokenAsync() | Modules\Auth\Actions\RefreshToken |
-| MeterReadingService.CreateBatchAsync() | Modules\Meter\Actions\CreateBatchReadings |
-| TariffCalculationService.CalculateCostAsync() | Modules\Billing\Actions\CalculateTariffCost |
-| ExportService.GenerateCsv() | Modules\Export\Actions\ExportToCsv |
-| ExportService.GeneratePdf() | Modules\Export\Actions\ExportToPdf |
+| Модуль | Action |
+|--------|--------|
+| Auth | LoginUser, RegisterUser, LinkOAuthProvider, UnlinkOAuthProvider |
+| Address | CreateAddress, UpdateAddress, DeleteAddress, GetUserAddresses |
+| Meter | CreateMeter, GetDashboardStats, GetConsumptionHistory, UploadMeterPhoto |
+| Billing | CreateServiceProvider, CalculateTariffCost, GetExpenseDistribution |
+| Export | ExportMeterReadings, ExportToCsv, ExportToPdf |
 
 **Правила використання Actions:**
 1. `handle()` — чиста бізнес-логіка, без HTTP-залежностей
-2. `asController()` — HTTP-адаптер (лише якщо Action використовується як route handler)
-3. `rules()` — НЕ використовуємо (Form Request замість цього, згідно CLAUDE.md)
-4. Actions можуть викликати інші Actions для композиції
-
-**Коли НЕ використовувати Actions:**
-- Складні cross-cutting сервіси (JwtService, OAuthService, ImageService) — залишаємо як класичні Service classes
-- Background jobs — окремі Job класи (але можуть dispatch Actions)
+2. Actions можуть викликати інші Actions для композиції
+3. `rules()` — не використовуємо (Form Request виконує цю роль)
 
 ### Наслідки
 
 **Позитивні:**
 - Один клас = одна відповідальність
-- Легке тестування (CreateAddress::run(...))
-- Легка композиція (RegisterUser викликає CreateUser + SendWelcomeEmail)
+- Легке тестування (`CreateAddress::run(...)`)
+- Легка композиція між Actions
 - Можливість dispatch як Job
 
 **Негативні:**
 - Більше файлів порівняно з Service classes
-- Потрібна дисципліна в іменуванні (verb + noun: CreateAddress, не AddressCreator)
+- Потрібна дисципліна в іменуванні (verb + noun: CreateAddress)
 
 ---
 
@@ -166,24 +144,23 @@ JSON Response
 Прийнято
 
 ### Контекст
-.NET проєкт використовує Repository pattern з UnitOfWork (15+ репозиторіїв). Потрібно зберегти цей архітектурний підхід для:
-- Абстракції доступу до даних
-- Тестованості (можливість мокати репозиторії)
-- Єдиного місця для складних запитів
+Repository pattern застосовується в модулях, де потрібна абстракція доступу до даних та тестованість через моки. В Auth та Address модулях є явні Repository реалізації. Для простих CRUD операцій в інших модулях — Eloquent напряму через Actions.
 
 ### Рішення
-Реалізуємо Repository pattern з interface-based підходом всередині кожного модуля.
+Interface-based Repository в межах кожного модуля:
 
-**Структура:**
 ```
+Modules/Auth/
+├── Repositories/
+│   ├── Contracts/
+│   │   └── UserRepositoryInterface.php
+│   └── UserRepository.php
+
 Modules/Address/
-├── app/
-│   ├── Repositories/
-│   │   ├── Contracts/
-│   │   │   └── AddressRepositoryInterface.php
-│   │   └── AddressRepository.php
-│   └── Providers/
-│       └── AddressServiceProvider.php  ← bind interface → implementation
+├── Repositories/
+│   ├── Contracts/
+│   │   └── AddressRepositoryInterface.php
+│   └── AddressRepository.php
 ```
 
 **Base Repository Interface:**
@@ -202,80 +179,25 @@ interface RepositoryInterface
 }
 ```
 
-**Eloquent Base Repository:**
-```php
-namespace App\Repositories;
-
-abstract class EloquentRepository implements RepositoryInterface
-{
-    public function __construct(protected Model $model) {}
-
-    public function all(): Collection
-    {
-        return $this->model->newQuery()->get();
-    }
-    // ... інші методи
-}
-```
-
-**Module Repository (з domain-specific методами):**
-```php
-namespace Modules\Address\Repositories;
-
-class AddressRepository extends EloquentRepository implements AddressRepositoryInterface
-{
-    public function __construct(Address $model)
-    {
-        parent::__construct($model);
-    }
-
-    public function getForUser(int $userId, int $perPage, string $sortBy, bool $desc): LengthAwarePaginator
-    {
-        return $this->model->newQuery()
-            ->whereHas('userAddresses', fn ($q) => $q->where('user_id', $userId))
-            ->with(['region', 'addressType'])
-            ->orderBy($sortBy, $desc ? 'desc' : 'asc')
-            ->paginate($perPage);
-    }
-}
-```
-
-**Binding в ServiceProvider:**
+**Binding у ServiceProvider:**
 ```php
 $this->app->bind(AddressRepositoryInterface::class, AddressRepository::class);
 ```
 
-**Mapping .NET Repositories → Laravel:**
-
-| .NET Repository | Laravel Repository |
-|---|---|
-| IAddressRepository | Modules\Address\Repositories\Contracts\AddressRepositoryInterface |
-| IUserRepository | Modules\Auth\Repositories\Contracts\UserRepositoryInterface |
-| IMeterRepository | Modules\Meter\Repositories\Contracts\MeterRepositoryInterface |
-| IMeterReadingRepository | Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface |
-| IServiceProviderRepository | Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface |
-| ITariffRepository | Modules\Billing\Repositories\Contracts\TariffRepositoryInterface |
-| ICurrencyRepository | Modules\Shared\Repositories\Contracts\CurrencyRepositoryInterface |
-| IRegionRepository | Modules\Address\Repositories\Contracts\RegionRepositoryInterface |
-| IRefreshTokenRepository | Modules\Auth\Repositories\Contracts\RefreshTokenRepositoryInterface |
-
 **Правила:**
-- Actions інжектять Repository interfaces, не конкретні класи
-- Складні запити — в Repository, не в Actions
-- Eloquent scopes залишаються на моделях для простих фільтрів (active, forAddress)
-- Repository не повертає Query Builder назовні — тільки Models/Collections/Paginators
+- Actions інжектують Repository interfaces, не конкретні класи
+- Складні запити — в Repository, прості — в Eloquent scopes на моделях
+- Repository повертає лише Models/Collections/Paginators (не Query Builder)
 
 ### Наслідки
 
 **Позитивні:**
-- Тестованість — легко мокати через interface binding
-- Абстракція — Actions не залежать від Eloquent напряму
+- Тестованість через interface binding
 - Єдине місце для складних запитів
-- Паритет архітектури з .NET проєктом
+- Абстракція від Eloquent у шарі Actions
 
 **Негативні:**
-- Додатковий layer (interface + implementation на кожен entity)
-- Більше файлів на модуль
+- Додатковий layer (interface + implementation)
 - Потрібна дисципліна щоб не дублювати логіку між Repository та Eloquent scopes
 
 ---
@@ -286,21 +208,18 @@ $this->app->bind(AddressRepositoryInterface::class, AddressRepository::class);
 Прийнято
 
 ### Контекст
-.NET проєкт активно використовує DTO (~50 класів) для передачі даних між шарами та серіалізації в JSON. Laravel має API Resources для серіалізації, але не має формалізованого DTO layer для вхідних даних та внутрішнього обміну.
+Laravel не має формалізованого DTO layer для вхідних даних. Передача масивів між шарами знижує type safety та ускладнює рефакторинг.
 
 ### Рішення
-Реалізуємо DTO як typed PHP classes з readonly properties для:
-1. **Request DTOs** — structured input для Actions (замість масивів)
-2. **Response DTOs** — НЕ використовуємо (Laravel API Resources виконують цю роль)
+Реалізуємо DTO як typed PHP класи з readonly properties для вхідних даних Actions.
 
 **Структура:**
 ```
 Modules/Address/
-├── app/
-│   ├── DTOs/
-│   │   ├── CreateAddressData.php
-│   │   ├── UpdateAddressData.php
-│   │   └── AddressPaginationData.php
+├── DTOs/
+│   ├── CreateAddressData.php
+│   ├── UpdateAddressData.php
+│   └── AddressPaginationData.php
 ```
 
 **Приклад Request DTO:**
@@ -338,99 +257,50 @@ final readonly class CreateAddressData
 }
 ```
 
-**Використання в Action:**
-```php
-class CreateAddress
-{
-    use AsAction;
-
-    public function __construct(
-        private AddressRepositoryInterface $addressRepository,
-    ) {}
-
-    public function handle(int $userId, CreateAddressData $data): Address
-    {
-        // Business logic використовує typed DTO замість array
-        return $this->addressRepository->create([
-            'region_id' => $data->regionId,
-            'city' => $data->city,
-            // ...
-        ]);
-    }
-}
-```
-
 **Flow даних:**
 ```
 HTTP Request → Form Request (validation) → DTO::fromRequest() → Action::handle(DTO) → Repository → Model
-Model → API Resource → JSON Response
+Model → Inertia::render($props)
 ```
-
-**Mapping .NET DTOs → Laravel:**
-
-| .NET DTO | Laravel Equivalent |
-|---|---|
-| CreateAddressDto | Modules\Address\DTOs\CreateAddressData |
-| UpdateAddressDto | Modules\Address\DTOs\UpdateAddressData |
-| AddressDto (response) | Modules\Address\Http\Resources\AddressResource |
-| RegisterUserRequest | Modules\Auth\DTOs\RegisterUserData |
-| AuthenticationRequest | Modules\Auth\DTOs\LoginData |
-| CreateMeterDto | Modules\Meter\DTOs\CreateMeterData |
-| BatchMeterReadingDto | Modules\Meter\DTOs\BatchReadingData |
-| CreateServiceProviderDto | Modules\Billing\DTOs\CreateServiceProviderData |
-| ExportRequestDto | Modules\Export\DTOs\ExportRequestData |
 
 **Правила:**
 - DTO — завжди `final readonly class`
-- Використовувати PHP 8.4 constructor promotion
+- PHP 8.x constructor promotion
 - Factory method `fromRequest()` для конвертації з Form Request
-- Response serialization — через API Resources (не DTO)
-- DTO НЕ містять бізнес-логіки
+- DTO не містять бізнес-логіки
 
 ### Наслідки
 
 **Позитивні:**
 - Type safety — Actions отримують typed objects замість масивів
-- Self-documenting — явний контракт між controller та action
-- Refactoring safety — IDE підкаже при зміні полів
-- Immutability — readonly запобігає випадковій мутації
+- Self-documenting контракт між controller та action
+- Refactoring safety (IDE підкаже при зміні полів)
+- Immutability через readonly
 
 **Негативні:**
 - Додаткові класи (1 DTO на Create/Update операцію)
-- Дублювання полів між Form Request та DTO (мітигується через `fromRequest()`)
+- Часткове дублювання полів між Form Request та DTO
 
 ---
 
 ## ADR-004: JWT автентифікація
 
 ### Статус
-Прийнято
+Замінено (ADR-012)
 
 ### Контекст
-.NET API використовує custom JWT implementation з refresh tokens. Потрібно відтворити ідентичний flow для сумісності з існуючими клієнтами.
+На початковому етапі проєкт реалізовував JWT автентифікацію (`php-open-source-saver/jwt-auth`) з refresh token flow для сумісності з .NET API клієнтами.
 
-### Рішення
-Використовуємо `tymon/jwt-auth` (або `php-open-source-saver/jwt-auth` для Laravel 12) з custom refresh token моделлю.
+### Рішення (оригінальне)
+Використовували `php-open-source-saver/jwt-auth` з custom `RefreshToken` моделлю.
 
-**Чому не Sanctum:**
-- Sanctum використовує opaque tokens, а не JWT
-- Існуючі клієнти очікують JWT з claims (sub, email, name, role)
-- Потрібна валідація expired tokens для refresh flow
-
-**Чому не Passport:**
-- Passport — повний OAuth2 server, це overhead
-- Нам потрібен лише JWT issue/validate
-
-**Структура:**
-- `JwtService` — генерація/валідація JWT (аналог .NET JwtService)
+- `JwtService` — генерація/валідація JWT
 - `RefreshToken` model — зберігання refresh tokens в БД
-- Custom middleware для JWT validation
-- Claims: sub (user_id), email, name (username), role, jti
+- Claims: sub (user_id), email, name, role, jti
+- Access token lifetime: 30 хв, refresh token: 7 днів
 
-### Наслідки
-- Повна сумісність з існуючими клієнтами
-- Контроль над token format та claims
-- Потрібно самостійно реалізувати refresh flow
+### Причина заміни
+Після міграції на full-stack Inertia.js архітектуру REST API клієнти більше не потрібні. Сесійна автентифікація (ADR-012) є стандартним та безпечнішим підходом для web-додатків.
 
 ---
 
@@ -440,26 +310,37 @@ Model → API Resource → JSON Response
 Прийнято
 
 ### Контекст
-.NET використовує custom OAuth providers (Google, GitHub) з прямими HTTP-запитами до OAuth API. Laravel має офіційний пакет Socialite для цього.
+Потрібна OAuth інтеграція з Google та GitHub для реєстрації та входу користувачів.
 
 ### Рішення
-Використовуємо `laravel/socialite` для OAuth інтеграції.
+Використовуємо `laravel/socialite` з web redirect flow (не stateless API flow).
 
-**Маппінг:**
-- GoogleOAuthProvider → Socialite Google driver
-- GitHubOAuthProvider → Socialite GitHub driver
-- OAuthService → Modules\Auth\Actions\OAuthLogin, OAuthCallback, LinkProvider, UnlinkProvider
+**Web redirect flow:**
+1. Користувач натискає "Увійти через Google"
+2. `OAuthController@redirect` — редирект до OAuth провайдера
+3. Провайдер повертає на `OAuthController@callback`
+4. Socialite обробляє callback, отримує профіль користувача
+5. Автоматичне створення або прив'язка існуючого акаунту
+6. Створення сесії (не JWT)
 
-**Зберігаємо бізнес-логіку:**
-- Авто-створення користувачів
-- Авто-лінк існуючих (без паролю)
-- CSRF state validation
-- Унікальний username generation
+**Actions:**
+- `LinkOAuthProvider` — прив'язка провайдера до наявного акаунту
+- `UnlinkOAuthProvider` — відв'язка провайдера
+
+**Налаштування в Settings:**
+- GET `/settings/oauth/{provider}/link` — ініціювати прив'язку
+- DELETE `/settings/oauth/{provider}` — відв'язати провайдера
+
+**Збережена бізнес-логіка:**
+- Автоматичне створення користувачів при першому OAuth вході
+- Авто-лінк до існуючого акаунту за email (якщо email збігається)
+- Унікальна генерація username з OAuth профілю
 
 ### Наслідки
-- Стандартний Laravel підхід
-- Легко додати нових провайдерів
-- Менше custom коду для OAuth flows
+- Стандартний Laravel підхід, добре документований
+- Легко додати нових провайдерів (Twitter, Apple тощо)
+- Безпечний CSRF state через Socialite автоматично
+- Не потребує статeless flow (на відміну від JWT варіанту)
 
 ---
 
@@ -469,32 +350,21 @@ Model → API Resource → JSON Response
 Прийнято
 
 ### Контекст
-.NET використовує SixLabors.ImageSharp + Magick.NET для обробки зображень (фото лічильників, аватари) з фоновою обробкою через Channel-based queue. Потрібне рішення, що інтегрується з Eloquent моделями та надає:
-- Зберігання файлів (optimized + thumbnail)
-- Автоматичні image conversions
-- Зв'язок media з моделями
-- Queued processing
+Потрібне рішення для зберігання фото лічильників та аватарів з автоматичними конверсіями (optimized + thumbnail) та фоновою обробкою.
 
 ### Рішення
-Використовуємо `spatie/laravel-medialibrary` — стандартний Laravel пакет для управління медіа-файлами, прив'язаними до Eloquent моделей.
+Використовуємо `spatie/laravel-medialibrary` — polymorphic media relation до Eloquent моделей.
 
 **Чому spatie/laravel-medialibrary:**
-- Автоматичні image conversions (optimized, thumbnail) без ручного коду
-- Polymorphic зв'язок media → model (один пакет для MeterReading photos і User avatars)
-- Queued conversions (Laravel Queue + Redis)
-- Collections з правилами (singleFile для avatar, multiple для meter photos)
-- URL generation для conversions
+- Автоматичні image conversions без ручного коду
+- Polymorphic зв'язок — один підхід для всіх моделей
+- Queued conversions через Laravel Queue (Redis)
+- singleFile collection для аватарів (автозаміна)
 - HEIC/HEIF підтримка через imagick driver
-
-**Чому НЕ intervention/image напряму:**
-- Intervention Image — лише image manipulation, без зберігання та зв'язків
-- Потрібно самостійно реалізовувати: file storage, model associations, URL generation, cleanup
-- spatie/laravel-medialibrary використовує Intervention Image під капотом
 
 **Реалізація на моделях:**
 
 ```php
-// MeterReading model
 class MeterReading extends Model implements HasMedia
 {
     use InteractsWithMedia;
@@ -521,7 +391,6 @@ class MeterReading extends Model implements HasMedia
     }
 }
 
-// User model
 class User extends Authenticatable implements HasMedia
 {
     use InteractsWithMedia;
@@ -529,87 +398,35 @@ class User extends Authenticatable implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatar')
-            ->singleFile()  // автоматично видаляє попередній аватар
+            ->singleFile()
             ->acceptsMimeTypes([
                 'image/jpeg', 'image/png', 'image/gif',
                 'image/heic', 'image/heif',
             ]);
     }
-
-    public function registerMediaConversions(?Media $media = null): void
-    {
-        $this->addMediaConversion('optimized')
-            ->width(800)
-            ->quality(85)
-            ->format('jpg')
-            ->performOnCollections('avatar')
-            ->queued();
-
-        $this->addMediaConversion('thumbnail')
-            ->width(200)
-            ->quality(85)
-            ->format('jpg')
-            ->performOnCollections('avatar')
-            ->queued();
-    }
 }
 ```
 
-**Використання в Actions:**
-```php
-// Upload meter reading photo
-$meterReading->addMedia($uploadedFile)->toMediaCollection('photos');
-
-// Upload avatar (singleFile — автоматично замінює попередній)
-$user->addMedia($uploadedFile)->toMediaCollection('avatar');
-
-// Get URLs
-$optimizedUrl = $meterReading->getFirstMediaUrl('photos', 'optimized');
-$thumbnailUrl = $meterReading->getFirstMediaUrl('photos', 'thumbnail');
-$avatarUrl = $user->getFirstMediaUrl('avatar', 'optimized');
-```
-
-**Mapping .NET → Laravel medialibrary:**
-
-| .NET компонент | Laravel medialibrary еквівалент |
-|---|---|
-| ImageService.ProcessImageAsync() | Queued media conversions (автоматично) |
-| ImageService.ProcessAvatarImageAsync() | Queued media conversions + singleFile collection |
-| FileStorageService | spatie disk configuration (config/media-library.php) |
-| MeterReadingPhoto model | Media model (polymorphic, collection: 'photos') |
-| MeterReadingImage model | Media model (polymorphic, collection: 'images') |
-| User.AvatarOptimizedPath | `$user->getFirstMediaUrl('avatar', 'optimized')` |
-| User.AvatarThumbnailPath | `$user->getFirstMediaUrl('avatar', 'thumbnail')` |
-| ImageProcessingService (background) | Laravel Queue worker (автоматично) |
-| StorageScope enum | Media collections |
-
-**Параметри (збережені з .NET):**
+**Параметри:**
 - Optimized: 800px max width, JPEG 85%
 - Thumbnail: 200px max width, JPEG 85%
 - Avatar max upload: 2MB, formats: jpg, png, gif, heic, heif
 - Meter reading max upload: 10MB, formats: jpg, png, webp
-- Validation через Form Request (не medialibrary)
 
 **Зміни в моделях:**
-- `MeterReadingPhoto` та `MeterReadingImage` — **НЕ створюємо** як окремі Eloquent моделі. Їх замінює `media` таблиця з spatie/laravel-medialibrary (polymorphic `model_type` + `model_id`)
-- Поля avatar_* на User моделі — **видаляємо** з міграції, замінюємо на media collection
-- `is_processed` статус — відслідковуємо через `hasGeneratedConversion('optimized')`
+- `MeterReadingPhoto` та `MeterReadingImage` — не створюємо як окремі Eloquent моделі, їх замінює `media` таблиця (polymorphic)
+- Поля avatar_* на User — замінені на media collection
 
 ### Наслідки
 
 **Позитивні:**
-- Значно менше custom коду (немає ImageService, FileStorageService, ProcessMeterReadingPhoto job)
-- Автоматичне управління файлами (cleanup при видаленні моделі)
-- singleFile collection для аватарів — автоматична заміна
-- Queued conversions — без додаткових Job класів
-- URL generation — без manual path construction
-- Polymorphic — один підхід для всіх моделей
+- Значно менше custom коду (немає ImageService, ProcessMeterReadingPhoto job)
+- Автоматичне управління файлами при видаленні моделі
+- Polymorphic — один підхід для всіх медіа
 
 **Негативні:**
-- Додаткова `media` таблиця в БД (замість окремих MeterReadingPhoto/MeterReadingImage)
-- Зміна схеми відносно .NET (avatar fields на User замінюються на media relation)
-- Потрібно встановити imagick в Docker для HEIC підтримки
-- Overhead для простих випадків (лише один файл)
+- Додаткова `media` таблиця замість окремих photo таблиць
+- Потрібен imagick в Docker для HEIC підтримки
 
 ---
 
@@ -619,68 +436,63 @@ $avatarUrl = $user->getFirstMediaUrl('avatar', 'optimized');
 Прийнято
 
 ### Контекст
-.NET використовує custom CSV generator та QuestPDF для PDF. Потрібно відтворити обидва формати.
+Потрібен експорт показників лічильників у CSV та PDF форматах.
 
 ### Рішення
-- **CSV**: використовуємо `league/csv` або native PHP `fputcsv()` з proper escaping
-- **PDF**: використовуємо `barryvdh/laravel-dompdf` або `spatie/laravel-pdf` (Browsershot)
+- **CSV**: `league/csv` — RFC 4180 сумісний, proper escaping, streaming
+- **PDF**: `spatie/laravel-pdf` — HTML-based PDF генерація
 
-Рекомендовано `spatie/laravel-pdf` для кращої якості PDF.
+**Actions:**
+- `ExportMeterReadings` — визначає формат і делегує
+- `ExportToCsv` — генерація CSV через league/csv
+- `ExportToPdf` — генерація PDF через spatie/laravel-pdf
+
+**Фільтрація:** за датами та адресою користувача.
 
 ### Наслідки
-- Стандартні Laravel пакети
-- PDF layout може дещо відрізнятись візуально (HTML-based vs QuestPDF)
+- Стандартні Laravel пакети з активною підтримкою
+- PDF layout базується на HTML/CSS (не pixel-perfect)
+- Streaming для великих CSV без memory overhead
 
 ---
 
-## ADR-008: Використання існуючої БД без міграцій
+## ADR-008: Міграції та схема БД
 
 ### Статус
 Прийнято
 
 ### Контекст
-.NET API використовує існуючу PostgreSQL базу зі snake_case naming convention (вже Laravel-compatible). Міграції .NET створювали таблиці з Laravel-сумісними іменами.
+Проєкт потребує version-controlled схеми БД для відтворення середовища та запуску тестів з чистою базою.
 
 ### Рішення
-Створюємо Laravel міграції, що відтворюють поточну структуру БД. Це дозволить:
-1. Мати version-controlled schema
-2. Запускати тести з чистою БД
-3. Розгортати нові інстанси
+Всі зміни структури БД — через Laravel міграції. Snake_case naming convention. Всі constraints, indexes, unique keys — в міграціях.
 
 **Підхід:**
-- Міграції створюються на основі аналізу .NET schema
-- Snake_case naming (вже використовується в .NET)
-- Всі constraints, indexes, unique keys зберігаються
-- Seed data відтворюється через Laravel seeders
+- Нова структура або зміна — новий файл міграції
+- Seed data — Laravel seeders + factories
+- Тести використовують `RefreshDatabase` trait
+- Окремий `db-test` PostgreSQL сервіс для тестів (compose.yml)
 
 ### Наслідки
-- Повна сумісність зі схемою .NET
-- Можливість паралельної роботи обох API
-- Тести можуть використовувати RefreshDatabase
+- Повна відтворюваність середовища
+- Тести можуть використовувати RefreshDatabase без впливу на dev БД
+- Паралельне тестування через окремий test DB instance
 
 ---
 
 ## ADR-009: API Versioning
 
 ### Статус
-Прийнято
+Замінено
 
 ### Контекст
-.NET API використовує URL-based versioning (`/api/v1/...`).
+Початково проєкт реалізовував REST API з URL-based versioning (`/api/v1/...`).
 
-### Рішення
-Організовуємо routes з prefix `/api/v1` в кожному модулі. Для майбутніх версій створюємо окремі route files.
+### Рішення (оригінальне)
+Маршрути з prefix `/api/v1` в кожному модулі через `routes/api.php`.
 
-```php
-// Modules/Auth/routes/api.php
-Route::prefix('v1/auth')->group(function () {
-    Route::post('/login', LoginUser::class);
-});
-```
-
-### Наслідки
-- Простий підхід без додаткових пакетів
-- Легко додати v2 в майбутньому
+### Причина заміни
+Після міграції на Inertia.js + React SPA окремий REST API більше не потрібен. Всі маршрути — виключно web routes без версіонування. Маршрути в кожному модулі знаходяться в `routes/web.php`.
 
 ---
 
@@ -690,27 +502,39 @@ Route::prefix('v1/auth')->group(function () {
 Прийнято
 
 ### Контекст
-Потрібна стратегія тестування для модульної архітектури з Pest 4.
+Потрібна стратегія тестування для full-stack додатку з Inertia.js та модульною архітектурою.
 
 ### Рішення
 
 **Структура тестів:**
 ```
-Modules/Auth/tests/
+tests/
+├── Browser/                    ← Pest 4 browser tests (Inertia page rendering)
+│   ├── AuthTest.php
+│   ├── DashboardTest.php
+│   ├── MetersTest.php
+│   ├── ReadingsTest.php
+│   ├── AddressesTest.php
+│   ├── ProvidersTest.php
+│   └── SettingsTest.php
 ├── Feature/
-│   ├── LoginTest.php
-│   ├── RegisterTest.php
-│   └── OAuthTest.php
-├── Unit/
-│   ├── Actions/
-│   │   ├── LoginUserTest.php
-│   │   └── RegisterUserTest.php
-│   └── Services/
-│       └── JwtServiceTest.php
+│   └── Web/                    ← HTTP feature tests
+│       ├── Auth/
+│       ├── Dashboard/
+│       ├── Address/
+│       ├── Meter/
+│       ├── Billing/
+│       ├── HealthCheckTest.php
+│       └── SecurityHeadersTest.php
 └── Pest.php
+
+Modules/*/tests/
+├── Feature/
+└── Unit/
+    └── Actions/                ← Unit tests for Actions
 ```
 
-**phpunit.xml** оновлюється для включення `Modules/*/tests/*`.
+**phpunit.xml** включає `Modules/*/tests/*`.
 
 **Кожен модуль має Pest.php:**
 ```php
@@ -719,14 +543,18 @@ uses(Tests\TestCase::class)->in('Unit');
 ```
 
 **Підхід до тестування:**
+- Browser tests: рендеринг Inertia сторінок, форми, навігація, `assertNoJavaScriptErrors()`
+- Feature tests: HTTP endpoints (status codes, redirect, session, Inertia response)
 - Unit tests: Actions (handle method напряму)
-- Feature tests: HTTP endpoints через Laravel test client
-- Integration tests: бізнес-сценарії (batch readings, OAuth flow)
+
+**Заборонено:**
+- Unit tests для Eloquent моделей (відносини, CRUD)
+- Тестування стандартного Eloquent функціоналу
 
 ### Наслідки
-- Pest 4 повністю сумісний з модулями (через phpunit.xml)
+- Pest 4 повністю сумісний з модульною структурою
+- Browser tests верифікують SPA поведінку через Inertia
 - Кожен модуль тестується незалежно
-- `module:make-test` генерує PHPUnit-стиль, потрібно конвертувати в Pest
 
 ---
 
@@ -736,19 +564,19 @@ uses(Tests\TestCase::class)->in('Unit');
 Прийнято
 
 ### Контекст
-Модулі потребують доступу до моделей/Actions інших модулів (наприклад, Meter модуль потребує Address, Billing потребує UtilityType).
+Модулі потребують доступу до моделей/Actions інших модулів (наприклад, Meter потребує Address, Billing потребує UtilityType).
 
 ### Рішення
 
 **Рівні зв'язності:**
 
-1. **Shared Module** — спільні entities (UtilityType, Currency, ServiceCategory), до яких звертаються кілька модулів
-2. **Read-only доступ** — модуль може читати моделі іншого модуля через їх public API (Eloquent models)
-3. **Events** — для side effects (наприклад, після видалення Address — очистити пов'язані Meter readings)
+1. **Shared Module** — спільні entities (UtilityType, Currency, ServiceCategory) для кількох модулів
+2. **Read-only доступ** — модуль може читати Eloquent моделі іншого модуля
+3. **Events** — для side effects (наприклад, після видалення Address — очистити пов'язані Meters)
 4. **Actions** — модуль може викликати Actions іншого модуля
 
 **Правила:**
-- НІКОЛИ не імпортувати Actions з іншого модуля напряму в controller
+- Ніколи не імпортувати Actions з іншого модуля напряму в Controller
 - Моделі можна імпортувати cross-module (вони public)
 - Складна cross-module логіка — через Events
 
@@ -756,10 +584,192 @@ uses(Tests\TestCase::class)->in('Unit');
 ```
 Shared ← Address ← Meter ← Export
                  ← Billing ←┘
-Auth (ізольований, тільки User model використовується)
+Auth (ізольований, тільки User model використовується іншими)
 ```
 
 ### Наслідки
 - Чіткі межі між модулями
 - Shared module запобігає circular dependencies
 - Events забезпечують loose coupling
+
+---
+
+## ADR-012: Сесійна автентифікація
+
+### Статус
+Прийнято
+
+### Контекст
+Після міграції на full-stack Inertia.js + React SPA JWT автентифікація стала надмірно ускладненою. Web-додаток не потребує stateless токенів — сесійна автентифікація є стандартним та безпечнішим підходом для browser-based SPA.
+
+### Рішення
+Використовуємо вбудовану Laravel сесійну автентифікацію:
+
+- **Guard**: `web` (session driver)
+- **Provider**: `users` (Eloquent, таблиця `users`)
+- **Session driver**: `database` (таблиця `sessions`)
+- **Session lifetime**: 120 хвилин
+- **CSRF**: вбудований Laravel CSRF middleware
+
+**config/auth.php:**
+```php
+'defaults' => [
+    'guard' => 'web',
+    'passwords' => 'users',
+],
+
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
+    ],
+],
+```
+
+**Видалено:**
+- `php-open-source-saver/jwt-auth` пакет
+- `config/jwt.php`
+- `RefreshToken` модель та міграція
+- `JwtService`
+- `RefreshTokenRepository`
+- `/api/v1/auth/refresh-token`, `/api/v1/auth/revoke-token` ендпоінти
+
+**Actions автентифікації:**
+- `LoginUser` — `Auth::attempt()` + `session()->regenerate()`
+- `RegisterUser` — створення User + автоматичний вхід
+- `LogoutUser` — `Auth::logout()` + session invalidation
+
+**Middleware:**
+- `auth` — захист всіх приватних маршрутів
+- `guest` — редирект автентифікованих зі сторінок входу/реєстрації
+
+### Чому не JWT для SPA
+
+- SPA в одному домені з backend не потребує stateless tokens
+- Сесії + CSRF дають кращий захист проти XSS (httpOnly cookie)
+- Inertia.js автоматично передає CSRF token в кожному запиті
+- Простіша реалізація без token refresh logic
+
+### Наслідки
+
+**Позитивні:**
+- Менше коду (немає JwtService, RefreshToken, refresh flow)
+- Стандартний Laravel підхід з повною документацією
+- Безпечніший httpOnly session cookie
+- Автоматичний CSRF захист через Inertia
+
+**Негативні:**
+- Неможливо використовувати з мобільними клієнтами або сторонніми API
+- Прив'язка до браузерного клієнта
+
+---
+
+## ADR-013: Inertia.js v2 + React frontend архітектура
+
+### Статус
+Прийнято
+
+### Контекст
+Проєкт потребував frontend рішення. Варіанти:
+1. REST API + окремий SPA (React/Next.js)
+2. Blade templates + Alpine.js
+3. Inertia.js + React (server-driven SPA)
+
+### Рішення
+Використовуємо `inertia-laravel/inertia` v2 + React 19 + TypeScript.
+
+**Чому Inertia.js:**
+- Один codebase — немає окремого API для frontend
+- Server-side routing через Laravel (не React Router)
+- Автентифікація, авторизація та валідація — на сервері
+- SPA-like UX без складності окремого API
+- Seamless передача props з Laravel до React
+
+**Структура frontend:**
+```
+resources/js/
+├── components/             ← shared UI components
+│   ├── ui/                 ← base components (Button, Input, etc.)
+│   └── ...
+├── layouts/
+│   ├── AuthenticatedLayout.tsx
+│   └── GuestLayout.tsx
+├── pages/
+│   ├── Auth/
+│   │   ├── Login.tsx
+│   │   └── Register.tsx
+│   ├── Dashboard/
+│   │   └── Index.tsx
+│   ├── Meters/
+│   │   ├── Index.tsx
+│   │   ├── Create.tsx
+│   │   └── Edit.tsx
+│   ├── Readings/
+│   │   ├── Index.tsx
+│   │   └── Create.tsx
+│   ├── Addresses/
+│   │   ├── Index.tsx
+│   │   ├── Create.tsx
+│   │   └── Edit.tsx
+│   ├── Providers/
+│   │   ├── Index.tsx
+│   │   ├── Create.tsx
+│   │   └── Edit.tsx
+│   └── Settings/
+│       └── Index.tsx
+├── types/                  ← TypeScript interfaces
+└── app.tsx                 ← Inertia bootstrap
+```
+
+**Технологічний стек frontend:**
+- **React 19** — UI бібліотека
+- **TypeScript** (strict mode) — типізація
+- **Tailwind CSS v4** — стилізація
+- **Tailwind Variants (`tv()`)** — variant-based компоненти
+- **react-hook-form** — управління формами (поруч з `useForm` від Inertia)
+- **Recharts** — графіки на Dashboard
+- **Lucide React** — іконки
+- **Ziggy** — типізовані Laravel маршрути у JS
+
+**Правила TypeScript:**
+- Компоненти — named exports (не default)
+- Props — через `interface` (не `type`)
+- Без `any` — `unknown` з type narrowing
+- Функціональні компоненти (без class components)
+
+**Приклад Inertia render з Laravel:**
+```php
+return Inertia::render('Meters/Index', [
+    'meters' => MeterResource::collection($meters->paginate(15)),
+    'addresses' => AddressResource::collection($addresses),
+]);
+```
+
+**Приклад форми в React:**
+```tsx
+import { useForm } from '@inertiajs/react';
+
+const { data, setData, post, errors, processing } = useForm({
+    name: '',
+    serial_number: '',
+});
+
+const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route('meters.store'));
+};
+```
+
+### Наслідки
+
+**Позитивні:**
+- Єдиний codebase без окремого API
+- Server-side validation errors автоматично передаються в React
+- Стандартна Laravel авторизація без JWT
+- SPA UX (без page refresh) при мінімальній складності
+- TypeScript типізація через shared interfaces
+
+**Негативні:**
+- Неможливо перевикористати backend як API для мобільних клієнтів без додаткового шару
+- Менша гнучкість у deployment (frontend та backend завжди разом)
+- Крива навчання Inertia.js для нових розробників

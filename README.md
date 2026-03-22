@@ -1,75 +1,68 @@
-# Komunalka API
+# Komunalka
 
-REST API for managing utility services: meters, readings, billing, addresses, and user accounts. Migrated from .NET to Laravel.
+Full-stack веб-додаток для управління комунальними послугами: лічильники, показники споживання, постачальники, тарифи та адреси. Побудований на Laravel 13 + Inertia.js v2 + React 19.
 
-## Tech Stack
+## Технологічний стек
 
-- **PHP 8.4** / Laravel 12 / FrankenPHP (Octane)
+- **PHP 8.2+** / Laravel 13 / FrankenPHP (Octane)
+- **React 19** / TypeScript / Inertia.js v2
+- **Tailwind CSS v4** / Tailwind Variants
 - **PostgreSQL 17** / Redis 7.2
-- **JWT Authentication** with OAuth (Google, GitHub)
-- **Pest 4** (361 tests) / PHPStan level 5 / Laravel Pint
+- **Сесійна автентифікація** з OAuth (Google, GitHub)
+- **Pest 4** / PHPStan level 7 / Laravel Pint
 
-## Requirements
+## Вимоги
 
-- Docker & Docker Compose
+- Docker та Docker Compose
 
-## Local Setup
+## Локальне налаштування
 
-1. Clone the repository:
+1. Клонувати репозиторій:
 
 ```bash
 git clone <repo-url> && cd komunalka-laravel-api
 ```
 
-2. Copy environment file and configure it:
+2. Скопіювати файл середовища та налаштувати:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` — set database credentials, Redis password, JWT secret, and OAuth keys as needed. The defaults work with Docker Compose services out of the box.
+Відредагувати `.env` — встановити облікові дані бази даних, Redis, ключі OAuth. Значення за замовчуванням сумісні з Docker Compose сервісами.
 
-3. Start all services:
+3. Запустити всі сервіси:
 
 ```bash
 docker compose up -d
 ```
 
-This starts: **app** (FrankenPHP), **db** (PostgreSQL), **db-test** (test database), **redis**, **workers** (queue), **schedule** (cron), **websockets** (Reverb), **mailpit** (email testing).
+Запускаються: **app** (FrankenPHP), **db** (PostgreSQL), **db-test** (тестова БД), **redis**, **schedule** (cron), **ci** (CI pipeline).
 
-4. Run initial setup inside the container:
+4. Виконати початкове налаштування в контейнері:
 
 ```bash
 docker compose exec app composer setup
 ```
 
-This will: install dependencies, generate app key, run migrations, install npm packages, and build frontend assets.
+Команда встановлює залежності, генерує ключ, запускає міграції, встановлює npm-пакети та збирає frontend.
 
-5. Generate JWT secret:
+Додаток доступний за адресою **https://localhost**.
 
-```bash
-docker compose exec app php artisan jwt:secret
-```
+## Сервіси
 
-The API is now available at **https://localhost**.
+| Сервіс | URL | Призначення |
+|--------|-----|-------------|
+| App | https://localhost | Основний веб-додаток |
+| WebSockets | ws://localhost:8080 | Real-time події (Reverb) |
+| PostgreSQL | localhost:5432 | База даних |
+| Redis | localhost:6379 | Кеш та черги |
 
-## Services
+## Локальний HTTPS
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| API | https://localhost | Main application |
-| Mailpit | http://localhost:8025 | Email testing dashboard |
-| WebSockets | ws://localhost:8080 | Real-time events (Reverb) |
-| PostgreSQL | localhost:5432 | Database |
-| Redis | localhost:6379 | Cache & queues |
+HTTPS працює одразу через директиву Caddy `tls internal`, яка генерує самопідписаний сертифікат. HTTP-запити до `http://localhost` автоматично перенаправляються на HTTPS.
 
-## Local HTTPS
-
-HTTPS works out of the box via Caddy's `tls internal` directive, which generates a self-signed certificate from Caddy's local CA. HTTP requests to `http://localhost` are automatically redirected to HTTPS.
-
-The `.env` file includes `OCTANE_HTTPS=true` so Laravel generates correct `https://` URLs.
-
-To trust the local CA certificate on macOS (removes browser warnings):
+Щоб довіряти локальному CA на macOS (прибирає попередження браузера):
 
 ```bash
 docker compose cp app:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
@@ -77,67 +70,77 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 rm ./caddy-root.crt
 ```
 
-To verify HTTPS is working:
+Перевірити що HTTPS працює:
 
 ```bash
 curl -k https://localhost/health
 ```
 
-## API Modules
+## Сторінки додатку
 
-All endpoints are versioned under `/api/v1/`.
+| Сторінка | Маршрути | Опис |
+|----------|----------|------|
+| **Dashboard** | `/` | Статистика, графіки споживання, останні показники |
+| **Адреси** | `/addresses` | Управління адресами (CRUD) |
+| **Лічильники** | `/meters` | Управління лічильниками та фото |
+| **Показники** | `/readings` | Внесення та перегляд показників |
+| **Постачальники** | `/providers` | Постачальники послуг та тарифи |
+| **Налаштування** | `/settings` | Профіль, безпека, OAuth прив'язки |
+| **Auth** | `/login`, `/register` | Вхід та реєстрація |
 
-| Module | Endpoints | Description |
-|--------|-----------|-------------|
-| **Auth** | 22 | Registration, login, JWT refresh/revoke, OAuth (Google, GitHub) |
-| **Address** | 11 | Address CRUD, types, regions, primary toggle |
-| **Meter** | 21 | Meters, batch readings, photo uploads, legacy endpoints |
-| **Billing** | 7 | Service providers, tariffs, cost calculation |
-| **Export** | 2 | CSV/PDF export of meter readings |
-| **Shared** | 3 | Currencies, utility types |
-| **Health** | 2 | `/health`, `/health/ready` |
-
-## Running Tests
+## Запуск тестів
 
 ```bash
 docker compose exec app php artisan test --compact --parallel
 ```
 
-Filter by group:
+Запуск за типом:
 
 ```bash
-docker compose exec app php artisan test --compact --filter=EndToEnd
-docker compose exec app php artisan test --compact --filter=ApiCompatibility
-docker compose exec app php artisan test --compact --filter=Performance
+docker compose exec app php artisan test tests/Browser/
+docker compose exec app php artisan test tests/Feature/
 ```
 
-## Code Quality
+Запуск із покриттям:
 
 ```bash
-# Code style
-docker compose exec app vendor/bin/pint --dirty --format agent
+docker compose exec app php artisan test --coverage
+```
 
-# Static analysis
+## Якість коду
+
+```bash
+# Форматування коду
+docker compose exec app vendor/bin/pint --dirty
+
+# Статичний аналіз
 docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+
+# Модернізація коду
+docker compose exec app vendor/bin/rector process --dry-run
 ```
 
-## Project Structure
+## Структура проєкту
 
 ```
-app/                    Base controller, repository contracts
+app/                        Базові класи (Repository contracts)
 Modules/
-  Address/              Address CRUD, types, regions
-  Auth/                 JWT auth, OAuth, user management
-  Billing/              Service providers, tariffs
-  Export/               CSV/PDF export
-  Meter/                Meters, readings, photos
-  Shared/               Currencies, utility types
+  Address/                  Адреси, типи адрес, регіони
+  Auth/                     Автентифікація, OAuth, налаштування
+  Billing/                  Постачальники послуг, тарифи
+  Export/                   Експорт CSV/PDF
+  Meter/                    Лічильники, показники, фото
+  Shared/                   Типи послуг, валюти, довідники
+resources/
+  js/
+    components/             Shared React компоненти
+    layouts/                AuthenticatedLayout, GuestLayout
+    pages/                  React TSX сторінки (Inertia)
+    types/                  TypeScript інтерфейси
 tests/
+  Browser/                  Pest 4 browser tests (рендеринг Inertia сторінок)
   Feature/
-    EndToEnd/           Cross-module integration flows
-    ApiCompatibility/   Response format verification
-    EndpointCoverage/   Edge cases, security
-    Performance/        N+1 prevention, queue tests
+    Web/                    HTTP feature tests
 ```
 
-Each module follows the structure: `Actions/`, `DTOs/`, `Http/Controllers/`, `Http/Requests/`, `Http/Resources/`, `Models/`, `Repositories/`, `routes/`, `database/`, `tests/`.
+Кожен модуль містить: `Actions/`, `DTOs/`, `Http/Controllers/Web/`, `Http/Requests/`, `Models/`, `Repositories/`, `routes/web.php`, `database/`, `tests/`.

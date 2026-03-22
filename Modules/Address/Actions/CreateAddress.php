@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Address\Actions;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\DTO\CreateAddressData;
+use Modules\Address\Http\Requests\StoreAddressRequest;
 use Modules\Address\Models\Address;
 use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
@@ -22,7 +24,6 @@ class CreateAddress
 
     public function handle(int $userId, CreateAddressData $data): Address
     {
-        /** @var Address */
         return DB::transaction(function () use ($userId, $data) {
             /** @var Address $address */
             $address = $this->addressRepository->create([
@@ -40,9 +41,19 @@ class CreateAddress
                 $this->userAddressRepository->clearPrimary($userId);
             }
 
-            $this->userAddressRepository->attach($userId, $address->id, $data->isPrimary);
+            $this->userAddressRepository->attach($userId, $address->getKey(), $data->isPrimary);
 
             return $address->load(['region', 'addressType']);
         });
+    }
+
+    public function asController(StoreAddressRequest $request): RedirectResponse
+    {
+        $this->handle(
+            (int) $request->user()->getKey(),
+            CreateAddressData::fromRequest($request),
+        );
+
+        return redirect()->route('addresses.index')->with('success', 'Адресу створено');
     }
 }

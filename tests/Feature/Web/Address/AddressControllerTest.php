@@ -8,6 +8,7 @@ use Modules\Address\Models\Region;
 use Modules\Auth\Models\User;
 
 beforeEach(function (): void {
+    $this->withoutVite();
     $this->user = User::factory()->create();
     $this->region = Region::factory()->create();
     $this->addressType = AddressType::factory()->create();
@@ -20,29 +21,32 @@ describe('AddressController', function (): void {
             $this->user->addresses()->attach($address->getKey(), ['is_primary' => false]);
         }
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.address.index'))
-            ->assertSuccessful()
-            ->assertJsonCount(3, 'data')
-            ->assertJsonStructure([
-                'data' => [['id', 'city', 'street', 'building_number', 'region', 'address_type']],
-            ]);
+        $this->actingAs($this->user)
+            ->get(route('addresses.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Addresses/Index')
+                ->has('addresses.data', 3),
+            );
     });
 
-    it('renders show with reference data', function (): void {
+    it('renders edit page with address data', function (): void {
         $address = Address::factory()->create([
             'region_id' => $this->region->getKey(),
             'address_type_id' => $this->addressType->getKey(),
+            'city' => 'Львів',
         ]);
-        $this->user->addresses()->attach($address->getKey(), ['is_primary' => true]);
+        $this->user->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.address.show', $address->getKey()))
-            ->assertSuccessful()
-            ->assertJsonPath('data.id', $address->getKey())
-            ->assertJsonPath('data.region.id', $this->region->getKey())
-            ->assertJsonPath('data.address_type.id', $this->addressType->getKey())
-            ->assertJsonPath('data.is_primary', true);
+        $this->actingAs($this->user)
+            ->get(route('addresses.edit', $address->getKey()))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Addresses/Edit')
+                ->has('address')
+                ->has('regions')
+                ->has('addressTypes'),
+            );
     });
 
     it('creates address and redirects', function (): void {
@@ -57,12 +61,10 @@ describe('AddressController', function (): void {
             'is_primary' => true,
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.address.store'), $payload)
-            ->assertSuccessful()
-            ->assertJsonPath('data.city', 'Київ')
-            ->assertJsonPath('data.street', 'Хрещатик')
-            ->assertJsonPath('data.region.id', $this->region->getKey());
+        $this->actingAs($this->user)
+            ->post(route('addresses.store'), $payload)
+            ->assertRedirect(route('addresses.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('addresses', ['city' => 'Київ', 'street' => 'Хрещатик']);
         $this->assertDatabaseHas('address_user', [
@@ -81,10 +83,9 @@ describe('AddressController', function (): void {
         ];
         unset($payload[$field]);
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.address.store'), $payload)
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors($field);
+        $this->actingAs($this->user)
+            ->post(route('addresses.store'), $payload)
+            ->assertSessionHasErrors($field);
     })->with(['region_id', 'address_type_id', 'city', 'street', 'building_number']);
 
     it('validates region_id and address_type_id exist', function (): void {
@@ -96,25 +97,9 @@ describe('AddressController', function (): void {
             'building_number' => '1',
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->postJson(route('api.address.store'), $payload)
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors(['region_id', 'address_type_id']);
-    });
-
-    it('renders edit form with address data', function (): void {
-        $address = Address::factory()->create([
-            'region_id' => $this->region->getKey(),
-            'address_type_id' => $this->addressType->getKey(),
-            'city' => 'Львів',
-        ]);
-        $this->user->addresses()->attach($address->getKey(), ['is_primary' => false]);
-
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.address.show', $address->getKey()))
-            ->assertSuccessful()
-            ->assertJsonPath('data.city', 'Львів')
-            ->assertJsonPath('data.id', $address->getKey());
+        $this->actingAs($this->user)
+            ->post(route('addresses.store'), $payload)
+            ->assertSessionHasErrors(['region_id', 'address_type_id']);
     });
 
     it('updates address and redirects', function (): void {
@@ -137,11 +122,10 @@ describe('AddressController', function (): void {
             'is_primary' => true,
         ];
 
-        $this->actingAs($this->user, 'api')
-            ->putJson(route('api.address.update', $address->getKey()), $payload)
-            ->assertSuccessful()
-            ->assertJsonPath('data.city', 'Одеса')
-            ->assertJsonPath('data.region.id', $newRegion->getKey());
+        $this->actingAs($this->user)
+            ->put(route('addresses.update', $address->getKey()), $payload)
+            ->assertRedirect(route('addresses.index'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('addresses', [
             'id' => $address->getKey(),
@@ -149,32 +133,14 @@ describe('AddressController', function (): void {
         ]);
     });
 
-    it('partially updates address via patch', function (): void {
-        $address = Address::factory()->create([
-            'city' => 'Київ',
-            'region_id' => $this->region->getKey(),
-            'address_type_id' => $this->addressType->getKey(),
-        ]);
-        $this->user->addresses()->attach($address->getKey(), ['is_primary' => false]);
-
-        $this->actingAs($this->user, 'api')
-            ->patchJson(route('api.address.patch', $address->getKey()), ['city' => 'Харків'])
-            ->assertSuccessful()
-            ->assertJsonPath('data.city', 'Харків');
-
-        $this->assertDatabaseHas('addresses', [
-            'id' => $address->getKey(),
-            'city' => 'Харків',
-        ]);
-    });
-
     it('deletes address and redirects', function (): void {
         $address = Address::factory()->create();
         $this->user->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
-        $this->actingAs($this->user, 'api')
-            ->deleteJson(route('api.address.destroy', $address->getKey()))
-            ->assertSuccessful();
+        $this->actingAs($this->user)
+            ->delete(route('addresses.destroy', $address->getKey()))
+            ->assertRedirect(route('addresses.index'))
+            ->assertSessionHas('success');
 
         $this->assertSoftDeleted('addresses', ['id' => $address->getKey()]);
         $this->assertDatabaseMissing('address_user', [
@@ -184,14 +150,13 @@ describe('AddressController', function (): void {
     });
 
     it('requires authentication for all routes', function (string $method, string $routeName, array $params): void {
-        $this->{$method}(route($routeName, $params))->assertUnauthorized();
+        $this->{$method}(route($routeName, $params))->assertRedirect(route('login'));
     })->with([
-        ['getJson', 'api.address.index', []],
-        ['getJson', 'api.address.show', [1]],
-        ['postJson', 'api.address.store', []],
-        ['putJson', 'api.address.update', [1]],
-        ['patchJson', 'api.address.patch', [1]],
-        ['deleteJson', 'api.address.destroy', [1]],
+        ['get', 'addresses.index', []],
+        ['get', 'addresses.edit', [1]],
+        ['post', 'addresses.store', []],
+        ['put', 'addresses.update', [1]],
+        ['delete', 'addresses.destroy', [1]],
     ]);
 
     it('prevents access to other users addresses', function (): void {
@@ -199,12 +164,12 @@ describe('AddressController', function (): void {
         $address = Address::factory()->create();
         $otherUser->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
-        $this->actingAs($this->user, 'api')
-            ->getJson(route('api.address.show', $address->getKey()))
+        $this->actingAs($this->user)
+            ->get(route('addresses.edit', $address->getKey()))
             ->assertNotFound();
 
-        $this->actingAs($this->user, 'api')
-            ->putJson(route('api.address.update', $address->getKey()), [
+        $this->actingAs($this->user)
+            ->put(route('addresses.update', $address->getKey()), [
                 'region_id' => $this->region->getKey(),
                 'address_type_id' => $this->addressType->getKey(),
                 'city' => 'Test',
@@ -213,12 +178,8 @@ describe('AddressController', function (): void {
             ])
             ->assertNotFound();
 
-        $this->actingAs($this->user, 'api')
-            ->patchJson(route('api.address.patch', $address->getKey()), ['city' => 'Test'])
-            ->assertNotFound();
-
-        $this->actingAs($this->user, 'api')
-            ->deleteJson(route('api.address.destroy', $address->getKey()))
+        $this->actingAs($this->user)
+            ->delete(route('addresses.destroy', $address->getKey()))
             ->assertNotFound();
     });
 });

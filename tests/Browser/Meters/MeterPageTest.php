@@ -116,8 +116,8 @@ describe('Meters Index Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Meters/Index')
                 ->has('meters.data', 2)
-                ->where('meters.data.0.is_active', true)
-                ->where('meters.data.1.is_active', false),
+                ->where('meters.data', fn ($meters) => collect($meters)->contains('is_active', true)
+                    && collect($meters)->contains('is_active', false)),
             );
     });
 

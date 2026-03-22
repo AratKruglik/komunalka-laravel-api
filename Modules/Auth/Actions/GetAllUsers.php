@@ -6,6 +6,7 @@ namespace Modules\Auth\Actions;
 
 use Illuminate\Database\Eloquent\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
 
 class GetAllUsers
@@ -14,7 +15,7 @@ class GetAllUsers
 
     public function __construct(private UserRepositoryInterface $userRepository) {}
 
-    /** @return Collection<int, \Modules\Auth\Models\User> */
+    /** @return Collection<int, User> */
     public function handle(): Collection
     {
         return $this->userRepository->getAllWithAddresses();

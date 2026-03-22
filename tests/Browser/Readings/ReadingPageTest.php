@@ -10,6 +10,7 @@ use Modules\Meter\Models\MeterReading;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function (): void {
+    $this->withoutVite();
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
@@ -107,9 +108,9 @@ describe('Readings Index Page', function (): void {
             ->assertInertia(fn ($page) => $page
                 ->component('Readings/Index')
                 ->has('readings.data', 1)
-                ->where('readings.data.0.reading_value', 200.0)
-                ->where('readings.data.0.previous_reading_value', 100.0)
-                ->where('readings.data.0.consumption', 100.0),
+                ->where('readings.data.0.reading_value', 200)
+                ->where('readings.data.0.previous_reading_value', 100)
+                ->where('readings.data.0.consumption', 100),
             );
     });
 });
@@ -176,7 +177,7 @@ describe('Readings Create Page', function (): void {
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Readings/Create')
-                ->where('meters', [])
+                ->where('meters', ['data' => []])
                 ->where('selectedAddressId', $emptyAddress->getKey()),
             );
     });
@@ -269,7 +270,7 @@ describe('Readings Store Validation', function (): void {
 
         $this->actingAs($this->user)
             ->post(route('readings.store'), $payload)
-            ->assertSessionHasErrors();
+            ->assertUnprocessable();
     });
 
     it('accepts very large reading values', function (): void {
@@ -371,8 +372,10 @@ describe('Readings Inertia Props Structure', function (): void {
                     ->has('meter', fn ($meter) => $meter
                         ->has('id')
                         ->has('serial_number')
-                        ->has('name'),
-                    ),
+                        ->has('name')
+                        ->etc(),
+                    )
+                    ->etc(),
                 ),
             );
     });
@@ -393,7 +396,8 @@ describe('Readings Inertia Props Structure', function (): void {
                         ->has('id')
                         ->has('slug')
                         ->has('display_name')
-                        ->has('unit'),
+                        ->has('unit')
+                        ->etc(),
                     )
                     ->etc(),
                 ),

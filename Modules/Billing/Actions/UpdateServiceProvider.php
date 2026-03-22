@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Actions;
 
+use Illuminate\Http\RedirectResponse;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Billing\DTO\UpdateServiceProviderData;
+use Modules\Billing\Http\Requests\UpdateServiceProviderRequest;
 use Modules\Billing\Models\ServiceProvider;
 use Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface;
 
@@ -15,7 +17,7 @@ class UpdateServiceProvider
 
     public function __construct(private ServiceProviderRepositoryInterface $repository) {}
 
-    public function handle(int $userId, ServiceProvider $provider, UpdateServiceProviderData $data): ServiceProvider
+    public function handle(ServiceProvider $provider, UpdateServiceProviderData $data): ServiceProvider
     {
         /** @var ServiceProvider */
         $updated = $this->repository->update($provider, [
@@ -29,5 +31,13 @@ class UpdateServiceProvider
         ]);
 
         return $updated->load(['utilityType', 'tariffs.currency']);
+    }
+
+    public function asController(UpdateServiceProviderRequest $request, string $provider): RedirectResponse
+    {
+        $providerModel = GetServiceProvider::run((int) $request->user()->getKey(), (int) $provider);
+        $this->handle($providerModel, UpdateServiceProviderData::fromRequest($request));
+
+        return redirect()->route('providers.index')->with('success', 'Провайдера оновлено');
     }
 }

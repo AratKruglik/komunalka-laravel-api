@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Actions;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\UpdateUserData;
+use Modules\Auth\Http\Requests\UpdateUserRequest;
 use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
 
@@ -43,5 +45,19 @@ class UpdateUser
         }
 
         return $user->load(['addresses.region', 'addresses.addressType', 'media']);
+    }
+
+    public function asController(UpdateUserRequest $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $this->handle(
+            $user,
+            UpdateUserData::fromRequest($request),
+            $request->file('avatar'),
+        );
+
+        return back()->with('success', 'Профіль успішно оновлено.');
     }
 }

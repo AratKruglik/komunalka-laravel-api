@@ -11,6 +11,7 @@ use Modules\Shared\Models\UtilityType;
 
 describe('DashboardController', function (): void {
     beforeEach(function (): void {
+        $this->withoutVite();
         $this->user = User::factory()->create();
     });
 
@@ -98,7 +99,7 @@ describe('DashboardController', function (): void {
                 ->where('stats.addressCount', 0)
                 ->where('stats.meterCount', 0)
                 ->where('stats.lastReadingDate', null)
-                ->where('stats.totalMonthlyConsumption', 0.0),
+                ->where('stats.totalMonthlyConsumption', 0),
             );
     });
 });

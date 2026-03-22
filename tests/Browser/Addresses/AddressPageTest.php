@@ -8,6 +8,10 @@ use Modules\Address\Models\AddressType;
 use Modules\Address\Models\Region;
 use Modules\Auth\Models\User;
 
+beforeEach(function (): void {
+    $this->withoutVite();
+});
+
 describe('Address Index Page', function (): void {
     it('renders address list for authenticated user', function (): void {
         $user = User::factory()->create();
@@ -258,7 +262,7 @@ describe('Address Edit Page', function (): void {
         $user->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
         $this->actingAs($user)
-            ->get('/addresses/' . $address->getKey() . '/edit')
+            ->get('/addresses/'.$address->getKey().'/edit')
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Edit')
@@ -289,7 +293,7 @@ describe('Address Edit Page', function (): void {
         $user->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
         $this->actingAs($user)
-            ->put('/addresses/' . $address->getKey(), [
+            ->put('/addresses/'.$address->getKey(), [
                 'region_id' => $newRegion->getKey(),
                 'address_type_id' => $addressType->getKey(),
                 'city' => 'Львів',
@@ -318,7 +322,7 @@ describe('Address Edit Page', function (): void {
         $otherUser->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
         $this->actingAs($user)
-            ->get('/addresses/' . $address->getKey() . '/edit')
+            ->get('/addresses/'.$address->getKey().'/edit')
             ->assertNotFound();
     });
 
@@ -338,7 +342,7 @@ describe('Address Delete', function (): void {
         $user->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
         $this->actingAs($user)
-            ->delete('/addresses/' . $address->getKey())
+            ->delete('/addresses/'.$address->getKey())
             ->assertRedirect('/addresses')
             ->assertSessionHas('success', 'Адресу видалено');
 
@@ -354,7 +358,7 @@ describe('Address Delete', function (): void {
         $user->addresses()->attach($address->getKey(), ['is_primary' => true]);
 
         $this->actingAs($user)
-            ->delete('/addresses/' . $address->getKey())
+            ->delete('/addresses/'.$address->getKey())
             ->assertRedirect('/addresses')
             ->assertSessionHas('success', 'Адресу видалено');
 
@@ -371,7 +375,7 @@ describe('Address Delete', function (): void {
         $otherUser->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
         $this->actingAs($user)
-            ->delete('/addresses/' . $address->getKey())
+            ->delete('/addresses/'.$address->getKey())
             ->assertNotFound();
 
         $this->assertDatabaseHas('address_user', [
@@ -455,7 +459,7 @@ describe('Address Authentication', function (): void {
     it('redirects unauthenticated user to login from edit', function (): void {
         $address = Address::factory()->create();
 
-        $this->get('/addresses/' . $address->getKey() . '/edit')
+        $this->get('/addresses/'.$address->getKey().'/edit')
             ->assertRedirect('/login');
     });
 
@@ -471,7 +475,7 @@ describe('Address Authentication', function (): void {
     it('redirects unauthenticated user to login on update', function (): void {
         $address = Address::factory()->create();
 
-        $this->put('/addresses/' . $address->getKey(), [
+        $this->put('/addresses/'.$address->getKey(), [
             'city' => 'Київ',
         ])
             ->assertRedirect('/login');
@@ -480,7 +484,7 @@ describe('Address Authentication', function (): void {
     it('redirects unauthenticated user to login on delete', function (): void {
         $address = Address::factory()->create();
 
-        $this->delete('/addresses/' . $address->getKey())
+        $this->delete('/addresses/'.$address->getKey())
             ->assertRedirect('/login');
     });
 });
@@ -505,7 +509,7 @@ describe('Address Navigation', function (): void {
         $user->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
         $this->actingAs($user)
-            ->get('/addresses/' . $address->getKey() . '/edit')
+            ->get('/addresses/'.$address->getKey().'/edit')
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Edit')
@@ -539,7 +543,7 @@ describe('Address Navigation', function (): void {
         $user->addresses()->attach($address->getKey(), ['is_primary' => false]);
 
         $this->actingAs($user)
-            ->put('/addresses/' . $address->getKey(), [
+            ->put('/addresses/'.$address->getKey(), [
                 'region_id' => $region->getKey(),
                 'address_type_id' => $addressType->getKey(),
                 'city' => 'Дніпро',
