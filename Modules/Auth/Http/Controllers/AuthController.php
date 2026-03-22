@@ -32,21 +32,26 @@ use Modules\Auth\Http\Requests\UnlinkOAuthRequest;
 use Modules\Auth\Http\Resources\AuthenticationResource;
 use Modules\Auth\Http\Resources\UserResource;
 use Modules\Auth\Models\User;
+use Modules\Auth\Services\JwtService;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private JwtService $jwtService,
+    ) {}
+
     public function register(RegisterRequest $request, RegisterUser $action): AuthenticationResource
     {
-        $result = $action->handle(RegisterUserData::fromRequest($request));
+        $user = $action->handle(RegisterUserData::fromRequest($request));
 
-        return new AuthenticationResource($result);
+        return new AuthenticationResource($this->jwtService->generateTokenPair($user));
     }
 
     public function login(LoginRequest $request, LoginUser $action): AuthenticationResource
     {
-        $result = $action->handle(LoginData::fromRequest($request));
+        $user = $action->handle(LoginData::fromRequest($request));
 
-        return new AuthenticationResource($result);
+        return new AuthenticationResource($this->jwtService->generateTokenPair($user));
     }
 
     public function refreshToken(RefreshTokenRequest $request, RefreshUserToken $action): AuthenticationResource
@@ -70,9 +75,9 @@ class AuthController extends Controller
 
     public function oauthLogin(OAuthLoginRequest $request, OAuthLogin $action): AuthenticationResource
     {
-        $result = $action->handle(OAuthLoginData::fromRequest($request));
+        $user = $action->handle(OAuthLoginData::fromRequest($request));
 
-        return new AuthenticationResource($result);
+        return new AuthenticationResource($this->jwtService->generateTokenPair($user));
     }
 
     public function oauthAuthorize(string $provider, GetOAuthUrl $action): JsonResponse
@@ -84,9 +89,9 @@ class AuthController extends Controller
 
     public function oauthCallback(OAuthCallbackRequest $request, HandleOAuthCallback $action): AuthenticationResource
     {
-        $result = $action->handle(OAuthCallbackData::fromRequest($request));
+        $user = $action->handle(OAuthCallbackData::fromRequest($request));
 
-        return new AuthenticationResource($result);
+        return new AuthenticationResource($this->jwtService->generateTokenPair($user));
     }
 
     public function linkOAuth(LinkOAuthRequest $request, LinkOAuthProvider $action): JsonResponse

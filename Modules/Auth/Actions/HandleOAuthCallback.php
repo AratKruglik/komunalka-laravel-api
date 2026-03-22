@@ -7,7 +7,7 @@ namespace Modules\Auth\Actions;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\OAuthCallbackData;
-use Modules\Auth\Services\JwtService;
+use Modules\Auth\Models\User;
 use Modules\Auth\Services\OAuthService;
 
 class HandleOAuthCallback
@@ -16,11 +16,9 @@ class HandleOAuthCallback
 
     public function __construct(
         private OAuthService $oAuthService,
-        private JwtService $jwtService,
     ) {}
 
-    /** @return array<string, mixed> */
-    public function handle(OAuthCallbackData $data): array
+    public function handle(OAuthCallbackData $data): User
     {
         if ($data->error) {
             throw ValidationException::withMessages([
@@ -33,6 +31,6 @@ class HandleOAuthCallback
 
         $user->update(['last_login_at' => now()]);
 
-        return $this->jwtService->generateTokenPair($user);
+        return $user;
     }
 }
