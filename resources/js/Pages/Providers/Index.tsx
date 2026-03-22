@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Head, Link, router } from '@inertiajs/react'
-import { Building2, MapPin, Pencil, Plus, Trash2 } from 'lucide-react'
-import { denormalizeCollection } from '@/lib/jsonapi'
+import { Building2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useDenormalizeCollection } from '@/lib/useDenormalize'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { Button, ConfirmDialog } from '@/Components/ui'
 import type { IndexPageProps, ProviderItem } from './types'
@@ -12,7 +12,7 @@ interface DeleteDialogState {
 }
 
 export default function Index({ providers }: IndexPageProps) {
-    const providersList = useMemo(() => denormalizeCollection<ProviderItem>(providers), [providers])
+    const providersList = useDenormalizeCollection<ProviderItem>(providers)
 
     const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
         isOpen: false,
@@ -41,10 +41,10 @@ export default function Index({ providers }: IndexPageProps) {
     }
 
     const formatTariffLabel = (tariff: ProviderItem['tariffs'][number]): string => {
-        const rate = Number(tariff.base_rate)
-        const fee = Number(tariff.service_fee)
+        const rate = Number(tariff.baseRate)
+        const fee = Number(tariff.serviceFee)
         const symbol = tariff.currency?.symbol ?? 'грн'
-        const unit = tariff.utility_type?.unit ?? 'од.'
+        const unit = tariff.utilityType?.unit ?? 'од.'
         let label = `${rate} ${symbol}/${unit}`
         if (fee > 0) {
             label += ` + ${fee} ${symbol}`
@@ -149,9 +149,9 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
                         <p className="font-medium text-gray-800 dark:text-slate-100">
                             {provider.name}
                         </p>
-                        {provider.utility_type && (
+                        {provider.utilityType && (
                             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-slate-700 dark:text-slate-300">
-                                {provider.utility_type.display_name}
+                                {provider.utilityType.displayName}
                             </span>
                         )}
                     </div>

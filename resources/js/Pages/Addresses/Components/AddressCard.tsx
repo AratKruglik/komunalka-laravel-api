@@ -10,7 +10,8 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Button, DropdownMenu, type DropdownMenuItem } from '@/Components/ui'
-import type { AddressItem } from '../types'
+import { formatAddressLabel } from '@/lib/formatAddress'
+import type { Address } from '@/types/entities'
 
 const ADDRESS_TYPE_ICONS: Record<string, LucideIcon> = {
     apartment: Building2,
@@ -19,17 +20,17 @@ const ADDRESS_TYPE_ICONS: Record<string, LucideIcon> = {
 }
 
 interface AddressCardProps {
-    address: AddressItem
-    onDelete: (address: AddressItem) => void
+    address: Address
+    onDelete: (address: Address) => void
 }
 
 export function AddressCard({ address, onDelete }: AddressCardProps) {
-    const Icon = ADDRESS_TYPE_ICONS[address.address_type.icon] ?? Home
-    const title = `${address.street}, ${address.building_number}`
+    const Icon = ADDRESS_TYPE_ICONS[address.addressType.icon] ?? Home
+    const title = formatAddressLabel(address)
     const subtitle = [
         address.city,
         address.region.name,
-        address.zip_code,
+        address.zipCode,
     ].filter(Boolean).join(', ')
 
     const actions: DropdownMenuItem[] = [
@@ -41,7 +42,7 @@ export function AddressCard({ address, onDelete }: AddressCardProps) {
         if (item.id === 'delete') onDelete(address)
     }
 
-    const surfaceClasses = address.is_primary
+    const surfaceClasses = address.isPrimary
         ? 'border-2 border-primary bg-primary-bg dark:border-amber-300 dark:bg-amber-200/10'
         : 'border border-gray-200 bg-white dark:border-slate-800 dark:bg-slate-900'
 
@@ -52,14 +53,14 @@ export function AddressCard({ address, onDelete }: AddressCardProps) {
             <div className="flex flex-wrap items-start justify-between gap-3 pr-12 sm:pr-14">
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-                        address.is_primary
+                        address.isPrimary
                             ? 'bg-primary text-text-dark dark:bg-amber-300 dark:text-slate-900'
                             : 'border border-gray-200 bg-white text-gray-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200'
                     }`}>
                         <Icon className="h-3.5 w-3.5" />
-                        {address.address_type.name}
+                        {address.addressType.name}
                     </span>
-                    {address.is_primary ? (
+                    {address.isPrimary ? (
                         <span className="inline-flex items-center gap-2 rounded-full bg-primary text-text-dark px-3 py-1 text-xs font-semibold dark:bg-amber-300 dark:text-slate-900">
                             <Star className="h-3.5 w-3.5" />
                             Основна
@@ -94,9 +95,9 @@ export function AddressCard({ address, onDelete }: AddressCardProps) {
                 <p className="text-xs text-gray-600 dark:text-slate-400 sm:text-sm">{subtitle}</p>
             </Link>
 
-            {address.apartment_number ? (
+            {address.apartmentNumber ? (
                 <p className="text-xs text-gray-500 dark:text-slate-400">
-                    кв./оф. {address.apartment_number}
+                    кв./оф. {address.apartmentNumber}
                 </p>
             ) : null}
         </article>

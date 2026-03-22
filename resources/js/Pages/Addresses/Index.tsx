@@ -1,11 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Head, Link, router } from '@inertiajs/react'
 import { Plus } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { Button, ConfirmDialog } from '@/Components/ui'
-import { denormalizeCollection } from '@/lib/jsonapi'
+import { useDenormalizeCollection } from '@/lib/useDenormalize'
+import { formatAddressLabel } from '@/lib/formatAddress'
 import { AddressCard } from './Components/AddressCard'
-import type { IndexPageProps, AddressItem } from './types'
+import type { IndexPageProps } from './types'
+import type { Address } from '@/types/entities'
 
 interface DeleteDialogState {
     isOpen: boolean
@@ -14,7 +16,7 @@ interface DeleteDialogState {
 }
 
 export default function Index({ addresses }: IndexPageProps) {
-    const addressList = useMemo(() => denormalizeCollection<AddressItem>(addresses), [addresses])
+    const addressList = useDenormalizeCollection<Address>(addresses)
 
     const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
         isOpen: false,
@@ -23,11 +25,11 @@ export default function Index({ addresses }: IndexPageProps) {
     })
     const [isDeleting, setIsDeleting] = useState(false)
 
-    const handleDeleteClick = (address: AddressItem) => {
+    const handleDeleteClick = (address: Address) => {
         setDeleteDialog({
             isOpen: true,
             addressId: address.id,
-            addressTitle: `${address.street}, ${address.building_number}`,
+            addressTitle: formatAddressLabel(address),
         })
     }
 

@@ -34,13 +34,13 @@ export function AuthenticatedLayout({
 
   const user = useMemo<TopbarUser>(() => {
     if (authUser) {
-      const fullName = [authUser.first_name, authUser.last_name]
+      const fullName = [authUser.firstName, authUser.lastName]
         .filter(Boolean)
         .join(' ') || authUser.username
       return {
         name: fullName,
         email: authUser.email,
-        avatarUrl: authUser.avatar_thumbnail_url ?? undefined,
+        avatarUrl: authUser.avatarThumbnailUrl ?? undefined,
       }
     }
     return {

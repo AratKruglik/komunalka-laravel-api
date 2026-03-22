@@ -2,15 +2,15 @@ import { tv } from 'tailwind-variants';
 
 interface MeterReadingData {
     id: number;
-    reading_value: number;
-    reading_date: string;
+    readingValue: number;
+    readingDate: string;
     consumption: number;
     meter: {
         id: number;
         name: string;
-        utility_type: {
+        utilityType: {
             slug: string;
-            display_name: string;
+            displayName: string;
             unit: string;
         };
     };
@@ -60,10 +60,10 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
                             <div className="mb-3 flex items-center gap-3">
                                 <div className="flex-1">
                                     <h3 className="text-sm font-semibold leading-5 text-neutral-800 dark:text-slate-100">
-                                        {reading.meter.utility_type.display_name}
+                                        {reading.meter.utilityType.displayName}
                                     </h3>
                                     <p className="mt-0.5 text-xs leading-4 text-neutral-500 dark:text-slate-400">
-                                        {formatDate(reading.reading_date)} &middot; {reading.meter.name}
+                                        {formatDate(reading.readingDate)} &middot; {reading.meter.name}
                                     </p>
                                 </div>
                             </div>
@@ -73,7 +73,7 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
                                         Показання
                                     </p>
                                     <p className="mt-1 text-sm font-semibold leading-5 text-neutral-800 dark:text-slate-50">
-                                        {reading.reading_value} {reading.meter.utility_type.unit}
+                                        {reading.readingValue} {reading.meter.utilityType.unit}
                                     </p>
                                 </div>
                                 <div>
@@ -82,7 +82,7 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
                                     </p>
                                     <p className={`mt-1 text-sm font-semibold leading-5 ${differenceColor}`}>
                                         {reading.consumption > 0 ? '+' : ''}
-                                        {reading.consumption} {reading.meter.utility_type.unit}
+                                        {reading.consumption} {reading.meter.utilityType.unit}
                                     </p>
                                 </div>
                             </div>
@@ -130,18 +130,18 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
                                 >
                                     <td className="py-4 pr-4">
                                         <span className="text-sm font-semibold leading-5 text-neutral-800 dark:text-slate-100">
-                                            {reading.meter.utility_type.display_name}
+                                            {reading.meter.utilityType.displayName}
                                         </span>
                                     </td>
                                     <td className="py-4 pr-4 text-sm leading-5 text-neutral-700 dark:text-slate-300">
-                                        {formatDate(reading.reading_date)}
+                                        {formatDate(reading.readingDate)}
                                     </td>
                                     <td className="py-4 pr-4 text-sm leading-5 text-neutral-700 dark:text-slate-300">
-                                        {reading.reading_value} {reading.meter.utility_type.unit}
+                                        {reading.readingValue} {reading.meter.utilityType.unit}
                                     </td>
                                     <td className={`py-4 text-sm font-semibold leading-5 ${differenceColor}`}>
                                         {reading.consumption > 0 ? '+' : ''}
-                                        {reading.consumption} {reading.meter.utility_type.unit}
+                                        {reading.consumption} {reading.meter.utilityType.unit}
                                     </td>
                                 </tr>
                             );

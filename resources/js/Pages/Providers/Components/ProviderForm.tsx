@@ -12,10 +12,11 @@ import {
     Textarea,
 } from '@/Components/ui'
 import { FormField } from '@/Components/ui/FormField'
-import type { AddressItem, CurrencyItem, ProviderItem, UtilityTypeItem } from '../types'
+import { formatAddressLabel } from '@/lib/formatAddress'
+import type { CurrencyItem, ProviderAddressItem, ProviderItem, UtilityTypeItem } from '../types'
 
 interface ProviderFormProps {
-    addresses: AddressItem[]
+    addresses: ProviderAddressItem[]
     utilityTypes: UtilityTypeItem[]
     currencies: CurrencyItem[]
     provider?: ProviderItem
@@ -77,26 +78,26 @@ export function ProviderForm({
 
     const initialTariffs: TariffFormData[] = provider?.tariffs?.length
         ? provider.tariffs.map((t) => ({
-              utility_type_id: String(t.utility_type?.id ?? provider.utility_type?.id ?? ''),
+              utility_type_id: String(t.utilityType?.id ?? provider.utilityType?.id ?? ''),
               currency_id: String(t.currency?.id ?? defaultCurrencyId),
               name: t.name,
-              base_rate: String(t.base_rate),
-              service_fee: String(t.service_fee ?? '0'),
-              effective_from: t.effective_from ? String(t.effective_from).split('T')[0] : '',
-              effective_to: t.effective_to ? String(t.effective_to).split('T')[0] : '',
+              base_rate: String(t.baseRate),
+              service_fee: String(t.serviceFee ?? '0'),
+              effective_from: t.effectiveFrom ? String(t.effectiveFrom).split('T')[0] : '',
+              effective_to: t.effectiveTo ? String(t.effectiveTo).split('T')[0] : '',
               notes: t.notes ?? '',
           }))
-        : [createEmptyTariff(provider?.utility_type ? String(provider.utility_type.id) : '', defaultCurrencyId)]
+        : [createEmptyTariff(provider?.utilityType ? String(provider.utilityType.id) : '', defaultCurrencyId)]
 
     const form = useForm<FormData>({
-        address_id: provider ? String(provider.address_id) : (addresses.length > 0 ? String(addresses[0].id) : ''),
-        utility_type_id: provider?.utility_type ? String(provider.utility_type.id) : '',
+        address_id: provider ? String(provider.addressId) : (addresses.length > 0 ? String(addresses[0].id) : ''),
+        utility_type_id: provider?.utilityType ? String(provider.utilityType.id) : '',
         name: provider?.name ?? '',
         description: provider?.description ?? '',
         phone: provider?.phone ?? '',
         email: provider?.email ?? '',
         website: provider?.website ?? '',
-        is_active: provider?.is_active ?? true,
+        is_active: provider?.isActive ?? true,
         tariffs: initialTariffs,
     })
 
@@ -137,12 +138,8 @@ export function ProviderForm({
         form.setData('tariffs', updated)
     }
 
-    const formatAddressDisplay = (address: AddressItem): string => {
-        const parts = [address.city, address.street, address.building_number]
-        if (address.apartment_number) {
-            parts.push(`кв. ${address.apartment_number}`)
-        }
-        return parts.join(', ')
+    const formatAddressDisplay = (address: ProviderAddressItem): string => {
+        return formatAddressLabel(address)
     }
 
     return (
@@ -175,7 +172,7 @@ export function ProviderForm({
                                 {addresses.map((address) => (
                                     <option key={address.id} value={address.id}>
                                         {formatAddressDisplay(address)}
-                                        {address.is_primary ? ' (основна)' : ''}
+                                        {address.isPrimary ? ' (основна)' : ''}
                                     </option>
                                 ))}
                             </Select>
@@ -198,7 +195,7 @@ export function ProviderForm({
                                 </option>
                                 {utilityTypes.map((ut) => (
                                     <option key={ut.id} value={ut.id}>
-                                        {ut.display_name}
+                                        {ut.displayName}
                                     </option>
                                 ))}
                             </Select>
@@ -425,4 +422,3 @@ export function ProviderForm({
         </form>
     )
 }
-

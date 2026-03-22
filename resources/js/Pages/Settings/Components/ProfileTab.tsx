@@ -19,14 +19,14 @@ export function ProfileTab() {
     const user = useAuthUser();
 
     const { data, setData, put, processing, errors } = useForm({
-        first_name: user?.first_name ?? '',
-        last_name: user?.last_name ?? '',
-        phone_number: user?.phone_number ?? '',
+        first_name: user?.firstName ?? '',
+        last_name: user?.lastName ?? '',
+        phone_number: user?.phoneNumber ?? '',
         avatar: null as File | null,
     });
 
     const [avatarPreview, setAvatarPreview] = useState<string | null>(
-        user?.avatar_optimized_url ?? null,
+        user?.avatarOptimizedUrl ?? null,
     );
 
     const handleAvatarSelected = (files: FileList | null) => {
@@ -41,7 +41,7 @@ export function ProfileTab() {
 
     const handleAvatarClear = () => {
         setData('avatar', null);
-        setAvatarPreview(user?.avatar_optimized_url ?? null);
+        setAvatarPreview(user?.avatarOptimizedUrl ?? null);
     };
 
     const handleSubmit = (event: React.FormEvent) => {

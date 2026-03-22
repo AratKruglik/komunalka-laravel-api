@@ -1,30 +1,12 @@
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import { Link, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { tv } from 'tailwind-variants';
-import { Button, Badge, DropdownMenu, type DropdownMenuItem } from '@/Components/ui';
-
-interface MeterCardMeter {
-    id: number;
-    serial_number: string;
-    name: string;
-    description: string | null;
-    location: string | null;
-    is_active: boolean;
-    utility_type: {
-        id: number;
-        display_name: string;
-        unit: string;
-    } | null;
-    service_provider: {
-        id: number;
-        name: string;
-    } | null;
-    photo_url: string | null;
-}
+import { Button, DropdownMenu, type DropdownMenuItem } from '@/Components/ui';
+import type { Meter } from '@/types/entities';
 
 interface MeterCardProps {
-    meter: MeterCardMeter;
-    onDelete: (meter: MeterCardMeter) => void;
+    meter: Meter;
+    onDelete: (meter: Meter) => void;
 }
 
 const METER_ACTIONS: DropdownMenuItem[] = [
@@ -84,34 +66,34 @@ export function MeterCard({ meter, onDelete }: MeterCardProps) {
             <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-3">
                     <p className="text-base font-semibold text-gray-900 dark:text-slate-100">{meter.name}</p>
-                    <span className={statusBadge({ active: meter.is_active })}>
-                        {meter.is_active ? 'Активний' : 'Неактивний'}
+                    <span className={statusBadge({ active: meter.isActive })}>
+                        {meter.isActive ? 'Активний' : 'Неактивний'}
                     </span>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-slate-300">
-                    Серійний №: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.serial_number}</span>
+                    Серійний №: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.serialNumber}</span>
                 </p>
                 {meter.location ? (
                     <p className="text-sm text-gray-600 dark:text-slate-300">
                         Локація: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.location}</span>
                     </p>
                 ) : null}
-                {meter.service_provider ? (
+                {meter.serviceProvider ? (
                     <p className="text-sm text-gray-600 dark:text-slate-300">
-                        Провайдер: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.service_provider.name}</span>
+                        Провайдер: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.serviceProvider.name}</span>
                     </p>
                 ) : null}
-                {meter.utility_type ? (
+                {meter.utilityType ? (
                     <p className="text-sm text-gray-600 dark:text-slate-300">
-                        Тип: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.utility_type.display_name}</span>
+                        Тип: <span className="font-medium text-gray-800 dark:text-slate-100">{meter.utilityType.displayName}</span>
                     </p>
                 ) : null}
             </div>
 
-            {meter.photo_url ? (
+            {meter.photoUrl ? (
                 <div className="flex-shrink-0">
                     <img
-                        src={meter.photo_url}
+                        src={meter.photoUrl}
                         alt={`Фото ${meter.name}`}
                         className="h-16 w-16 rounded-lg object-cover"
                     />

@@ -11,17 +11,13 @@ use Modules\Shared\Models\Currency;
 /** @mixin Currency */
 class CurrencyResource extends InertiaJsonApiResource
 {
-    /** @var list<string> */
-    public $attributes = [
-        'code',
-        'name',
-        'symbol',
-    ];
-
     /** @return array<string, mixed> */
-    public function toMeta(Request $request): array
+    public function toAttributes(Request $request): array
     {
         return [
+            'code' => $this->code,
+            'name' => $this->name,
+            'symbol' => $this->symbol,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

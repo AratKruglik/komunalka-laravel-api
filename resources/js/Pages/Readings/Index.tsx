@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Head, router } from '@inertiajs/react'
 import { Plus, Trash2 } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
@@ -14,31 +14,14 @@ import {
   Badge,
   ConfirmDialog,
 } from '@/Components/ui'
-import { denormalizeCollection, denormalizeAuto } from '@/lib/jsonapi'
+import { useDenormalizeCollection, useDenormalizeAuto } from '@/lib/useDenormalize'
+import { formatFullAddressLabel } from '@/lib/formatAddress'
 import type { PageProps } from '@/types'
 import type { JsonApiCollectionDocument } from '@/types/jsonapi'
+import type { Address, Reading } from '@/types/entities'
 
-interface InertiaAddress {
-  id: number
-  city: string
-  street: string
-  building_number: string
-  apartment_number: string | null
-}
-
-interface InertiaReading {
-  id: number
-  reading_value: number
-  reading_date: string
-  previous_reading_value: number | null
-  consumption: number | null
-  notes: string | null
-  is_estimated: boolean
-  meter: {
-    id: number
-    serial_number: string
-    name: string
-  }
+interface ReadingWithMeterName extends Reading {
+  meter: Reading['meter'] & { name: string }
 }
 
 interface Props extends PageProps {
@@ -59,18 +42,10 @@ const numberFormatter = new Intl.NumberFormat('uk-UA', {
   maximumFractionDigits: 2,
 })
 
-function formatAddressLabel(address: InertiaAddress): string {
-  const parts = [address.city, address.street, address.building_number]
-  if (address.apartment_number) {
-    parts.push(`кв. ${address.apartment_number}`)
-  }
-  return parts.join(', ')
-}
-
 export default function Index({ addresses, readings, filters }: Props) {
   const [deletingId, setDeletingId] = useState<number | null>(null)
-  const addressList = useMemo(() => denormalizeCollection<InertiaAddress>(addresses), [addresses])
-  const readingList = useMemo(() => denormalizeAuto<InertiaReading>(readings), [readings])
+  const addressList = useDenormalizeCollection<Address>(addresses)
+  const readingList = useDenormalizeAuto<ReadingWithMeterName>(readings)
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     router.visit(`/readings?address_id=${event.target.value}`, {
@@ -121,7 +96,7 @@ export default function Index({ addresses, readings, filters }: Props) {
                 <option value="">Оберіть адресу</option>
                 {addressList.map((address) => (
                   <option key={address.id} value={address.id}>
-                    {formatAddressLabel(address)}
+                    {formatFullAddressLabel(address)}
                   </option>
                 ))}
               </Select>
@@ -137,10 +112,10 @@ export default function Index({ addresses, readings, filters }: Props) {
                   <div className="flex items-center gap-3">
                     <div>
                       <CardTitle className="text-base">
-                        {reading.meter.name} &#8470; {reading.meter.serial_number}
+                        {reading.meter.name} &#8470; {reading.meter.serialNumber}
                       </CardTitle>
                       <p className="text-sm text-gray-500">
-                        {dateFormatter.format(new Date(reading.reading_date))}
+                        {dateFormatter.format(new Date(reading.readingDate))}
                       </p>
                     </div>
                   </div>
@@ -159,14 +134,14 @@ export default function Index({ addresses, readings, filters }: Props) {
                     <div>
                       <dt className="text-gray-500">Показання</dt>
                       <dd className="font-semibold text-gray-900">
-                        {numberFormatter.format(reading.reading_value)}
+                        {numberFormatter.format(reading.readingValue)}
                       </dd>
                     </div>
-                    {reading.previous_reading_value !== null ? (
+                    {reading.previousReadingValue !== null ? (
                       <div>
                         <dt className="text-gray-500">Попередні</dt>
                         <dd className="font-semibold text-gray-900">
-                          {numberFormatter.format(reading.previous_reading_value)}
+                          {numberFormatter.format(reading.previousReadingValue)}
                         </dd>
                       </div>
                     ) : null}
@@ -178,7 +153,7 @@ export default function Index({ addresses, readings, filters }: Props) {
                         </dd>
                       </div>
                     ) : null}
-                    {reading.is_estimated ? (
+                    {reading.isEstimated ? (
                       <div>
                         <Badge variant="warning">Оцінка</Badge>
                       </div>

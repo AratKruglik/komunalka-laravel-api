@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
-import { Head, Link } from '@inertiajs/react'
-import { ChevronRight } from 'lucide-react'
+import { Head } from '@inertiajs/react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
-import { denormalizeCollection } from '@/lib/jsonapi'
+import { Breadcrumbs } from '@/Components/navigation/Breadcrumbs'
+import { useDenormalizeCollection } from '@/lib/useDenormalize'
 import { AddressForm } from './Components/AddressForm'
-import type { CreatePageProps, AddressRegion, AddressTypeItem } from './types'
+import type { CreatePageProps } from './types'
+import type { Region, AddressType } from '@/types/entities'
 
 const breadcrumbs = [
     { label: 'Головна', href: '/' },
@@ -13,8 +13,8 @@ const breadcrumbs = [
 ]
 
 export default function Create({ regions, addressTypes }: CreatePageProps) {
-    const regionList = useMemo(() => denormalizeCollection<AddressRegion>(regions), [regions])
-    const addressTypeList = useMemo(() => denormalizeCollection<AddressTypeItem>(addressTypes), [addressTypes])
+    const regionList = useDenormalizeCollection<Region>(regions)
+    const addressTypeList = useDenormalizeCollection<AddressType>(addressTypes)
 
     return (
         <AuthenticatedLayout
@@ -24,34 +24,7 @@ export default function Create({ regions, addressTypes }: CreatePageProps) {
             <Head title="Додати адресу" />
 
             <div className="space-y-6">
-                <nav
-                    aria-label="Breadcrumb"
-                    className="flex flex-wrap items-center gap-2 text-sm text-gray-500 dark:text-slate-400"
-                >
-                    {breadcrumbs.map((breadcrumb, index) => {
-                        const isLast = index === breadcrumbs.length - 1
-
-                        return (
-                            <span key={breadcrumb.label} className="flex items-center gap-2">
-                                {breadcrumb.href && !isLast ? (
-                                    <Link
-                                        href={breadcrumb.href}
-                                        className="transition-colors hover:text-gray-700 dark:hover:text-slate-200"
-                                    >
-                                        {breadcrumb.label}
-                                    </Link>
-                                ) : (
-                                    <span
-                                        className={isLast ? 'font-medium text-gray-700 dark:text-slate-200' : undefined}
-                                    >
-                                        {breadcrumb.label}
-                                    </span>
-                                )}
-                                {!isLast ? <ChevronRight className="h-4 w-4" /> : null}
-                            </span>
-                        )
-                    })}
-                </nav>
+                <Breadcrumbs items={breadcrumbs} />
 
                 <AddressForm
                     regions={regionList}

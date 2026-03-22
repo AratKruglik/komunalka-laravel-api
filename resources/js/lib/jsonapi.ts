@@ -17,46 +17,71 @@ function buildIncludedMap(included?: JsonApiResourceObject[]): IncludedMap {
     return map
 }
 
+function coerceId(id: string): number | string {
+    const num = Number(id)
+    return Number.isNaN(num) ? id : num
+}
+
+function snakeToCamel(str: string): string {
+    return str.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase())
+}
+
+function camelCaseKeys(obj: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(obj)) {
+        result[snakeToCamel(key)] = value
+    }
+    return result
+}
+
 function resolveRelationshipData(
     identifier: JsonApiResourceIdentifier,
     includedMap: IncludedMap,
+    resolving: Set<string>,
 ): Record<string, unknown> | null {
-    const resource = includedMap.get(`${identifier.type}:${identifier.id}`)
+    const key = `${identifier.type}:${identifier.id}`
+    const resource = includedMap.get(key)
     if (!resource) {
-        return { id: Number(identifier.id) }
+        return { id: coerceId(identifier.id) }
     }
-    return flattenResource(resource, includedMap)
+    return flattenResource(resource, includedMap, resolving)
 }
 
 function resolveRelationship(
     rel: JsonApiRelationship,
     includedMap: IncludedMap,
+    resolving: Set<string>,
 ): Record<string, unknown> | Record<string, unknown>[] | null {
     if (rel.data === null) return null
     if (Array.isArray(rel.data)) {
-        return rel.data.map((id) => resolveRelationshipData(id, includedMap)).filter(Boolean) as Record<string, unknown>[]
+        return rel.data.map((id) => resolveRelationshipData(id, includedMap, resolving)).filter(Boolean) as Record<string, unknown>[]
     }
-    return resolveRelationshipData(rel.data, includedMap)
+    return resolveRelationshipData(rel.data, includedMap, resolving)
 }
 
 function flattenResource(
     resource: JsonApiResourceObject,
     includedMap: IncludedMap,
+    resolving: Set<string> = new Set(),
 ): Record<string, unknown> {
+    const resourceKey = `${resource.type}:${resource.id}`
+
     const result: Record<string, unknown> = {
-        id: Number(resource.id),
-        ...(resource.attributes ?? {}),
+        id: coerceId(resource.id),
+        ...camelCaseKeys(resource.attributes ?? {}),
     }
 
-    if (resource.relationships) {
+    if (resource.relationships && !resolving.has(resourceKey)) {
+        resolving.add(resourceKey)
         for (const [key, rel] of Object.entries(resource.relationships)) {
-            result[key] = resolveRelationship(rel, includedMap)
+            result[snakeToCamel(key)] = resolveRelationship(rel, includedMap, resolving)
         }
+        resolving.delete(resourceKey)
     }
 
     if (resource.meta) {
         for (const [key, value] of Object.entries(resource.meta)) {
-            result[key] = value
+            result[snakeToCamel(key)] = value
         }
     }
 

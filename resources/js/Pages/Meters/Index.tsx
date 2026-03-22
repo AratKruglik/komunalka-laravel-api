@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
@@ -8,41 +8,15 @@ import {
     Card,
     CardContent,
     ConfirmDialog,
-    FormMessage,
     Label,
     Select,
 } from '@/Components/ui';
 import { MeterCard } from './Components/MeterCard';
-import { denormalizeCollection } from '@/lib/jsonapi';
+import { useDenormalizeCollection } from '@/lib/useDenormalize';
+import { formatAddressLabel } from '@/lib/formatAddress';
 import type { JsonApiCollectionDocument } from '@/types/jsonapi';
 import type { PageProps } from '@/types';
-
-interface MeterItem {
-    id: number;
-    serial_number: string;
-    name: string;
-    description: string | null;
-    location: string | null;
-    is_active: boolean;
-    utility_type: {
-        id: number;
-        display_name: string;
-        unit: string;
-    } | null;
-    service_provider: {
-        id: number;
-        name: string;
-    } | null;
-    photo_url: string | null;
-}
-
-interface AddressItem {
-    id: number;
-    city: string;
-    street: string;
-    building_number: string;
-    apartment_number: string | null;
-}
+import type { Meter, Address } from '@/types/entities';
 
 interface Props extends PageProps {
     meters: JsonApiCollectionDocument;
@@ -51,18 +25,15 @@ interface Props extends PageProps {
 }
 
 export default function Index({ meters: metersDocument, addresses: addressesDocument, selectedAddressId }: Props) {
-    const meters = useMemo(() => denormalizeCollection<MeterItem>(metersDocument), [metersDocument]);
-    const addresses = useMemo(() => denormalizeCollection<AddressItem>(addressesDocument), [addressesDocument]);
-    const [deleteTarget, setDeleteTarget] = useState<MeterItem | null>(null);
+    const meters = useDenormalizeCollection<Meter>(metersDocument);
+    const addresses = useDenormalizeCollection<Address>(addressesDocument);
+    const [deleteTarget, setDeleteTarget] = useState<Meter | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const addressOptions = addresses.map((address) => {
-        const apartment = address.apartment_number ? `, кв. ${address.apartment_number}` : '';
-        return {
-            value: address.id,
-            label: `${address.street}, ${address.building_number}${apartment}`,
-        };
-    });
+    const addressOptions = addresses.map((address) => ({
+        value: address.id,
+        label: formatAddressLabel(address),
+    }));
 
     const handleAddressChange = (addressId: string) => {
         if (addressId) {
@@ -155,8 +126,8 @@ export default function Index({ meters: metersDocument, addresses: addressesDocu
                     <>
                         Ви впевнені, що хочете видалити лічильник{' '}
                         <strong>{deleteTarget?.name}</strong>
-                        {deleteTarget?.serial_number ? (
-                            <> (серійний №: {deleteTarget.serial_number})</>
+                        {deleteTarget?.serialNumber ? (
+                            <> (серійний №: {deleteTarget.serialNumber})</>
                         ) : null}
                         ? Усі пов'язані показання також будуть видалені. Цю дію неможливо скасувати.
                     </>

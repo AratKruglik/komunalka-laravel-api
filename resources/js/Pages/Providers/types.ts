@@ -4,10 +4,10 @@ import type { JsonApiCollectionDocument, JsonApiDocument } from '@/types/jsonapi
 export interface UtilityTypeItem {
     id: number
     slug: string
-    display_name: string
+    displayName: string
     unit: string
     description: string | null
-    is_active: boolean
+    isActive: boolean
 }
 
 export interface CurrencyItem {
@@ -20,12 +20,12 @@ export interface CurrencyItem {
 export interface TariffItem {
     id: number
     name: string
-    base_rate: string | number
-    service_fee: string | number
-    effective_from: string
-    effective_to: string | null
+    baseRate: string | number
+    serviceFee: string | number
+    effectiveFrom: string
+    effectiveTo: string | null
     notes: string | null
-    utility_type: UtilityTypeItem
+    utilityType: UtilityTypeItem
     currency: CurrencyItem
 }
 
@@ -36,21 +36,21 @@ export interface ProviderItem {
     phone: string | null
     email: string | null
     website: string | null
-    is_active: boolean
-    address_id: number
-    utility_type: UtilityTypeItem
+    isActive: boolean
+    addressId: number
+    utilityType: UtilityTypeItem
     tariffs: TariffItem[]
-    created_at: string
-    updated_at: string
+    createdAt: string
+    updatedAt: string
 }
 
-export interface AddressItem {
+export interface ProviderAddressItem {
     id: number
     city: string
     street: string
-    building_number: string
-    apartment_number: string | null
-    is_primary: boolean
+    buildingNumber: string
+    apartmentNumber: string | null
+    isPrimary: boolean
 }
 
 export interface IndexPageProps extends PageProps {

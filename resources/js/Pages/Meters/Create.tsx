@@ -1,30 +1,22 @@
-import { useMemo } from 'react';
 import { Head } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { MeterForm } from './Components/MeterForm';
-import { denormalizeCollection } from '@/lib/jsonapi';
+import { useDenormalizeCollection } from '@/lib/useDenormalize';
 import type { JsonApiCollectionDocument } from '@/types/jsonapi';
 import type { PageProps } from '@/types';
-
-interface AddressItem {
-    id: number;
-    city: string;
-    street: string;
-    building_number: string;
-    apartment_number: string | null;
-}
+import type { Address } from '@/types/entities';
 
 interface UtilityTypeItem {
     id: number;
     slug: string;
-    display_name: string;
+    displayName: string;
     unit: string;
 }
 
 interface ServiceProviderItem {
     id: number;
     name: string;
-    address_id: number;
+    addressId: number;
 }
 
 interface Props extends PageProps {
@@ -38,9 +30,9 @@ export default function Create({
     utilityTypes: utilityTypesDocument,
     serviceProviders: serviceProvidersDocument,
 }: Props) {
-    const addresses = useMemo(() => denormalizeCollection<AddressItem>(addressesDocument), [addressesDocument]);
-    const utilityTypes = useMemo(() => denormalizeCollection<UtilityTypeItem>(utilityTypesDocument), [utilityTypesDocument]);
-    const serviceProviders = useMemo(() => denormalizeCollection<ServiceProviderItem>(serviceProvidersDocument), [serviceProvidersDocument]);
+    const addresses = useDenormalizeCollection<Address>(addressesDocument);
+    const utilityTypes = useDenormalizeCollection<UtilityTypeItem>(utilityTypesDocument);
+    const serviceProviders = useDenormalizeCollection<ServiceProviderItem>(serviceProvidersDocument);
 
     return (
         <AuthenticatedLayout

@@ -1,8 +1,10 @@
 import { Head, usePage } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
-import { denormalizeCollection } from '@/lib/jsonapi';
+import { useDenormalizeCollection } from '@/lib/useDenormalize';
+import { formatAddressLabel } from '@/lib/formatAddress';
 import { useAuthUser } from '@/lib/useAuthUser';
 import type { PageProps } from '@/types';
+import type { Address } from '@/types/entities';
 import type { JsonApiCollectionDocument } from '@/types/jsonapi';
 import { WelcomeHeader } from './Components/WelcomeHeader';
 import { ConsumptionChart } from './Components/ConsumptionChart';
@@ -32,27 +34,18 @@ interface ExpenseItem {
 
 interface MeterReadingData {
     id: number;
-    reading_value: number;
-    reading_date: string;
+    readingValue: number;
+    readingDate: string;
     consumption: number;
     meter: {
         id: number;
         name: string;
-        utility_type: {
+        utilityType: {
             slug: string;
-            display_name: string;
+            displayName: string;
             unit: string;
         };
     };
-}
-
-interface Address {
-    id: number;
-    city: string;
-    street: string;
-    building_number: string;
-    apartment_number: string | null;
-    is_primary: boolean;
 }
 
 interface DashboardPageProps extends PageProps {
@@ -63,32 +56,18 @@ interface DashboardPageProps extends PageProps {
     addresses: JsonApiCollectionDocument;
 }
 
-function formatAddressLabel(address: Address): string {
-    const parts = [address.street, address.building_number];
-    if (address.apartment_number) {
-        parts.push(`кв. ${address.apartment_number}`);
-    }
-    return parts.join(', ');
-}
-
 export default function Index() {
     const { consumptionHistory, expenseDistribution, recentReadings, addresses } =
         usePage<DashboardPageProps>().props;
 
     const user = useAuthUser();
 
-    const addressList = useMemo(
-        () => denormalizeCollection<Address>(addresses),
-        [addresses],
-    );
+    const addressList = useDenormalizeCollection<Address>(addresses);
 
-    const readingList = useMemo(
-        () => denormalizeCollection<MeterReadingData>(recentReadings),
-        [recentReadings],
-    );
+    const readingList = useDenormalizeCollection<MeterReadingData>(recentReadings);
 
     const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>(
-        addressList.find((a) => a.is_primary)?.id ?? addressList[0]?.id,
+        addressList.find((a) => a.isPrimary)?.id ?? addressList[0]?.id,
     );
 
     const addressOptions = useMemo(
@@ -101,7 +80,7 @@ export default function Index() {
         [addressList],
     );
 
-    const userName = user?.first_name ?? user?.username ?? 'Користувач';
+    const userName = user?.firstName ?? user?.username ?? 'Користувач';
 
     return (
         <>

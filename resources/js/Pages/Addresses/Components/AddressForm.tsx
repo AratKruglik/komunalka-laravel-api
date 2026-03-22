@@ -21,7 +21,7 @@ import {
     Textarea,
 } from '@/Components/ui'
 import { FormField } from '@/Components/ui/FormField'
-import type { AddressItem, AddressRegion, AddressTypeItem } from '../types'
+import type { Address, Region, AddressType } from '@/types/entities'
 
 type StepStatus = 'completed' | 'current' | 'upcoming'
 
@@ -36,9 +36,9 @@ interface Step extends StepDefinition {
 }
 
 interface AddressFormProps {
-    regions: AddressRegion[]
-    addressTypes: AddressTypeItem[]
-    address?: AddressItem
+    regions: Region[]
+    addressTypes: AddressType[]
+    address?: Address
     submitUrl: string
     submitMethod: 'post' | 'put'
     title: string
@@ -75,15 +75,15 @@ export function AddressForm({
     submitLabel,
 }: AddressFormProps) {
     const form = useForm({
-        address_type_id: address ? String(address.address_type.id) : '',
+        address_type_id: address ? String(address.addressType.id) : '',
         region_id: address ? String(address.region.id) : '',
         city: address?.city ?? '',
         street: address?.street ?? '',
-        building_number: address?.building_number ?? '',
-        apartment_number: address?.apartment_number ?? '',
-        zip_code: address?.zip_code ?? '',
+        building_number: address?.buildingNumber ?? '',
+        apartment_number: address?.apartmentNumber ?? '',
+        zip_code: address?.zipCode ?? '',
         notes: address?.notes ?? '',
-        is_primary: address?.is_primary ?? false,
+        is_primary: address?.isPrimary ?? false,
     })
 
     const addressTypeId = form.data.address_type_id

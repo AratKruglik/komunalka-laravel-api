@@ -11,19 +11,15 @@ use Modules\Shared\Models\UtilityType;
 /** @mixin UtilityType */
 class UtilityTypeResource extends InertiaJsonApiResource
 {
-    /** @var list<string> */
-    public $attributes = [
-        'slug',
-        'display_name',
-        'unit',
-        'description',
-        'is_active',
-    ];
-
     /** @return array<string, mixed> */
-    public function toMeta(Request $request): array
+    public function toAttributes(Request $request): array
     {
         return [
+            'slug' => $this->slug,
+            'display_name' => $this->display_name,
+            'unit' => $this->unit,
+            'description' => $this->description,
+            'is_active' => $this->is_active,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

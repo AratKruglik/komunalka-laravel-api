@@ -1,47 +1,22 @@
-import { useMemo } from 'react';
 import { Head } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { MeterForm } from './Components/MeterForm';
-import { denormalize, denormalizeCollection } from '@/lib/jsonapi';
+import { useDenormalize, useDenormalizeCollection } from '@/lib/useDenormalize';
 import type { JsonApiCollectionDocument, JsonApiDocument } from '@/types/jsonapi';
 import type { PageProps } from '@/types';
+import type { Address, Meter } from '@/types/entities';
 
 interface UtilityTypeItem {
     id: number;
     slug: string;
-    display_name: string;
+    displayName: string;
     unit: string;
-}
-
-interface MeterData {
-    id: number;
-    address_id: number;
-    serial_number: string;
-    name: string;
-    description: string | null;
-    model_name: string | null;
-    location: string | null;
-    installation_date: string | null;
-    initial_reading: number | null;
-    notes: string | null;
-    is_active: boolean;
-    utility_type: UtilityTypeItem | null;
-    service_provider: { id: number; name: string } | null;
-    photo_url: string | null;
-}
-
-interface AddressItem {
-    id: number;
-    city: string;
-    street: string;
-    building_number: string;
-    apartment_number: string | null;
 }
 
 interface ServiceProviderItem {
     id: number;
     name: string;
-    address_id: number;
+    addressId: number;
 }
 
 interface Props extends PageProps {
@@ -57,10 +32,10 @@ export default function Edit({
     utilityTypes: utilityTypesDocument,
     serviceProviders: serviceProvidersDocument,
 }: Props) {
-    const meter = useMemo(() => denormalize<MeterData>(meterDocument), [meterDocument]);
-    const addresses = useMemo(() => denormalizeCollection<AddressItem>(addressesDocument), [addressesDocument]);
-    const utilityTypes = useMemo(() => denormalizeCollection<UtilityTypeItem>(utilityTypesDocument), [utilityTypesDocument]);
-    const serviceProviders = useMemo(() => denormalizeCollection<ServiceProviderItem>(serviceProvidersDocument), [serviceProvidersDocument]);
+    const meter = useDenormalize<Meter>(meterDocument);
+    const addresses = useDenormalizeCollection<Address>(addressesDocument);
+    const utilityTypes = useDenormalizeCollection<UtilityTypeItem>(utilityTypesDocument);
+    const serviceProviders = useDenormalizeCollection<ServiceProviderItem>(serviceProvidersDocument);
 
     return (
         <AuthenticatedLayout

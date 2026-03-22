@@ -10,7 +10,7 @@
   },
   "packageManager": "pnpm@10.28.0",
   "dependencies": {
-    "@inertiajs/react": "^2.3.18",
+    "@inertiajs/react": "3.0.0-beta.5",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
-import { Head, Link } from '@inertiajs/react'
-import { ChevronRight } from 'lucide-react'
+import { Head } from '@inertiajs/react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
-import { denormalize, denormalizeCollection } from '@/lib/jsonapi'
+import { Breadcrumbs } from '@/Components/navigation/Breadcrumbs'
+import { useDenormalize, useDenormalizeCollection } from '@/lib/useDenormalize'
 import { AddressForm } from './Components/AddressForm'
-import type { EditPageProps, AddressItem, AddressRegion, AddressTypeItem } from './types'
+import type { EditPageProps } from './types'
+import type { Address, Region, AddressType } from '@/types/entities'
 
 const breadcrumbs = [
     { label: 'Головна', href: '/' },
@@ -13,9 +13,9 @@ const breadcrumbs = [
 ]
 
 export default function Edit({ address, regions, addressTypes }: EditPageProps) {
-    const addressData = useMemo(() => denormalize<AddressItem>(address), [address])
-    const regionList = useMemo(() => denormalizeCollection<AddressRegion>(regions), [regions])
-    const addressTypeList = useMemo(() => denormalizeCollection<AddressTypeItem>(addressTypes), [addressTypes])
+    const addressData = useDenormalize<Address>(address)
+    const regionList = useDenormalizeCollection<Region>(regions)
+    const addressTypeList = useDenormalizeCollection<AddressType>(addressTypes)
 
     return (
         <AuthenticatedLayout
@@ -25,34 +25,7 @@ export default function Edit({ address, regions, addressTypes }: EditPageProps) 
             <Head title="Редагування адреси" />
 
             <div className="space-y-6">
-                <nav
-                    aria-label="Breadcrumb"
-                    className="flex flex-wrap items-center gap-2 text-sm text-gray-500 dark:text-slate-400"
-                >
-                    {breadcrumbs.map((breadcrumb, index) => {
-                        const isLast = index === breadcrumbs.length - 1
-
-                        return (
-                            <span key={breadcrumb.label} className="flex items-center gap-2">
-                                {breadcrumb.href && !isLast ? (
-                                    <Link
-                                        href={breadcrumb.href}
-                                        className="transition-colors hover:text-gray-700 dark:hover:text-slate-200"
-                                    >
-                                        {breadcrumb.label}
-                                    </Link>
-                                ) : (
-                                    <span
-                                        className={isLast ? 'font-medium text-gray-700 dark:text-slate-200' : undefined}
-                                    >
-                                        {breadcrumb.label}
-                                    </span>
-                                )}
-                                {!isLast ? <ChevronRight className="h-4 w-4" /> : null}
-                            </span>
-                        )
-                    })}
-                </nav>
+                <Breadcrumbs items={breadcrumbs} />
 
                 <AddressForm
                     regions={regionList}

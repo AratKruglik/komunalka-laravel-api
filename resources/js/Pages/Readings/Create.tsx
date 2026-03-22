@@ -3,10 +3,12 @@ import { Head, router } from '@inertiajs/react'
 import { Plus } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { PageSectionHeader } from '@/Components/pages'
-import { Button, Card, CardContent, FormMessage, Label, Select } from '@/Components/ui'
-import { denormalizeCollection, denormalizeAuto } from '@/lib/jsonapi'
+import { Button, Card, CardContent, Label, Select } from '@/Components/ui'
+import { useDenormalizeCollection, useDenormalizeAuto } from '@/lib/useDenormalize'
+import { formatFullAddressLabel } from '@/lib/formatAddress'
 import type { PageProps, Meter, Reading } from '@/types'
 import type { ApiServiceProvider } from '@/types/api'
+import type { Address } from '@/types/entities'
 import type { JsonApiCollectionDocument } from '@/types/jsonapi'
 import {
   toAddressReadingsSnapshotViewModel,
@@ -15,120 +17,6 @@ import {
 } from '@/viewModels'
 import { ReadingCard } from './Components/ReadingCard'
 import { ReadingSummaryTable } from './Components/ReadingSummaryTable'
-
-interface InertiaAddress {
-  id: number
-  city: string
-  street: string
-  building_number: string
-  apartment_number: string | null
-}
-
-interface InertiaMeter {
-  id: number
-  serial_number: string
-  name: string
-  description: string | null
-  model_name: string | null
-  location: string | null
-  installation_date: string
-  initial_reading: number | null
-  notes: string | null
-  is_active: boolean
-  address_id: number
-  utility_type: {
-    id: number
-    slug: string
-    display_name: string
-    unit: string
-  }
-  service_provider: {
-    id: number
-    name: string
-  } | null
-  photo_url: string | null
-  created_at: string
-  updated_at: string
-}
-
-interface InertiaReading {
-  id: number
-  reading_value: number
-  reading_date: string
-  previous_reading_value: number | null
-  consumption: number | null
-  notes: string | null
-  is_estimated: boolean
-  meter: {
-    id: number
-    serial_number: string
-    name: string
-  }
-  tariff: {
-    id: number
-    name: string
-  } | null
-  photos: Array<{
-    id: number
-    original_url: string
-    optimized_url: string
-    thumbnail_url: string
-  }>
-  created_at: string
-  updated_at: string
-}
-
-interface InertiaServiceProvider {
-  id: number
-  name: string
-  description: string | null
-  phone: string | null
-  email: string | null
-  website: string | null
-  is_active: boolean
-  address_id: number
-  utility_type: {
-    id: number
-    slug: string
-    display_name: string
-    unit: string
-    description: string | null
-    is_active: boolean
-    created_at: string
-    updated_at: string
-  }
-  tariffs: Array<{
-    id: number
-    name: string
-    base_rate: string | number
-    service_fee: string | number
-    effective_from: string
-    effective_to: string | null
-    notes: string | null
-    utility_type: {
-      id: number
-      slug: string
-      display_name: string
-      unit: string
-      description: string | null
-      is_active: boolean
-      created_at: string
-      updated_at: string
-    }
-    currency: {
-      id: number
-      code: string
-      name: string
-      symbol: string
-      created_at: string
-      updated_at: string
-    }
-    created_at: string
-    updated_at: string
-  }>
-  created_at: string
-  updated_at: string
-}
 
 interface Props extends PageProps {
   addresses: JsonApiCollectionDocument
@@ -150,118 +38,6 @@ type MeterFormState = Record<
     }
   }
 >
-
-function toMeter(m: InertiaMeter): Meter {
-  return {
-    id: m.id,
-    addressId: m.address_id,
-    serialNumber: m.serial_number,
-    name: m.name,
-    description: m.description,
-    modelName: m.model_name,
-    location: m.location,
-    installationDate: m.installation_date,
-    initialReading: m.initial_reading,
-    notes: m.notes,
-    isActive: m.is_active,
-    utilityType: {
-      id: m.utility_type.id,
-      slug: m.utility_type.slug,
-      displayName: m.utility_type.display_name,
-      unit: m.utility_type.unit,
-    },
-    serviceProvider: m.service_provider
-      ? { id: m.service_provider.id, name: m.service_provider.name }
-      : null,
-    photoUrl: m.photo_url,
-    createdAt: m.created_at,
-    updatedAt: m.updated_at,
-  }
-}
-
-function toReading(r: InertiaReading): Reading {
-  return {
-    id: r.id,
-    readingValue: r.reading_value,
-    readingDate: r.reading_date,
-    previousReadingValue: r.previous_reading_value,
-    consumption: r.consumption,
-    notes: r.notes,
-    isEstimated: r.is_estimated,
-    meter: { id: r.meter.id, serialNumber: r.meter.serial_number },
-    tariff: r.tariff,
-    photos: r.photos.map((p) => ({
-      id: p.id,
-      originalUrl: p.original_url,
-      optimizedUrl: p.optimized_url,
-      thumbnailUrl: p.thumbnail_url,
-    })),
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
-  }
-}
-
-function toApiServiceProvider(sp: InertiaServiceProvider): ApiServiceProvider {
-  return {
-    id: sp.id,
-    addressId: sp.address_id,
-    name: sp.name,
-    description: sp.description,
-    phone: sp.phone,
-    email: sp.email,
-    website: sp.website,
-    isActive: sp.is_active,
-    utilityType: {
-      id: sp.utility_type.id,
-      slug: sp.utility_type.slug,
-      displayName: sp.utility_type.display_name,
-      unit: sp.utility_type.unit,
-      description: sp.utility_type.description,
-      isActive: sp.utility_type.is_active,
-      createdAt: sp.utility_type.created_at,
-      updatedAt: sp.utility_type.updated_at,
-    },
-    tariffs: sp.tariffs.map((t) => ({
-      id: t.id,
-      name: t.name,
-      baseRate: t.base_rate,
-      serviceFee: t.service_fee,
-      effectiveFrom: t.effective_from,
-      effectiveTo: t.effective_to,
-      notes: t.notes,
-      utilityType: {
-        id: t.utility_type.id,
-        slug: t.utility_type.slug,
-        displayName: t.utility_type.display_name,
-        unit: t.utility_type.unit,
-        description: t.utility_type.description,
-        isActive: t.utility_type.is_active,
-        createdAt: t.utility_type.created_at,
-        updatedAt: t.utility_type.updated_at,
-      },
-      currency: {
-        id: t.currency.id,
-        code: t.currency.code,
-        name: t.currency.name,
-        symbol: t.currency.symbol,
-        createdAt: t.currency.created_at,
-        updatedAt: t.currency.updated_at,
-      },
-      createdAt: t.created_at,
-      updatedAt: t.updated_at,
-    })),
-    createdAt: sp.created_at,
-    updatedAt: sp.updated_at,
-  }
-}
-
-function formatAddressLabel(address: InertiaAddress): string {
-  const parts = [address.city, address.street, address.building_number]
-  if (address.apartment_number) {
-    parts.push(`кв. ${address.apartment_number}`)
-  }
-  return parts.join(', ')
-}
 
 function buildFormState(drafts: readonly MeterReadingDraftViewModel[]): MeterFormState {
   return drafts.reduce<MeterFormState>((acc, draft) => {
@@ -293,14 +69,10 @@ export default function Create({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const generatedPreviews = useRef<Record<string, string>>({})
 
-  const addressList = useMemo(() => denormalizeCollection<InertiaAddress>(addresses), [addresses])
-  const rawMeters = useMemo(() => denormalizeAuto<InertiaMeter>(meters), [meters])
-  const rawReadings = useMemo(() => denormalizeAuto<InertiaReading>(readings), [readings])
-  const rawProviders = useMemo(() => denormalizeAuto<InertiaServiceProvider>(serviceProviders), [serviceProviders])
-
-  const meterList = useMemo(() => rawMeters.map(toMeter), [rawMeters])
-  const readingList = useMemo(() => rawReadings.map(toReading), [rawReadings])
-  const providerList = useMemo(() => rawProviders.map(toApiServiceProvider), [rawProviders])
+  const addressList = useDenormalizeCollection<Address>(addresses)
+  const meterList = useDenormalizeAuto<Meter>(meters)
+  const readingList = useDenormalizeAuto<Reading>(readings)
+  const providerList = useDenormalizeAuto<ApiServiceProvider>(serviceProviders)
 
   const currentAddressId = selectedAddressId ?? (addressList[0]?.id ?? null)
 
@@ -516,7 +288,7 @@ export default function Create({
               >
                 {addressList.map((address) => (
                   <option key={address.id} value={address.id}>
-                    {formatAddressLabel(address)}
+                    {formatFullAddressLabel(address)}
                   </option>
                 ))}
               </Select>

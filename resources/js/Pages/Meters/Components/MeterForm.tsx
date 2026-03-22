@@ -14,81 +14,55 @@ import {
     Select,
     Textarea,
 } from '@/Components/ui';
-
-interface AddressOption {
-    id: number;
-    city: string;
-    street: string;
-    building_number: string;
-    apartment_number: string | null;
-}
+import { formatAddressLabel } from '@/lib/formatAddress';
+import type { Address, Meter } from '@/types/entities';
 
 interface UtilityTypeOption {
     id: number;
     slug: string;
-    display_name: string;
+    displayName: string;
     unit: string;
 }
 
 interface ServiceProviderOption {
     id: number;
     name: string;
-    address_id: number;
-}
-
-interface MeterData {
-    id: number;
-    address_id: number;
-    serial_number: string;
-    name: string;
-    description: string | null;
-    model_name: string | null;
-    location: string | null;
-    installation_date: string | null;
-    initial_reading: number | null;
-    notes: string | null;
-    is_active: boolean;
-    utility_type: UtilityTypeOption | null;
-    service_provider: { id: number; name: string } | null;
-    photo_url: string | null;
+    addressId: number;
 }
 
 interface MeterFormProps {
-    addresses: AddressOption[];
+    addresses: Address[];
     utilityTypes: UtilityTypeOption[];
     serviceProviders: ServiceProviderOption[];
-    meter?: MeterData;
+    meter?: Meter;
 }
 
 export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: MeterFormProps) {
     const isEditing = Boolean(meter);
 
     const form = useForm({
-        address_id: meter?.address_id?.toString() ?? '',
-        utility_type_id: meter?.utility_type?.id?.toString() ?? '',
-        service_provider_id: meter?.service_provider?.id?.toString() ?? '',
-        serial_number: meter?.serial_number ?? '',
+        address_id: meter?.addressId?.toString() ?? '',
+        utility_type_id: meter?.utilityType?.id?.toString() ?? '',
+        service_provider_id: meter?.serviceProvider?.id?.toString() ?? '',
+        serial_number: meter?.serialNumber ?? '',
         name: meter?.name ?? '',
         description: meter?.description ?? '',
-        model_name: meter?.model_name ?? '',
+        model_name: meter?.modelName ?? '',
         location: meter?.location ?? '',
-        installation_date: meter?.installation_date?.split('T')[0] ?? '',
-        initial_reading: meter?.initial_reading?.toString() ?? '',
+        installation_date: meter?.installationDate?.split('T')[0] ?? '',
+        initial_reading: meter?.initialReading?.toString() ?? '',
         notes: meter?.notes ?? '',
-        is_active: meter?.is_active ?? true,
+        is_active: meter?.isActive ?? true,
         photo: null as File | null,
     });
 
-    const [photoPreview, setPhotoPreview] = useState<string | null>(meter?.photo_url ?? null);
+    const [photoPreview, setPhotoPreview] = useState<string | null>(meter?.photoUrl ?? null);
 
     const addressOptions = useMemo(() => {
-        return addresses.map((address) => {
-            const apartment = address.apartment_number ? `, кв. ${address.apartment_number}` : '';
-            return {
-                value: String(address.id),
-                label: `${address.street}, ${address.building_number}${apartment}`,
-            };
-        });
+        return addresses.map((address) => ({
+            value: String(address.id),
+            label: formatAddressLabel(address),
+        }));
     }, [addresses]);
 
     const filteredProviders = useMemo(() => {
@@ -96,7 +70,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
             return [];
         }
         const addressId = Number(form.data.address_id);
-        return serviceProviders.filter((sp) => sp.address_id === addressId);
+        return serviceProviders.filter((sp) => sp.addressId === addressId);
     }, [serviceProviders, form.data.address_id]);
 
     const selectedUnit = useMemo(() => {
@@ -180,7 +154,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                             >
                                 <option value="">Оберіть тип послуги</option>
                                 {utilityTypes.map((ut) => (
-                                    <option key={ut.id} value={String(ut.id)}>{ut.display_name}</option>
+                                    <option key={ut.id} value={String(ut.id)}>{ut.displayName}</option>
                                 ))}
                             </Select>
                             <FormMessage variant="error">{form.errors.utility_type_id}</FormMessage>
