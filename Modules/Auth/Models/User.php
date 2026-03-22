@@ -16,13 +16,12 @@ use Modules\Auth\Database\Factories\UserFactory;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
 use Modules\Auth\Policies\UserPolicy;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[UsePolicy(UserPolicy::class)]
-class User extends Authenticatable implements HasMedia, JWTSubject
+class User extends Authenticatable implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
@@ -56,21 +55,6 @@ class User extends Authenticatable implements HasMedia, JWTSubject
             'password' => 'hashed',
             'role' => UserRole::class,
             'auth_provider' => AuthProvider::class,
-        ];
-    }
-
-    public function getJWTIdentifier(): mixed
-    {
-        return $this->getKey();
-    }
-
-    /** @return array<string, mixed> */
-    public function getJWTCustomClaims(): array
-    {
-        return [
-            'email' => $this->email,
-            'name' => $this->name,
-            'role' => $this->role?->value,
         ];
     }
 

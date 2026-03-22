@@ -9,8 +9,8 @@ use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\LoginData;
 use Modules\Auth\Enums\AuthProvider;
+use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
-use Modules\Auth\Services\JwtService;
 
 class LoginUser
 {
@@ -18,11 +18,9 @@ class LoginUser
 
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private JwtService $jwtService,
     ) {}
 
-    /** @return array<string, mixed> */
-    public function handle(LoginData $data): array
+    public function handle(LoginData $data): User
     {
         $user = $this->userRepository->findByEmail($data->email);
 
@@ -42,6 +40,6 @@ class LoginUser
 
         $user->update(['last_login_at' => now()]);
 
-        return $this->jwtService->generateTokenPair($user);
+        return $user;
     }
 }

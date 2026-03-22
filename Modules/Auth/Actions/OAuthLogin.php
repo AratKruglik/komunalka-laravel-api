@@ -6,7 +6,7 @@ namespace Modules\Auth\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\OAuthLoginData;
-use Modules\Auth\Services\JwtService;
+use Modules\Auth\Models\User;
 use Modules\Auth\Services\OAuthService;
 
 class OAuthLogin
@@ -15,17 +15,15 @@ class OAuthLogin
 
     public function __construct(
         private OAuthService $oAuthService,
-        private JwtService $jwtService,
     ) {}
 
-    /** @return array<string, mixed> */
-    public function handle(OAuthLoginData $data): array
+    public function handle(OAuthLoginData $data): User
     {
         $socialiteUser = $this->oAuthService->authenticateWithToken($data->provider, $data->token);
         $user = $this->oAuthService->findOrCreateUser($socialiteUser, $data->provider);
 
         $user->update(['last_login_at' => now()]);
 
-        return $this->jwtService->generateTokenPair($user);
+        return $user;
     }
 }

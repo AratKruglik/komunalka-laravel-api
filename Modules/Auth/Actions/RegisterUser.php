@@ -8,8 +8,8 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\DTO\RegisterUserData;
 use Modules\Auth\Enums\AuthProvider;
 use Modules\Auth\Enums\UserRole;
+use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
-use Modules\Auth\Services\JwtService;
 
 class RegisterUser
 {
@@ -17,13 +17,11 @@ class RegisterUser
 
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private JwtService $jwtService,
     ) {}
 
-    /** @return array<string, mixed> */
-    public function handle(RegisterUserData $data): array
+    public function handle(RegisterUserData $data): User
     {
-        /** @var \Modules\Auth\Models\User $user */
+        /** @var User $user */
         $user = $this->userRepository->create([
             'name' => "{$data->firstName} {$data->lastName}",
             'username' => $data->username,
@@ -37,6 +35,6 @@ class RegisterUser
             'email_verified' => false,
         ]);
 
-        return $this->jwtService->generateTokenPair($user);
+        return $user;
     }
 }
