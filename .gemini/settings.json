@@ -1,4 +1,48 @@
 {
+    "context": {
+        "fileName": ["GEMINI.md", "AGENTS.md"]
+    },
+    "general": {
+        "defaultApprovalMode": "default",
+        "plan": {
+            "enabled": true,
+            "directory": ".gemini/plans"
+        }
+    },
+    "experimental": {
+        "enableAgents": true
+    },
+    "agents": {
+        "overrides": {
+            "browser_agent": {
+                "enabled": true
+            }
+        },
+        "browser": {
+            "sessionMode": "persistent",
+            "headless": false,
+            "disableUserInput": true,
+            "confirmSensitiveActions": true,
+            "blockFileUploads": false,
+            "maxActionsPerTask": 100,
+            "allowedDomains": []
+        }
+    },
+    "hooks": {
+        "AfterTool": [
+            {
+                "matcher": "write_file|replace|edit_file",
+                "hooks": [
+                    {
+                        "name": "pint-rector",
+                        "type": "command",
+                        "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/pint-rector.sh",
+                        "timeout": 120000
+                    }
+                ]
+            }
+        ]
+    },
     "mcpServers": {
         "laravel-boost": {
             "command": "php",
@@ -15,6 +59,41 @@
             "env": {
                 "SITE_PATH": "/Users/oleksii/Projects/Youtube/Komunalka/komunalka-laravel-api"
             }
+        },
+        "context7": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@upstash/context7-mcp",
+                "--api-key",
+                "${CONTEXT7_API_KEY}"
+            ],
+            "trust": false
+        },
+        "figma": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "figma-developer-mcp",
+                "--figma-api-key=${FIGMA_API_KEY}",
+                "--stdio"
+            ],
+            "trust": false
+        },
+        "github": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "GITHUB_PERSONAL_ACCESS_TOKEN",
+                "ghcr.io/github/github-mcp-server"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+            },
+            "trust": false
         }
     }
 }
