@@ -4,5 +4,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Project Initialization**
-  *Link: [./tracks/project_initialization_20260420/](./tracks/project_initialization_20260420/)*
+- [x] **Track: Project Scaffolding**
+*Link: [./tracks/project_initialization_20260420/](./tracks/project_initialization_20260420/)*
+
+---
+
+- [ ] **Track: Migration Verification (Inertia Monolith)**
+*Link: [./tracks/migration_verification_20260420/](./tracks/migration_verification_20260420/)*
+
