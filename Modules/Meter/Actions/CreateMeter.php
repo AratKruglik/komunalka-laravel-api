@@ -42,6 +42,10 @@ class CreateMeter
             'is_active' => $data->isActive,
         ]);
 
+        if ($data->photo) {
+            $meter->addMedia($data->photo)->toMediaCollection('photo');
+        }
+
         return $meter->load(['utilityType', 'serviceProvider']);
     }
 

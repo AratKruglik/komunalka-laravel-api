@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Meter\DTO;
 
+use Illuminate\Http\UploadedFile;
 use Modules\Meter\Http\Requests\StoreMeterRequest;
 
 final readonly class CreateMeterData
@@ -21,6 +22,7 @@ final readonly class CreateMeterData
         public float $initialReading,
         public ?string $notes,
         public bool $isActive,
+        public ?UploadedFile $photo = null,
     ) {}
 
     public static function fromRequest(StoreMeterRequest $request): self
@@ -36,10 +38,11 @@ final readonly class CreateMeterData
             description: $request->validated('description'),
             modelName: $request->validated('model_name'),
             location: $request->validated('location'),
-            installationDate: $request->validated('installation_date'),
+            installation_date: $request->validated('installation_date'),
             initialReading: (float) $request->validated('initial_reading', 0),
             notes: $request->validated('notes'),
             isActive: (bool) $request->validated('is_active', true),
+            photo: $request->file('photo'),
         );
     }
 }
