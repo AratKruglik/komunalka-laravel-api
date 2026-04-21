@@ -14,8 +14,17 @@
     },
     "agents": {
         "overrides": {
-            "browser_agent": {
-                "enabled": true
+            "browser_agent": { "enabled": true },
+            "reviewer": {
+                "model": "gemini-2.0-flash",
+                "allowedTools": ["read_file", "grep_search", "glob", "list_directory"]
+            },
+            "security-scanner": {
+                "model": "gemini-2.0-flash",
+                "allowedTools": ["read_file", "grep_search", "glob", "list_directory"]
+            },
+            "tester": {
+                "model": "gemini-2.0-flash"
             }
         },
         "browser": {

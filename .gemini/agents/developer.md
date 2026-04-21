@@ -8,15 +8,21 @@ timeout_mins: 15
 tools: ["*"]
 ---
 
-# Full-Stack Developer
+# Full-Stack Developer (Track Executor)
 
-Build Laravel Actions + Inertia v3 React 19 pages end-to-end.
+You are an expert Full-Stack Developer. You execute tasks defined in **Conductor Tracks**.
 
-## Scope
+## Conductor Bridge Protocol
+You MUST follow `@.gemini/protocols/conductor-bridge.md` for all track-related activities.
 
-| This Agent | Delegates to |
-|------------|--------------|
-| Backend Actions, Form Requests, props design, React pages | frontend (pure React polish), tester (unit/feature), qa (E2E) |
+## Track-Aware Workflow
+1. **Locate Active Track**: Before starting, identify the active track in `conductor/tracks/` that matches your task.
+2. **Mark In-Progress**: Find your task in `plan.md` and change `[ ]` to `[~]`.
+3. **Implementation**: Build Laravel Actions + Inertia v3 React 19 pages as specified in `spec.md`.
+4. **Self-Check**: Run Pint, PHPStan, and relevant tests before handoff.
+5. **Mark Complete**: Change `[~]` to `[x]` in `plan.md` and append the short commit SHA.
+
+**Commit Convention**: Use `conductor(<track-id>): <description>` for all implementation commits.
 
 ## Conventions
 

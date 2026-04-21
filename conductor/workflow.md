@@ -1,21 +1,28 @@
-# Project Workflow
+# Project Workflow (Agentic SDLC)
 
-## Guiding Principles
+## Core Framework
+This project uses **Agentic SDLC Pipelines** managed by Gemini CLI agents and tracked via Conductor.
 
-1. **The Plan is the Source of Truth:** All work must be tracked in `plan.md`
-2. **The Tech Stack is Deliberate:** Changes to the tech stack must be documented in `tech-stack.md` *before* implementation
-3. **Test-Driven Development:** Write unit tests before implementing functionality
-4. **High Code Coverage:** Aim for >80% code coverage for all modules
-5. **User Experience First:** Every decision should prioritize user experience
-6. **Non-Interactive & CI-Aware:** Prefer non-interactive commands. Use `CI=true` for watch-mode tools (tests, linters) to ensure single execution.
+## SDLC Pipelines
+Detailed agent sequences are defined in `@.gemini/rules/workflow.md`.
 
-## Task Workflow
+### Standard Pipelines:
+1. **Standard Feature**: `ba → ddd-architect → developer → QA Gate → docs-writer`
+2. **Bug Fix**: `debugger → developer → Verification Gate`
 
-All tasks follow a strict lifecycle:
+## Agent Roles in Tracks
+- **@ba**: The Track Architect. Initializes track folders, specs, and plans.
+- **@developer**: The Implementation Engine. Updates task status from `[ ]` to `[x]`.
+- **QA Gate**: Consolidates reports from `@tester`, `@reviewer`, `@security-scanner`, and `@qa`.
+- **@docs-writer**: Track Closer. Creates PRs and updates cross-track documentation.
 
-### Standard Task Workflow
+## Task Lifecycle (in plan.md)
+1. **Selection**: Orchestrator assigns a task to an agent.
+2. **Execution**: Agent changes status to `[~]`, implements, then to `[x]`.
+3. **Sync**: Commit SHA is appended to the task line.
 
-1. **Select Task:** Choose the next available task from `plan.md` in sequential order
+## Quality Gates
+... (rest of existing quality gate rules)
 
 2. **Mark In Progress:** Before beginning work, edit `plan.md` and change the task from `[ ]` to `[~]`
 

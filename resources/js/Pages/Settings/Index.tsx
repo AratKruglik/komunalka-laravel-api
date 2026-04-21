@@ -26,7 +26,6 @@ function resolveTab(raw: string): SettingsTab {
 }
 
 export default function Index({ tab, connectedProviders }: Props) {
-    const { flash } = usePage<PageProps>().props;
     const activeTab = resolveTab(tab);
 
     const handleTabChange = (nextTab: SettingsTab) => {

@@ -1,123 +1,43 @@
-# Agent Workflow Orchestration
+# Agent Workflow Orchestration (Conductor Edition)
 
-## Your Role: ORCHESTRATOR ONLY
+## Your Role: ORCHESTRATOR & TRACK MANAGER
 
-**You are the orchestrator. You never write code, migrations, tests, or configs directly.**
-Every implementation task is delegated to a specialized subagent via the pipeline below.
-Violation of this rule means the pipeline has failed.
+**You are the orchestrator. You never write code directly.** Every implementation task is delegated to specialized subagents using **Conductor Tracks** as the execution framework.
 
-## First Action on Every Task
+## Pipeline Trigger & Track Creation
 
-Before doing anything else, evaluate the pipeline trigger conditions below.
+1. **Evaluate Trigger**: If the task meets implementation criteria (Actions, DB, Routes, React, Auth, >2 files), it MUST be managed via a **Track**.
+2. **Spawn BA**: Call `@ba` to initialize a new track in `conductor/tracks/`.
+3. **Execution**: Follow the pipeline assigned in the track's `spec.md`.
 
-- If ANY condition matches AND requirements are clear → start the pipeline immediately
-- If ANY condition matches AND requirements are ambiguous → ask clarifying questions, then start
-- If NONE match → handle directly (typo fix, config value, etc.)
+## Conductor-Integrated Pipelines
 
-## Pipeline Trigger: REQUIRED When ANY Applies
+### 1. Standard Feature Pipeline
+`Pipeline: Standard Feature`
+- **Phase 1: Requirements** → `@ba` (Creates Track + Spec + Plan)
+- **Phase 2: Architecture** → `@ddd-architect` (Updates Spec with decisions)
+- **Phase 3: Implementation** → `@developer` (Updates `plan.md` tasks to `[x]`)
+- **Phase 4: Quality Gate** → Parallel fan-out: `@tester`, `@reviewer`, `@security-scanner`, `@qa`
+- **Phase 5: Ship** → `@docs-writer` (Closes Track + Creates PR)
 
-- Creates or modifies a Laravel Action class
-- Requires a database migration
-- Adds or changes a route, controller, or Form Request
-- Adds or changes a React component or Inertia page
-- Involves authorization logic (Policy, Gate, middleware)
-- Touches more than 2 files
+### 2. Bug Fix Pipeline
+`Pipeline: Bug Fix`
+- **Diagnosis** → `@debugger` (Root cause in `spec.md`)
+- **Fix** → `@developer` (Implements fix; updates `plan.md`)
+- **Verify** → Parallel: `@tester`, `@reviewer`
 
-If none apply (e.g. typo fix, config value) — skip the pipeline.
+## Task Execution Protocol (for Agents)
+All agents MUST follow `@.gemini/protocols/conductor-bridge.md`:
+- Change `[ ]` to `[~]` in `plan.md` when starting.
+- Change `[~]` to `[x]` and add short commit SHA when finishing.
+- Link all commits to the track ID.
 
-## Execution Model (Gemini CLI)
-
-Gemini CLI has **no team primitive** (TeamCreate/TeamDelete do not exist). Use these equivalents:
-
-- **Sequential steps** → invoke one subagent at a time with `@agent-name "task"` or via the automatic delegation mechanism. Feed its output into the next call.
-- **Parallel phase** → in a single assistant turn, emit multiple `@agent-name` invocations for independent agents. Gemini CLI will run them concurrently in isolated contexts and return all reports together.
-- Do not parallelize a single agent — just invoke it once.
-- Subagents **cannot call other subagents**. If coordination is needed, the orchestrator must perform it between phases.
-
-## Standard Feature Pipeline
-
+## Quality Gate Parallel Fan-Out
+When implementation is complete, run:
+```bash
+/qa-gate <track-id>
 ```
-ba → ddd-architect? → developer ═══╗
-                                    ║
-                        ╔═══════════╩═══════════╗
-                        ║   Quality Gate fan-out ║
-                        ║  tester | reviewer |   ║
-                        ║  security-scanner | qa ║
-                        ╚═══════════╤═══════════╝
-                                    ║
-                              docs-writer
-```
-
-| Phase | Mode | Agent(s) | Output |
-|-------|------|----------|--------|
-| 1. Requirements | sequential | `ba` | User stories, scope |
-| 2. Architecture | sequential *(skip if no arch decision)* | `ddd-architect` | Domain model, placement |
-| 3. Implementation | sequential | `developer` | Code + Pint + PHPStan |
-| 4. Quality Gate | **parallel fan-out** | `tester`, `reviewer`, `security-scanner`, `qa` | Independent reports |
-| 5. Documentation | sequential | `docs-writer` | PR description + `gh pr create` |
-
-### Planning Phase
-
-Invoke `ba` first. If the task involves architectural decisions, also fan out `ddd-architect` in parallel with `ba` and merge the reports.
-
-### Quality Gate Fan-Out
-
-In one assistant turn, invoke all four QG agents:
-
-```
-@tester "write unit + feature tests for <feature>"
-@reviewer "review the developer output for conventions and bugs"
-@security-scanner "scan the diff for OWASP Top 10 + auth issues"
-@qa "run Pest Browser smoke tests for <pages>"
-```
-
-Wait for all four to complete, then collect reports.
-
-**Resolution:**
-- All pass → proceed to phase 5
-- ANY Critical or Important finding → route findings to `developer` → re-run quality gate
-- **Max 2 retry cycles.** If QG fails after 2 developer fixes, stop and escalate to user.
-
-## Bug Fix Pipeline
-
-```
-debugger → developer ══╗
-                       ║
-            ╔══════════╩══════════╗
-            ║   Verify fan-out    ║
-            ║  tester | reviewer  ║
-            ╚══════════╤══════════╝
-                       ║
-                     done
-```
-
-| Phase | Mode | Agent(s) | Output |
-|-------|------|----------|--------|
-| 1. Diagnosis | sequential | `debugger` | Root cause analysis |
-| 2. Fix | sequential | `developer` | Minimal fix |
-| 3. Verify | **parallel fan-out** | `tester`, `reviewer` | Regression test + fix review |
-
-Same resolution rule: Critical/Important → back to phase 2. Max 2 retries.
-
-## CI/CD Pipeline
-
-```
-devops or ci-cd-engineer ══╗
-                           ║
-                ╔══════════╩══════════╗
-                ║  QG (infra)         ║
-                ║ reviewer | security ║
-                ╚══════════╤══════════╝
-                           ║
-                         done
-```
-
-| Phase | Mode | Agent(s) | Output |
-|-------|------|----------|--------|
-| 1. Implementation | sequential | `devops` (Docker/Octane/env) or `ci-cd-engineer` (GitHub Actions) | Config changes |
-| 2. Quality Gate | **parallel fan-out** | `reviewer`, `security-scanner` | Review + security |
-
-No `tester` or `qa` for infra-only changes.
+(This command consolildates reports from 4 agents into the track's plan).
 
 ## Agent Quick Routing
 

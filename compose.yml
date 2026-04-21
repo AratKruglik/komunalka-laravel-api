@@ -55,9 +55,9 @@ services:
       - caddy_config:/config
       - ka_app_composer_data:/.composer
     ports:
-      - '80:80'
-      - '443:443'
-      - '443:443/udp'
+      - '8081:80'
+      - '8443:443'
+      - '8443:443/udp'
       - '5173:5173'
       - '9003:9003'
     networks:

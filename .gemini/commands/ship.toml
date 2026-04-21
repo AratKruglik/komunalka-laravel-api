@@ -1,0 +1,19 @@
+description = "Фіналізувати трек, створити PR та оновити документацію"
+
+prompt = """
+You are shipping the changes from track {{args}}.
+
+## Step 1: Dispatch Docs-Writer
+Call @docs-writer with the task: "Finalize track {{args}}. Perform the following:
+1. Update `README.md` if any architectural or setup changes were made.
+2. Update `docs/tasks-docs/lessons.md` with lessons learned during this implementation.
+3. Sync track status to 'Completed' in `conductor/tracks.md`.
+4. Create a Pull Request with a clear description of the track's impact.
+"
+
+## Step 2: Final Quality Check
+Verify that all tasks in the track's `plan.md` are marked as `[x]`.
+
+## Step 3: Report to User
+Show the PR link and the updated track status.
+"""

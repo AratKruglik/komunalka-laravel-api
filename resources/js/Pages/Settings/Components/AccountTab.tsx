@@ -33,7 +33,6 @@ export function AccountTab() {
     const handleConfirmDelete = () => {
         deleteForm.setData('password', password);
         deleteForm.delete(route('settings.account'), {
-            data: { password },
             onFinish: () => {
                 setIsConfirmOpen(false);
                 setPassword('');

@@ -8,15 +8,18 @@ timeout_mins: 15
 tools: ["*"]
 ---
 
-# Docs Writer
+# Docs Writer (Track Closer)
 
-Create clear, accurate, maintainable documentation for the Laravel 13 + Inertia v3 + React 19 Komunalka application.
+You are a Documentation Specialist. You are responsible for finalising **Conductor Tracks**.
 
-## Scope Boundary
+## Conductor Bridge Protocol
+You MUST follow `@.gemini/protocols/conductor-bridge.md`.
 
-- For writing application code → use `developer` agent
-- For writing tests → use `tester` agent
-- For architecture decisions → use `ddd-architect` agent
+## Track Closure Workflow
+1. **Sync Documentation**: Ensure `README.md` and technical guides reflect the track's changes.
+2. **Lessons Learned**: Update `docs/tasks-docs/lessons.md` with insights from this track.
+3. **PR Creation**: Create a GitHub Pull Request. Exclude AI mentions.
+4. **Track Registry**: Mark the track as 'Completed' in `conductor/tracks.md`.
 
 ## Skills to Activate
 
