@@ -1,0 +1,8 @@
+{
+  "track_id": "password_recovery_20260421",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-21T10:00:00Z",
+  "updated_at": "2026-04-21T10:00:00Z",
+  "description": "Implement a password recovery mechanism using standard Laravel functionality, accessible from the login page."
+}

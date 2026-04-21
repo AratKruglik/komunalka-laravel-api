@@ -12,3 +12,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [ ] **Track: Migration Verification (Inertia Monolith)**
 *Link: [./tracks/migration_verification_20260420/](./tracks/migration_verification_20260420/)*
 
+---
+
+- [ ] **Track: Password Recovery Implementation**
+*Link: [./tracks/password_recovery_20260421/](./tracks/password_recovery_20260421/)*
+
