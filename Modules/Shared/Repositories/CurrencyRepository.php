@@ -25,7 +25,16 @@ class CurrencyRepository extends EloquentRepository implements CurrencyRepositor
     /** @return Collection<int, Currency> */
     public function all(array $columns = ['*']): Collection
     {
-        return Cache::remember(self::CACHE_KEY_ALL, self::CACHE_TTL, fn () => parent::all($columns));
+        $value = Cache::get(self::CACHE_KEY_ALL);
+
+        if ($value instanceof Collection) {
+            return $value;
+        }
+
+        $value = parent::all($columns);
+        Cache::put(self::CACHE_KEY_ALL, $value, self::CACHE_TTL);
+
+        return $value;
     }
 
     public function invalidateCache(): void

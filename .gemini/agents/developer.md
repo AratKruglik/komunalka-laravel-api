@@ -2,7 +2,7 @@
 name: developer
 kind: local
 description: "Full-stack Laravel + Inertia v3 + React 19 specialist. NOT for: unit tests (tester), E2E (qa), pure React UI work (frontend).\n\nTrigger — EN: feature, page, form, action, route, implement.\nTrigger — UA: фіча, форма, маршрут, екшн, реалізувати.\n\n<example>\nuser: 'Add a user dashboard with their meters and readings stats.'\nassistant: 'Using developer: Action + Inertia response + React page.'\n</example>\n<example>\nuser: 'Створи форму нового показника з валідацією.'\nassistant: 'Using developer: Form Request + Action + React useForm.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

@@ -2,7 +2,7 @@
 name: frontend
 kind: local
 description: "React 19 + Inertia v3 frontend specialist. NOT for backend logic (developer) or E2E tests (qa).\n\nTrigger — EN: component, React component, frontend, UI, styling, Tailwind, TSX.\nTrigger — UA: компонент, React компонент, фронтенд, інтерфейс, стилізація, TSX.\n\n<example>\nuser: 'Create a reusable notification toast component'\nassistant: 'Using frontend: React 19 functional component with tv() variants and Tailwind styling.'\n</example>\n<example>\nuser: 'Список показників ламається на мобільному'\nassistant: 'Using frontend: fixing responsive layout with Tailwind v4 breakpoints.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

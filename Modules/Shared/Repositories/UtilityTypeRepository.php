@@ -31,13 +31,31 @@ class UtilityTypeRepository extends EloquentRepository implements UtilityTypeRep
 
     public function getActive(): Collection
     {
-        return Cache::remember(self::CACHE_KEY_ACTIVE, self::CACHE_TTL, fn () => $this->newQuery()->active()->get());
+        $value = Cache::get(self::CACHE_KEY_ACTIVE);
+
+        if ($value instanceof Collection) {
+            return $value;
+        }
+
+        $value = $this->newQuery()->active()->get();
+        Cache::put(self::CACHE_KEY_ACTIVE, $value, self::CACHE_TTL);
+
+        return $value;
     }
 
     /** @return Collection<int, UtilityType> */
     public function all(array $columns = ['*']): Collection
     {
-        return Cache::remember(self::CACHE_KEY_ALL, self::CACHE_TTL, fn () => parent::all($columns));
+        $value = Cache::get(self::CACHE_KEY_ALL);
+
+        if ($value instanceof Collection) {
+            return $value;
+        }
+
+        $value = parent::all($columns);
+        Cache::put(self::CACHE_KEY_ALL, $value, self::CACHE_TTL);
+
+        return $value;
     }
 
     public function invalidateCache(): void

@@ -2,7 +2,7 @@
 name: dba
 kind: local
 description: "Database architect and optimizer for PostgreSQL 17. NOT for application code (developer) or tests (tester), or server config (devops).\n\nTrigger — EN: database, migration, schema, index, query optimization, N+1, PostgreSQL.\nTrigger — UA: база даних, міграція, схема, індекс, оптимізація запитів, N+1, створити міграцію.\n\n<example>\nuser: 'Design schema for billing periods'\nassistant: 'Using dba: tables, relationships, indexes, and constraints for billing.'\n</example>\n<example>\nuser: 'N+1 запит на сторінці показників'\nassistant: 'Using dba: аналіз запитів і рекомендації eager loading.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

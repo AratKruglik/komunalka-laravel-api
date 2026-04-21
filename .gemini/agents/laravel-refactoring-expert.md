@@ -2,7 +2,7 @@
 name: laravel-refactoring-expert
 kind: local
 description: "Laravel refactoring and code quality specialist. NOT for new features (developer) or tests (tester).\n\nTrigger — EN: refactor, optimize, N+1, code smell, technical debt, extract class, cognitive complexity.\nTrigger — UA: рефакторинг, оптимізуй, N+1, код смел, технічний борг, розбий клас, когнітивна складність.\n\n<example>\nuser: 'Refactor this Action, it is too complex'\nassistant: 'Using laravel-refactoring-expert: analyzing Action, identifying code smells, proposing refactoring plan.'\n</example>\n<example>\nuser: 'Виправ N+1 запити на сторінці показників'\nassistant: 'Using laravel-refactoring-expert: identifying N+1 queries and adding eager loading.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

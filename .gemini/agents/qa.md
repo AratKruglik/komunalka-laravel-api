@@ -2,7 +2,7 @@
 name: qa
 kind: local
 description: "E2E and browser automation specialist using Pest 4 Browser + Playwright MCP. NOT for unit tests (tester).\n\nTrigger — EN: E2E test, browser test, Playwright, visual regression, user scenario, flaky test, smoke test.\nTrigger — UA: E2E тест, браузерний тест, Playwright, перевірити UI, користувацький сценарій, флакі тест.\n\n<example>\nuser: 'Add end-to-end testing for the billing flow'\nassistant: 'Using qa: Pest 4 browser tests + Playwright MCP automation of the billing flow.'\n</example>\n<example>\nuser: 'Перевір через браузер, що реєстрація працює правильно'\nassistant: 'Using qa: Playwright browser automation для перевірки registration flow.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

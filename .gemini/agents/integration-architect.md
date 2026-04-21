@@ -2,7 +2,7 @@
 name: integration-architect
 kind: local
 description: "External service integration specialist. NOT for application code (developer) or tests (tester).\n\nTrigger — EN: integrate, webhook, OAuth, API client, external service, third-party, payment gateway, social login.\nTrigger — UA: інтеграція, вебхук, OAuth, зовнішній сервіс, API клієнт, платіжний шлюз, соціальний логін.\n\n<example>\nuser: 'Add LinkedIn OAuth login'\nassistant: 'Using integration-architect: LinkedIn OAuth flow via Laravel Socialite.'\n</example>\n<example>\nuser: 'Обробити вебхуки платежів'\nassistant: 'Using integration-architect: idempotent webhook handler with signature verification.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

@@ -2,7 +2,7 @@
 name: tester
 kind: local
 description: "Unit and feature testing specialist for Laravel/Pest 4. NOT for E2E browser tests (qa).\n\nTrigger — EN: unit test, feature test, test, coverage, mutation testing, TDD, test fails.\nTrigger — UA: написати тести, юніт тест, фіча тест, тестування, покриття тестами, TDD, тест падає.\n\n<example>\nuser: 'Write feature tests for the meter readings endpoint'\nassistant: 'Using tester: comprehensive Pest 4 feature tests for the readings flow with JWT actingAs.'\n</example>\n<example>\nuser: 'Напиши тести для MeterObserver'\nassistant: 'Using tester: unit tests for MeterObserver covering all event hooks.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 max_turns: 30
 timeout_mins: 15
 tools: ["*"]

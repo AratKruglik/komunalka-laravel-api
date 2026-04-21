@@ -2,7 +2,7 @@
 name: reviewer
 kind: local
 description: "Code reviewer and quality auditor. Read-only: analyzes and reports, does NOT write code. NOT for implementing fixes (developer) or tests (tester).\n\nTrigger — EN: review, code review, audit, PR review, find bugs, technical debt, code quality.\nTrigger — UA: рев'ю, код рев'ю, аудит, перевірити код, переглянути PR, знайти баги, технічний борг.\n\n<example>\nuser: 'Review my latest changes before PR'\nassistant: 'Using reviewer: auditing changes for code quality, conventions, security, and potential issues.'\n</example>\n<example>\nuser: 'Зроби рев'ю PR #120'\nassistant: 'Using reviewer: code quality, tests, conventions, and potential issues у PR #120.'\n</example>"
-model: gemini-3.1-flash-preview
+model: gemini-3-flash-preview
 temperature: 0.2
 max_turns: 30
 timeout_mins: 15
