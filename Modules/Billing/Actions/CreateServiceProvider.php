@@ -46,7 +46,7 @@ class CreateServiceProvider
             foreach ($data->tariffs as $tariffData) {
                 $this->tariffRepository->create([
                     'service_provider_id' => $provider->getKey(),
-                    'utility_type_id' => $tariffData->utilityTypeId,
+                    'utility_type_id' => $tariffData->utilityTypeId ?: $data->utilityTypeId,
                     'currency_id' => $tariffData->currencyId,
                     'name' => $tariffData->name,
                     'base_rate' => $tariffData->baseRate,
@@ -63,10 +63,17 @@ class CreateServiceProvider
 
     public function asController(StoreServiceProviderRequest $request): RedirectResponse
     {
-        $this->handle(
+        \Illuminate\Support\Facades\Log::debug('Creating service provider', [
+            'user_id' => $request->user()->getKey(),
+            'data' => $request->all(),
+        ]);
+
+        $provider = $this->handle(
             (int) $request->user()->getKey(),
             CreateServiceProviderData::fromRequest($request),
         );
+
+        \Illuminate\Support\Facades\Log::debug('Service provider created', ['id' => $provider->id]);
 
         return redirect()->route('providers.index')->with('success', 'Провайдера створено');
     }

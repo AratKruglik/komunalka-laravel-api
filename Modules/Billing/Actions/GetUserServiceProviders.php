@@ -24,6 +24,17 @@ class GetUserServiceProviders
             ->pluck('address_id')
             ->all();
 
-        return $this->repository->getByAddressIds($addressIds);
+        \Illuminate\Support\Facades\Log::debug('Retrieving providers for user', [
+            'user_id' => $userId,
+            'address_ids' => $addressIds,
+        ]);
+
+        $providers = $this->repository->getByAddressIds($addressIds);
+
+        \Illuminate\Support\Facades\Log::debug('Providers retrieved', [
+            'count' => $providers->count(),
+        ]);
+
+        return $providers;
     }
 }

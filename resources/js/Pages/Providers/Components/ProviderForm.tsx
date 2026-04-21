@@ -101,6 +101,17 @@ export function ProviderForm({
         tariffs: initialTariffs,
     })
 
+    const handleUtilityTypeChange = (value: string) => {
+        form.setData((data) => ({
+            ...data,
+            utility_type_id: value,
+            tariffs: data.tariffs.map((tariff) => ({
+                ...tariff,
+                utility_type_id: value,
+            })),
+        }))
+    }
+
     const selectedUtilityType = useMemo(() => {
         return utilityTypes.find((ut) => String(ut.id) === form.data.utility_type_id)
     }, [utilityTypes, form.data.utility_type_id])
@@ -187,7 +198,7 @@ export function ProviderForm({
                             <Select
                                 id="utility_type_id"
                                 value={form.data.utility_type_id}
-                                onChange={(e) => form.setData('utility_type_id', e.target.value)}
+                                onChange={(e) => handleUtilityTypeChange(e.target.value)}
                                 isInvalid={Boolean(form.errors.utility_type_id)}
                             >
                                 <option value="" disabled>
