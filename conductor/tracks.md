@@ -14,6 +14,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Password Recovery Implementation**
+- [~] **Track: Password Recovery Implementation**
 *Link: [./tracks/password_recovery_20260421/](./tracks/password_recovery_20260421/)*
 
+---
+
+- [ ] **Track: ПОтрібно весь застосунок запустити в браузері і 'прклацйати' всі сторінки і форми сторінок. Потрібно підтвердити, що проєкт працює**
+*Link: [./tracks/full_browser_testing_20260427/](./tracks/full_browser_testing_20260427/)*
