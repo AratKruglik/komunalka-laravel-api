@@ -20,7 +20,7 @@ Route::get('/health/ready', function () {
             'database' => 'connected',
             'timestamp' => now()->toIso8601ZuluString(),
         ]);
-    } catch (\Throwable) {
+    } catch (Throwable) {
         return response()->json([
             'status' => 'error',
             'database' => 'disconnected',

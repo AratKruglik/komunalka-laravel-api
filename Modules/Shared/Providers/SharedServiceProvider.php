@@ -3,6 +3,10 @@
 namespace Modules\Shared\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Shared\Repositories\Contracts\CurrencyRepositoryInterface;
+use Modules\Shared\Repositories\Contracts\UtilityTypeRepositoryInterface;
+use Modules\Shared\Repositories\CurrencyRepository;
+use Modules\Shared\Repositories\UtilityTypeRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -26,13 +30,13 @@ class SharedServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->bind(
-            \Modules\Shared\Repositories\Contracts\CurrencyRepositoryInterface::class,
-            \Modules\Shared\Repositories\CurrencyRepository::class,
+            CurrencyRepositoryInterface::class,
+            CurrencyRepository::class,
         );
 
         $this->app->bind(
-            \Modules\Shared\Repositories\Contracts\UtilityTypeRepositoryInterface::class,
-            \Modules\Shared\Repositories\UtilityTypeRepository::class,
+            UtilityTypeRepositoryInterface::class,
+            UtilityTypeRepository::class,
         );
     }
 

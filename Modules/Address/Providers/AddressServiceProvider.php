@@ -3,6 +3,14 @@
 namespace Modules\Address\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Address\Repositories\AddressRepository;
+use Modules\Address\Repositories\AddressTypeRepository;
+use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
+use Modules\Address\Repositories\Contracts\AddressTypeRepositoryInterface;
+use Modules\Address\Repositories\Contracts\RegionRepositoryInterface;
+use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
+use Modules\Address\Repositories\RegionRepository;
+use Modules\Address\Repositories\UserAddressRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -26,23 +34,23 @@ class AddressServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->bind(
-            \Modules\Address\Repositories\Contracts\RegionRepositoryInterface::class,
-            \Modules\Address\Repositories\RegionRepository::class,
+            RegionRepositoryInterface::class,
+            RegionRepository::class,
         );
 
         $this->app->bind(
-            \Modules\Address\Repositories\Contracts\AddressTypeRepositoryInterface::class,
-            \Modules\Address\Repositories\AddressTypeRepository::class,
+            AddressTypeRepositoryInterface::class,
+            AddressTypeRepository::class,
         );
 
         $this->app->bind(
-            \Modules\Address\Repositories\Contracts\AddressRepositoryInterface::class,
-            \Modules\Address\Repositories\AddressRepository::class,
+            AddressRepositoryInterface::class,
+            AddressRepository::class,
         );
 
         $this->app->bind(
-            \Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface::class,
-            \Modules\Address\Repositories\UserAddressRepository::class,
+            UserAddressRepositoryInterface::class,
+            UserAddressRepository::class,
         );
     }
 

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Modules\Meter\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
+use Modules\Meter\Repositories\Contracts\MeterRepositoryInterface;
+use Modules\Meter\Repositories\MeterReadingRepository;
+use Modules\Meter\Repositories\MeterRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -28,13 +32,13 @@ class MeterServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->bind(
-            \Modules\Meter\Repositories\Contracts\MeterRepositoryInterface::class,
-            \Modules\Meter\Repositories\MeterRepository::class,
+            MeterRepositoryInterface::class,
+            MeterRepository::class,
         );
 
         $this->app->bind(
-            \Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface::class,
-            \Modules\Meter\Repositories\MeterReadingRepository::class,
+            MeterReadingRepositoryInterface::class,
+            MeterReadingRepository::class,
         );
     }
 

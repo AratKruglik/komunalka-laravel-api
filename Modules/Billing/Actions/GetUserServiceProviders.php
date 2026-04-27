@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Actions;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Models\UserAddress;
 use Modules\Billing\Models\ServiceProvider;
@@ -24,14 +25,14 @@ class GetUserServiceProviders
             ->pluck('address_id')
             ->all();
 
-        \Illuminate\Support\Facades\Log::debug('Retrieving providers for user', [
+        Log::debug('Retrieving providers for user', [
             'user_id' => $userId,
             'address_ids' => $addressIds,
         ]);
 
         $providers = $this->repository->getByAddressIds($addressIds);
 
-        \Illuminate\Support\Facades\Log::debug('Providers retrieved', [
+        Log::debug('Providers retrieved', [
             'count' => $providers->count(),
         ]);
 

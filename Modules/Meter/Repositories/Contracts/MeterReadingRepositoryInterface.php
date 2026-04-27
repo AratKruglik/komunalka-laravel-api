@@ -20,7 +20,7 @@ interface MeterReadingRepositoryInterface extends RepositoryInterface
     public function getLatestForMeter(int $meterId): ?MeterReading;
 
     /** @param array<int> $meterIds
-     *  @return \Illuminate\Database\Eloquent\Collection<int, MeterReading> */
+     *  @return Collection<int, MeterReading> */
     public function getLatestForMeters(array $meterIds): Collection;
 
     public function findWithRelations(int $id): ?MeterReading;

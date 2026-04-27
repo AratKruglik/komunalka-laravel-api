@@ -6,6 +6,7 @@ namespace Modules\Billing\Actions;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
 use Modules\Billing\DTO\CreateServiceProviderData;
@@ -63,7 +64,7 @@ class CreateServiceProvider
 
     public function asController(StoreServiceProviderRequest $request): RedirectResponse
     {
-        \Illuminate\Support\Facades\Log::debug('Creating service provider', [
+        Log::debug('Creating service provider', [
             'user_id' => $request->user()->getKey(),
             'data' => $request->all(),
         ]);
@@ -73,7 +74,7 @@ class CreateServiceProvider
             CreateServiceProviderData::fromRequest($request),
         );
 
-        \Illuminate\Support\Facades\Log::debug('Service provider created', ['id' => $provider->id]);
+        Log::debug('Service provider created', ['id' => $provider->id]);
 
         return redirect()->route('providers.index')->with('success', 'Провайдера створено');
     }

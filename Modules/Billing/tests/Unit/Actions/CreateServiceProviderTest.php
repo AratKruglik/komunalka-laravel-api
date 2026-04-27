@@ -9,6 +9,7 @@ use Modules\Billing\DTO\CreateServiceProviderData;
 use Modules\Billing\DTO\CreateTariffData;
 use Modules\Shared\Models\Currency;
 use Modules\Shared\Models\UtilityType;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -88,4 +89,4 @@ it('aborts when user does not own address', function () {
     );
 
     app(CreateServiceProvider::class)->handle($this->user->id, $data);
-})->throws(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+})->throws(HttpException::class);

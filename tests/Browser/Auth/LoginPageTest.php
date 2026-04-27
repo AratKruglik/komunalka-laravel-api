@@ -138,7 +138,7 @@ describe('Validation: Email Format', function (): void {
 describe('Validation: Edge Cases', function (): void {
     it('shows error for very long email exceeding max length', function (): void {
         $payload = array_merge($this->validData, [
-            'email' => str_repeat('a', 250) . '@example.com',
+            'email' => str_repeat('a', 250).'@example.com',
         ]);
 
         $this->from(route('login'))

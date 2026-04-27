@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Modules\Billing\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface;
+use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;
+use Modules\Billing\Repositories\ServiceProviderRepository;
+use Modules\Billing\Repositories\TariffRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -28,13 +32,13 @@ class BillingServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->bind(
-            \Modules\Billing\Repositories\Contracts\ServiceProviderRepositoryInterface::class,
-            \Modules\Billing\Repositories\ServiceProviderRepository::class,
+            ServiceProviderRepositoryInterface::class,
+            ServiceProviderRepository::class,
         );
 
         $this->app->bind(
-            \Modules\Billing\Repositories\Contracts\TariffRepositoryInterface::class,
-            \Modules\Billing\Repositories\TariffRepository::class,
+            TariffRepositoryInterface::class,
+            TariffRepository::class,
         );
     }
 

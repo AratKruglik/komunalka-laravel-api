@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Modules\Auth\Models\User;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 function mockWebOAuthDriver(string $provider = 'google', array $overrides = []): void
 {
@@ -34,7 +35,7 @@ function mockWebOAuthDriver(string $provider = 'google', array $overrides = []):
     $driver->shouldReceive('userFromToken')->andReturn($socialiteUser);
     $driver->shouldReceive('user')->andReturn($socialiteUser);
 
-    $redirect = new \Symfony\Component\HttpFoundation\RedirectResponse(
+    $redirect = new RedirectResponse(
         "https://accounts.example.com/authorize?provider={$provider}",
     );
     $driver->shouldReceive('redirect')->andReturn($redirect);
