@@ -80,7 +80,7 @@ export default function Login() {
                                         type="email"
                                         value={form.data.email}
                                         onChange={(e) => form.setData('email', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-11 pr-4 text-base text-gray-900 placeholder:text-gray-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                        className="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-11 pr-4 text-base text-gray-900 placeholder:text-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                         placeholder="ваша@пошта.com"
                                         autoComplete="email"
                                         disabled={form.processing}
@@ -109,7 +109,7 @@ export default function Login() {
                                         type={showPassword ? 'text' : 'password'}
                                         value={form.data.password}
                                         onChange={(e) => form.setData('password', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-11 pr-12 text-base text-gray-900 placeholder:text-gray-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                        className="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-11 pr-12 text-base text-gray-900 placeholder:text-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                         placeholder="••••••••"
                                         autoComplete="current-password"
                                         disabled={form.processing}
@@ -139,7 +139,7 @@ export default function Login() {
                                     type="checkbox"
                                     checked={form.data.remember}
                                     onChange={(e) => form.setData('remember', e.target.checked)}
-                                    className="h-4 w-4 cursor-pointer rounded border border-gray-400 accent-amber-500 transition-colors focus:ring-1 focus:ring-amber-500"
+                                    className="h-4 w-4 cursor-pointer rounded border border-gray-400 accent-primary transition-colors focus:ring-1 focus:ring-primary"
                                     disabled={form.processing}
                                 />
                                 <label
@@ -153,7 +153,7 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={form.processing}
-                                className="w-full rounded-md bg-amber-500 px-4 py-2.5 text-base font-medium text-gray-900 transition-colors hover:bg-amber-600 active:bg-amber-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                className="w-full rounded-md bg-primary px-4 py-2.5 text-base font-medium text-gray-900 transition-colors hover:bg-primary-dark active:bg-yellow-600 disabled:cursor-not-allowed disabled:bg-gray-300"
                             >
                                 {form.processing ? 'Вхід...' : 'Увійти'}
                             </button>
