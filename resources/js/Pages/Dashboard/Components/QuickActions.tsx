@@ -11,7 +11,7 @@ const actionButton = tv({
     base: 'inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-sm font-medium transition-colors',
     variants: {
         variant: {
-            primary: 'bg-blue-600 text-white hover:bg-blue-700',
+            primary: 'bg-primary text-gray-900 hover:bg-primary-dark active:bg-yellow-600',
             outline: 'border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700',
         },
     },
