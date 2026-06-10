@@ -7,11 +7,15 @@ use Modules\Auth\Actions\DestroyUserAccount;
 use Modules\Auth\Actions\HandleOAuthCallback;
 use Modules\Auth\Actions\LoginUser;
 use Modules\Auth\Actions\LogoutUser;
+use Modules\Auth\Actions\Pages\ForgotPasswordPage;
 use Modules\Auth\Actions\Pages\LoginPage;
 use Modules\Auth\Actions\Pages\RegisterPage;
+use Modules\Auth\Actions\Pages\ResetPasswordPage;
 use Modules\Auth\Actions\Pages\SettingsPage;
 use Modules\Auth\Actions\RedirectToOAuthProvider;
 use Modules\Auth\Actions\RegisterUser;
+use Modules\Auth\Actions\ResetUserPassword;
+use Modules\Auth\Actions\SendPasswordResetLink;
 use Modules\Auth\Actions\UnlinkOAuthProvider;
 use Modules\Auth\Actions\UpdateUser;
 use Modules\Auth\Actions\UpdateUserPassword;
@@ -23,6 +27,11 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/register', RegisterUser::class);
     Route::get('/auth/{provider}/redirect', RedirectToOAuthProvider::class)->name('oauth.redirect');
     Route::get('/auth/{provider}/callback', HandleOAuthCallback::class)->name('oauth.callback');
+
+    Route::get('/forgot-password', ForgotPasswordPage::class)->name('password.request');
+    Route::post('/forgot-password', SendPasswordResetLink::class)->name('password.email');
+    Route::get('/reset-password/{token}', ResetPasswordPage::class)->name('password.reset');
+    Route::post('/reset-password', ResetUserPassword::class)->name('password.update');
 });
 
 Route::middleware('auth')->group(function (): void {

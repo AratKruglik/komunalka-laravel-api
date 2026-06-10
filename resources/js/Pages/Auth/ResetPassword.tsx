@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { GuestLayout } from '@/Layouts/GuestLayout';
 
 export default function ResetPassword({

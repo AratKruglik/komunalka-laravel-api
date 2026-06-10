@@ -1,4 +1,4 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { SettingsSidebar } from './Components/SettingsSidebar';
 import { ProfileTab } from './Components/ProfileTab';

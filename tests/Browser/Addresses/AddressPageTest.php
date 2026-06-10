@@ -34,7 +34,7 @@ describe('Address Index Page', function (): void {
                 ->has('addresses.data', 1)
                 ->where('addresses.data.0.attributes.street', 'Хрещатик')
                 ->where('addresses.data.0.attributes.building_number', '22')
-                ->where('addresses.data.0.attributes.city', 'Київ')
+                ->where('addresses.data.0.attributes.city', 'Київ'),
             );
     });
 
@@ -46,7 +46,7 @@ describe('Address Index Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Index')
-                ->has('addresses.data', 0)
+                ->has('addresses.data', 0),
             );
     });
 
@@ -61,7 +61,7 @@ describe('Address Index Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Index')
-                ->has('addresses.data', 0)
+                ->has('addresses.data', 0),
             );
     });
 
@@ -75,7 +75,7 @@ describe('Address Index Page', function (): void {
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Index')
-                ->where('addresses.data.0.attributes.is_primary', true)
+                ->where('addresses.data.0.attributes.is_primary', true),
             );
     });
 });
@@ -83,8 +83,8 @@ describe('Address Index Page', function (): void {
 describe('Address Create Page', function (): void {
     it('renders form with regions and address types', function (): void {
         $user = User::factory()->create();
-        $regions = Region::factory()->count(3)->create();
-        $addressTypes = AddressType::factory()->count(2)->create();
+        Region::factory()->count(3)->create();
+        AddressType::factory()->count(2)->create();
 
         $this->actingAs($user)
             ->get('/addresses/create')
@@ -92,7 +92,7 @@ describe('Address Create Page', function (): void {
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('Addresses/Create')
                 ->has('regions.data', 3)
-                ->has('addressTypes.data', 2)
+                ->has('addressTypes.data', 2),
             );
     });
 
@@ -274,7 +274,7 @@ describe('Address Edit Page', function (): void {
                 ->where('address.data.attributes.notes', 'Центр міста')
                 ->where('address.data.attributes.is_primary', true)
                 ->has('regions.data')
-                ->has('addressTypes.data')
+                ->has('addressTypes.data'),
             );
     });
 
@@ -433,13 +433,13 @@ describe('Address Card Display', function (): void {
                     ->has('attributes.updated_at')
                     ->has('relationships.region.data', fn (AssertableInertia $r) => $r
                         ->where('id', (string) $region->getKey())
-                        ->where('type', 'regions')
+                        ->where('type', 'regions'),
                     )
                     ->has('relationships.addressType.data', fn (AssertableInertia $t) => $t
                         ->where('id', (string) $addressType->getKey())
-                        ->where('type', 'address_types')
-                    )
-                )
+                        ->where('type', 'address_types'),
+                    ),
+                ),
             );
     });
 });
@@ -498,7 +498,7 @@ describe('Address Navigation', function (): void {
             ->get('/addresses/create')
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('Addresses/Create')
+                ->component('Addresses/Create'),
             );
     });
 
@@ -511,7 +511,7 @@ describe('Address Navigation', function (): void {
             ->get('/addresses/'.$address->getKey().'/edit')
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('Addresses/Edit')
+                ->component('Addresses/Edit'),
             );
     });
 
@@ -550,5 +550,20 @@ describe('Address Navigation', function (): void {
                 'building_number' => '7',
             ])
             ->assertRedirect('/addresses');
+    });
+});
+
+describe('Addresses Browser Rendering', function (): void {
+    beforeEach(function (): void {
+        $this->withVite();
+    });
+
+    it('renders addresses list page in a real browser', function (): void {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        visit(route('addresses.index'))
+            ->assertSee('Мої адреси')
+            ->assertNoJavaScriptErrors();
     });
 });
