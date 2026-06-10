@@ -19,7 +19,7 @@ describe('Dashboard Page', function (): void {
         ]);
     });
 
-    it('renders dashboard for authenticated user', function (): void {
+    it('renders dashboard page for authenticated user', function (): void {
         $this->actingAs($this->user)
             ->get(route('dashboard'))
             ->assertOk()
@@ -33,7 +33,7 @@ describe('Dashboard Page', function (): void {
             );
     });
 
-    it('shows user first_name in welcome header props', function (): void {
+    it('shows user first_name in auth props', function (): void {
         $this->actingAs($this->user)
             ->get(route('dashboard'))
             ->assertOk()
@@ -129,7 +129,7 @@ describe('Dashboard Page', function (): void {
             );
     });
 
-    it('returns valid inertia page without javascript errors', function (): void {
+    it('returns valid inertia page with typed stats props', function (): void {
         $this->actingAs($this->user)
             ->get(route('dashboard'))
             ->assertOk()
@@ -181,7 +181,7 @@ describe('Dashboard Page', function (): void {
             );
     });
 
-    it('renders correct inertia component for dashboard route', function (): void {
+    it('renders dashboard via root route', function (): void {
         $this->actingAs($this->user)
             ->get('/')
             ->assertOk()
@@ -198,5 +198,17 @@ describe('Dashboard Page', function (): void {
                 ->component('Dashboard/Index')
                 ->has('consumptionHistory'),
             );
+    });
+});
+
+describe('Dashboard Browser Rendering', function (): void {
+    it('renders dashboard page in a real browser for authenticated user', function (): void {
+        $user = User::factory()->create(['first_name' => 'Тест']);
+
+        $this->actingAs($user);
+
+        visit(route('dashboard'))
+            ->assertSee('Вітаємо')
+            ->assertNoJavaScriptErrors();
     });
 });

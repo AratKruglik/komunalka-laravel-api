@@ -468,3 +468,19 @@ describe('Providers Edit Page', function (): void {
             ->assertRedirect(route('login'));
     });
 });
+
+describe('Providers Browser Rendering', function (): void {
+    beforeEach(function (): void {
+        $this->withVite();
+    });
+
+    it('renders providers list page in a real browser', function (): void {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        visit(route('providers.index'))
+            ->assertSee('Мої провайдери')
+            ->assertSee('Провайдерів поки немає')
+            ->assertNoJavaScriptErrors();
+    });
+});

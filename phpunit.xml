@@ -41,5 +41,8 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="PEST_BROWSER" value="chromium"/>
+        <env name="PEST_BROWSER_HEADLESS" value="true"/>
+        <env name="APP_URL" value="http://localhost:8000"/>
     </php>
 </phpunit>

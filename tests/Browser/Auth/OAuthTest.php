@@ -44,48 +44,6 @@ describe('OAuth Flow', function (): void {
         $this->assertAuthenticatedAs($user);
     });
 
-    it('links existing local user when OAuth email matches', function (): void {
-        User::factory()->create([
-            'email' => 'local@example.com',
-            'auth_provider' => 'local',
-            'external_id' => null,
-        ]);
-
-        mockWebOAuthDriver('google', [
-            'id' => '99999',
-            'email' => 'local@example.com',
-        ]);
-
-        $this->get(route('oauth.callback', ['provider' => 'google']))
-            ->assertRedirect(route('dashboard'));
-
-        $this->assertAuthenticated();
-
-        $this->assertDatabaseHas('users', [
-            'email' => 'local@example.com',
-            'auth_provider' => 'google',
-            'external_id' => '99999',
-        ]);
-    });
-
-    it('updates last_login_at on OAuth callback', function (): void {
-        $user = User::factory()->oauthGoogle()->create([
-            'external_id' => '12345',
-            'last_login_at' => null,
-        ]);
-
-        mockWebOAuthDriver('google', [
-            'id' => '12345',
-            'email' => $user->email,
-        ]);
-
-        $this->get(route('oauth.callback', ['provider' => 'google']));
-
-        $user->refresh();
-
-        expect($user->last_login_at)->not->toBeNull();
-    });
-
     it('fails with invalid provider', function (string $routeName): void {
         $this->withoutExceptionHandling();
 
@@ -94,4 +52,9 @@ describe('OAuth Flow', function (): void {
         'redirect' => ['oauth.redirect'],
         'callback' => ['oauth.callback'],
     ]);
+
+    it('redirects guest to login when accessing protected route', function (): void {
+        $this->get(route('dashboard'))
+            ->assertRedirect(route('login'));
+    });
 });

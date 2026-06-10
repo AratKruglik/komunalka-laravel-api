@@ -18,8 +18,8 @@ beforeEach(function (): void {
 });
 
 describe('Meters Index Page', function (): void {
-    it('renders meter list', function (): void {
-        $meters = Meter::factory()->count(3)->create([
+    it('renders meter list page', function (): void {
+        Meter::factory()->count(3)->create([
             'address_id' => $this->address->getKey(),
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
@@ -307,4 +307,19 @@ describe('Meters Authentication', function (): void {
         ['put', 'meters.update', [1]],
         ['delete', 'meters.destroy', [1]],
     ]);
+});
+
+describe('Meters Browser Rendering', function (): void {
+    beforeEach(function (): void {
+        $this->withVite();
+    });
+
+    it('renders meters list page in a real browser', function (): void {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        visit(route('meters.index'))
+            ->assertSee('Лічильники')
+            ->assertNoJavaScriptErrors();
+    });
 });

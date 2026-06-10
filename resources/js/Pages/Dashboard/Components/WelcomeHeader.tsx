@@ -21,7 +21,7 @@ const welcomeCard = tv({
 });
 
 const addButton = tv({
-    base: 'inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto sm:px-5 sm:text-base',
+    base: 'inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-primary-dark active:bg-yellow-600 sm:w-auto sm:px-5 sm:text-base',
 });
 
 export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddressChange }: WelcomeHeaderProps) {

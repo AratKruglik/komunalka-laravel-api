@@ -31,6 +31,12 @@ describe('Register Page Rendering', function (): void {
             ->assertOk()
             ->assertDontSee('Server Error');
     });
+
+    it('renders the registration page in a real browser', function (): void {
+        visit(route('register'))
+            ->assertSee('Створити акаунт')
+            ->assertNoJavaScriptErrors();
+    });
 });
 
 describe('Successful Registration', function (): void {
@@ -89,7 +95,7 @@ describe('Validation: Duplicate Data', function (): void {
     it('returns custom message for duplicate email', function (): void {
         User::factory()->create(['email' => 'jane@example.com']);
 
-        $response = $this->post(route('register'), $this->validData);
+        $this->post(route('register'), $this->validData);
 
         $errors = session('errors');
         expect($errors->get('email'))->toContain('An account with this email already exists.');
@@ -109,7 +115,7 @@ describe('Validation: Duplicate Data', function (): void {
     it('returns custom message for duplicate username', function (): void {
         User::factory()->create(['username' => 'testuser']);
 
-        $response = $this->post(route('register'), $this->validData);
+        $this->post(route('register'), $this->validData);
 
         $errors = session('errors');
         expect($errors->get('username'))->toContain('This username is already taken.');

@@ -10,7 +10,6 @@ use Modules\Meter\Models\MeterReading;
 use Modules\Shared\Models\UtilityType;
 
 beforeEach(function (): void {
-    $this->withoutVite();
     $this->user = User::factory()->create();
     $this->address = Address::factory()->create();
     $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
@@ -183,7 +182,7 @@ describe('Readings Create Page', function (): void {
     });
 
     it('includes service providers for the selected address', function (): void {
-        $serviceProvider = ServiceProvider::factory()->create([
+        ServiceProvider::factory()->create([
             'address_id' => $this->address->getKey(),
             'utility_type_id' => $this->utilityType->getKey(),
         ]);
@@ -372,7 +371,7 @@ describe('Readings Inertia Props Structure', function (): void {
                     ->has('attributes.is_estimated')
                     ->has('relationships.meter.data', fn ($meter) => $meter
                         ->has('id')
-                        ->has('type')
+                        ->has('type'),
                     )
                     ->etc(),
                 ),
@@ -394,7 +393,7 @@ describe('Readings Inertia Props Structure', function (): void {
                     ->has('attributes.address_id')
                     ->has('relationships.utilityType.data', fn ($ut) => $ut
                         ->has('id')
-                        ->has('type')
+                        ->has('type'),
                     )
                     ->etc(),
                 ),
@@ -429,5 +428,15 @@ describe('Readings Inertia Props Structure', function (): void {
                 ->component('Readings/Index')
                 ->where('readings', []),
             );
+    });
+});
+
+describe('Readings Browser Rendering', function (): void {
+    it('renders readings list page in a real browser', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('readings.index'))
+            ->assertSee('Показання лічильників')
+            ->assertNoJavaScriptErrors();
     });
 });

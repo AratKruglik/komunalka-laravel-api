@@ -10,7 +10,7 @@ const socialButton = tv({
         'rounded-lg border border-neutral-200 bg-white',
         'px-4 py-2.5 text-sm font-medium text-neutral-900',
         'transition-colors hover:bg-neutral-50',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary',
         'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
     ],
 });
@@ -107,7 +107,7 @@ export default function Register() {
                                             type="text"
                                             value={form.data.first_name}
                                             onChange={(e) => form.setData('first_name', e.target.value)}
-                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                             disabled={form.processing}
                                         />
                                         {form.errors.first_name && (
@@ -127,7 +127,7 @@ export default function Register() {
                                             type="text"
                                             value={form.data.last_name}
                                             onChange={(e) => form.setData('last_name', e.target.value)}
-                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                             disabled={form.processing}
                                         />
                                         {form.errors.last_name && (
@@ -148,7 +148,7 @@ export default function Register() {
                                         type="text"
                                         value={form.data.username}
                                         onChange={(e) => form.setData('username', e.target.value)}
-                                        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 placeholder:text-neutral-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 placeholder:text-neutral-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                         placeholder="my_username"
                                         disabled={form.processing}
                                     />
@@ -169,7 +169,7 @@ export default function Register() {
                                         type="email"
                                         value={form.data.email}
                                         onChange={(e) => form.setData('email', e.target.value)}
-                                        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 placeholder:text-neutral-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 placeholder:text-neutral-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                         placeholder="example@mail.com"
                                         disabled={form.processing}
                                     />
@@ -196,7 +196,7 @@ export default function Register() {
                                             onChange={(e) =>
                                                 form.setData('phone_number', e.target.value.replace(/\D/g, ''))
                                             }
-                                            className="w-full rounded-md border border-neutral-300 bg-white py-2.5 pl-14 pr-3 text-base text-neutral-900 placeholder:text-neutral-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                            className="w-full rounded-md border border-neutral-300 bg-white py-2.5 pl-14 pr-3 text-base text-neutral-900 placeholder:text-neutral-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                             placeholder="XX XXX XX XX"
                                             maxLength={9}
                                             disabled={form.processing}
@@ -220,7 +220,7 @@ export default function Register() {
                                             type={showPassword ? 'text' : 'password'}
                                             value={form.data.password}
                                             onChange={(e) => form.setData('password', e.target.value)}
-                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 pr-12 text-base text-neutral-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 pr-12 text-base text-neutral-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                             disabled={form.processing}
                                         />
                                         <button
@@ -256,7 +256,7 @@ export default function Register() {
                                             onChange={(e) =>
                                                 form.setData('password_confirmation', e.target.value)
                                             }
-                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 pr-12 text-base text-neutral-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
+                                            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 pr-12 text-base text-neutral-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-300 dark:focus:ring-amber-300"
                                             disabled={form.processing}
                                         />
                                         <button
@@ -287,7 +287,7 @@ export default function Register() {
                             <button
                                 type="submit"
                                 disabled={form.processing}
-                                className="w-full rounded-lg bg-amber-500 px-4 py-3 text-lg font-bold text-gray-900 transition-colors hover:bg-amber-600 active:bg-amber-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                className="w-full rounded-lg bg-primary px-4 py-3 text-lg font-bold text-gray-900 transition-colors hover:bg-primary-dark active:bg-yellow-600 disabled:cursor-not-allowed disabled:bg-gray-300"
                             >
                                 {form.processing ? 'Створення акаунту...' : 'Створити акаунт'}
                             </button>
@@ -297,7 +297,7 @@ export default function Register() {
                                     Вже маєте акаунт?{' '}
                                     <Link
                                         href="/login"
-                                        className="font-medium text-amber-600 hover:text-amber-700 hover:underline dark:text-amber-300 dark:hover:text-amber-200"
+                                        className="font-medium text-yellow-600 hover:text-yellow-700 hover:underline dark:text-amber-300 dark:hover:text-amber-200"
                                     >
                                         Увійти
                                     </Link>

@@ -264,3 +264,17 @@ describe('Authentication: Settings Routes', function (): void {
         'DELETE account' => ['DELETE', 'settings.account'],
     ]);
 });
+
+describe('Settings Browser Rendering', function (): void {
+    beforeEach(function (): void {
+        $this->withVite();
+    });
+
+    it('renders settings page in a real browser', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('settings'))
+            ->assertSee('Налаштування')
+            ->assertNoJavaScriptErrors();
+    });
+});

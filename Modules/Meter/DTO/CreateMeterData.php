@@ -38,7 +38,7 @@ final readonly class CreateMeterData
             description: $request->validated('description'),
             modelName: $request->validated('model_name'),
             location: $request->validated('location'),
-            installation_date: $request->validated('installation_date'),
+            installationDate: $request->validated('installation_date'),
             initialReading: (float) $request->validated('initial_reading', 0),
             notes: $request->validated('notes'),
             isActive: (bool) $request->validated('is_active', true),

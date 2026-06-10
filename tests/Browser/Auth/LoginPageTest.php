@@ -27,15 +27,24 @@ describe('Login Page Rendering', function (): void {
             ->assertOk()
             ->assertDontSee('Server Error');
     });
+
+    it('renders the login page in a real browser', function (): void {
+        visit(route('login'))
+            ->assertSee('Вхід')
+            ->assertSee('Увійти')
+            ->assertNoJavaScriptErrors();
+    });
 });
 
 describe('Successful Login', function (): void {
-    it('redirects to dashboard after valid credentials', function (): void {
+    beforeEach(function (): void {
         User::factory()->create([
             'email' => 'john@example.com',
             'password' => 'password',
         ]);
+    });
 
+    it('redirects to dashboard after valid credentials', function (): void {
         $this->post(route('login'), $this->validData)
             ->assertRedirect(route('dashboard'));
 
@@ -43,11 +52,6 @@ describe('Successful Login', function (): void {
     });
 
     it('rejects email in different case as non-matching', function (): void {
-        User::factory()->create([
-            'email' => 'john@example.com',
-            'password' => 'password',
-        ]);
-
         $this->from(route('login'))
             ->post(route('login'), [
                 'email' => 'JOHN@EXAMPLE.COM',
@@ -60,11 +64,6 @@ describe('Successful Login', function (): void {
     });
 
     it('accepts remember me parameter', function (): void {
-        User::factory()->create([
-            'email' => 'john@example.com',
-            'password' => 'password',
-        ]);
-
         $this->post(route('login'), array_merge($this->validData, [
             'remember' => true,
         ]))->assertRedirect(route('dashboard'));
@@ -74,12 +73,14 @@ describe('Successful Login', function (): void {
 });
 
 describe('Validation: Invalid Credentials', function (): void {
-    it('shows error for wrong password', function (): void {
+    beforeEach(function (): void {
         User::factory()->create([
             'email' => 'john@example.com',
             'password' => 'password',
         ]);
+    });
 
+    it('shows error for wrong password', function (): void {
         $this->from(route('login'))
             ->post(route('login'), [
                 'email' => 'john@example.com',
@@ -150,10 +151,7 @@ describe('Validation: Edge Cases', function (): void {
     });
 
     it('handles very long password gracefully', function (): void {
-        User::factory()->create([
-            'email' => 'john@example.com',
-            'password' => 'password',
-        ]);
+        User::factory()->create(['email' => 'john@example.com', 'password' => 'password']);
 
         $payload = array_merge($this->validData, [
             'password' => str_repeat('a', 256),
@@ -204,5 +202,11 @@ describe('OAuth Buttons', function (): void {
             ->get(route('login'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Auth/Login'));
+    });
+
+    it('renders login page containing OAuth social login options in browser', function (): void {
+        visit(route('login'))
+            ->assertSee('Увійти через соцмережі')
+            ->assertNoJavaScriptErrors();
     });
 });
