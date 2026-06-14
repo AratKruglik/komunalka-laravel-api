@@ -16,7 +16,7 @@ export const getApiPrimaryTariff = (provider: ApiServiceProvider): ApiTariff | u
 export const formatApiTariffLabel = (tariff: ApiTariff, unit?: string): string => {
   const price = Number(tariff.baseRate).toFixed(2)
   const symbol = tariff.currency.symbol
-  const displayUnit = unit ?? getUnitByUtilityTypeId(tariff.utilityType.id)
+  const displayUnit = unit ?? (tariff.utilityType ? getUnitByUtilityTypeId(tariff.utilityType.id) : 'од')
   return `${price} ${symbol}/${displayUnit}`
 }
 

@@ -21,7 +21,7 @@ class ServiceProviderRepository extends EloquentRepository implements ServicePro
     {
         return $this->newQuery()
             ->whereIn('address_id', $addressIds)
-            ->with(['utilityType', 'tariffs.currency'])
+            ->with(['utilityType', 'tariffs.currency', 'tariffs.utilityType'])
             ->get();
     }
 
@@ -29,7 +29,7 @@ class ServiceProviderRepository extends EloquentRepository implements ServicePro
     {
         return $this->newQuery()
             ->where('address_id', $addressId)
-            ->with(['utilityType', 'tariffs.currency'])
+            ->with(['utilityType', 'tariffs.currency', 'tariffs.utilityType'])
             ->get();
     }
 

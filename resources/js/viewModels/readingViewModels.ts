@@ -114,7 +114,7 @@ const getProviderUnit = (provider: ProviderInput): string => {
         4: 'м³',
         5: 'Гкал',
       }
-      return unitMap[tariff.utilityType.id] ?? 'од'
+      return tariff.utilityType ? (unitMap[tariff.utilityType.id] ?? 'од') : 'од'
     }
     return 'од'
   }
