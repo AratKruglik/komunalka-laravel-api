@@ -21,11 +21,12 @@ class BatchMeterReadingRequest extends FormRequest
             'readings.*.meter_id' => ['required', 'integer', 'exists:meters,id'],
             'readings.*.reading_value' => ['required', 'numeric', 'min:0'],
             'readings.*.reading_date' => ['required', 'date'],
+            'readings.*.tariff_id' => ['nullable', 'integer', 'exists:tariffs,id'],
             'readings.*.notes' => ['nullable', 'string'],
             'readings.*.is_estimated' => ['sometimes', 'boolean'],
             'photos' => ['sometimes', 'array'],
             'photos.*' => ['sometimes', 'array'],
-            'photos.*.*' => ['image', 'max:10240'],
+            'photos.*.*' => ['image', 'mimes:jpg,jpeg,png,webp,heic,heif', 'max:10240'],
         ];
     }
 
@@ -44,9 +45,12 @@ class BatchMeterReadingRequest extends FormRequest
             'readings.*.reading_value.min' => 'Значення показання не може бути від\'ємним.',
             'readings.*.reading_date.required' => 'Дата показання є обов\'язковою.',
             'readings.*.reading_date.date' => 'Дата показання має бути дійсною датою.',
+            'readings.*.tariff_id.integer' => 'Ідентифікатор тарифу має бути цілим числом.',
+            'readings.*.tariff_id.exists' => 'Обраний тариф не існує.',
             'readings.*.is_estimated.boolean' => 'Поле оцінки має бути булевим значенням.',
             'photos.*.*' => 'Кожен файл фото має бути зображенням.',
             'photos.*.*.image' => 'Кожен файл фото має бути зображенням.',
+            'photos.*.*.mimes' => 'Дозволені формати фото: JPEG, PNG, WebP, HEIC, HEIF.',
             'photos.*.*.max' => 'Розмір фото не може перевищувати 10 МБ.',
         ];
     }

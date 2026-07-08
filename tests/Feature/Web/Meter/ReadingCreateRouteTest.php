@@ -123,3 +123,95 @@ describe('Reading create page — serviceProviders JSON:API structure', function
             );
     });
 });
+
+describe('Reading create page — addresses as AddressResource collection', function (): void {
+    beforeEach(function (): void {
+        $this->address = Address::factory()->create([
+            'city' => 'Київ',
+            'street' => 'Хрещатик',
+            'building_number' => '1',
+        ]);
+        $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
+    });
+
+    it('returns addresses wrapped in JSON:API resource collection structure', function (): void {
+        $this->actingAs($this->user)
+            ->get(route('readings.create'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Readings/Create')
+                ->has('addresses.data', 1)
+            );
+    });
+
+    it('addresses.data items contain JSON:API attributes with city and street', function (): void {
+        $this->actingAs($this->user)
+            ->get(route('readings.create'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Readings/Create')
+                ->has('addresses.data.0.attributes')
+                ->where('addresses.data.0.attributes.city', 'Київ')
+                ->where('addresses.data.0.attributes.street', 'Хрещатик')
+                ->where('addresses.data.0.attributes.building_number', '1')
+            );
+    });
+
+    it('returns empty addresses.data when user has no addresses', function (): void {
+        $userWithoutAddresses = User::factory()->create();
+
+        $this->actingAs($userWithoutAddresses)
+            ->get(route('readings.create'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Readings/Create')
+                ->has('addresses.data', 0)
+            );
+    });
+});
+
+describe('Reading index page 2 — addresses as AddressResource collection', function (): void {
+    beforeEach(function (): void {
+        $this->address = Address::factory()->create([
+            'city' => 'Львів',
+            'street' => 'Проспект Свободи',
+            'building_number' => '5',
+        ]);
+        $this->user->addresses()->attach($this->address->getKey(), ['is_primary' => true]);
+    });
+
+    it('returns addresses wrapped in JSON:API resource collection structure', function (): void {
+        $this->actingAs($this->user)
+            ->get(route('readings.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Readings/Index')
+                ->has('addresses.data', 1)
+            );
+    });
+
+    it('addresses.data items contain JSON:API attributes with city and street', function (): void {
+        $this->actingAs($this->user)
+            ->get(route('readings.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Readings/Index')
+                ->has('addresses.data.0.attributes')
+                ->where('addresses.data.0.attributes.city', 'Львів')
+                ->where('addresses.data.0.attributes.street', 'Проспект Свободи')
+                ->where('addresses.data.0.attributes.building_number', '5')
+            );
+    });
+
+    it('returns empty addresses.data when user has no addresses', function (): void {
+        $userWithoutAddresses = User::factory()->create();
+
+        $this->actingAs($userWithoutAddresses)
+            ->get(route('readings.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Readings/Index')
+                ->has('addresses.data', 0)
+            );
+    });
+});

@@ -3,7 +3,7 @@ import { Head, router } from '@inertiajs/react'
 import { Plus } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { PageSectionHeader } from '@/Components/pages'
-import { Button, Card, CardContent, Label, Select } from '@/Components/ui'
+import { Button, Card, CardContent, FormMessage, Label, Select } from '@/Components/ui'
 import { useDenormalizeCollection, useDenormalizeAuto } from '@/lib/useDenormalize'
 import { formatFullAddressLabel } from '@/lib/formatAddress'
 import type { PageProps, Meter, Reading } from '@/types'
@@ -67,6 +67,7 @@ export default function Create({
   selectedAddressId,
 }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const generatedPreviews = useRef<Record<string, string>>({})
 
   const addressList = useDenormalizeCollection<Address>(addresses)
@@ -205,21 +206,30 @@ export default function Create({
     if (currentAddressId === null) return
 
     const formData = new FormData()
+    let readingIndex = 0
 
-    meterDrafts.forEach((draft, index) => {
+    meterDrafts.forEach((draft) => {
       const formState = forms[draft.id]
       if (!formState) return
 
-      const firstEntry = draft.tariffEntries[0]
-      if (!firstEntry) return
+      draft.tariffEntries.forEach((entry) => {
+        const readingValue = Number(
+          formState.tariffValues[entry.tariffId] ?? entry.previousValue,
+        )
 
-      const readingValue = Number(
-        formState.tariffValues[firstEntry.tariffId] ?? firstEntry.previousValue,
-      )
+        formData.append(`readings[${readingIndex}][meter_id]`, String(draft.id))
+        formData.append(`readings[${readingIndex}][reading_value]`, String(readingValue))
+        formData.append(`readings[${readingIndex}][reading_date]`, formState.readingDate)
 
-      formData.append(`readings[${index}][meter_id]`, String(draft.id))
-      formData.append(`readings[${index}][reading_value]`, String(readingValue))
-      formData.append(`readings[${index}][reading_date]`, formState.readingDate)
+        if (entry.tariffId !== '') {
+          formData.append(
+            `readings[${readingIndex}][tariff_id]`,
+            String(parseInt(entry.tariffId, 10)),
+          )
+        }
+
+        readingIndex++
+      })
 
       if (formState.photo.file) {
         formData.append(`photos[${draft.id}][]`, formState.photo.file)
@@ -227,10 +237,15 @@ export default function Create({
     })
 
     setIsSubmitting(true)
+    setSubmitError(null)
 
     router.post('/readings', formData, {
       forceFormData: true,
       onFinish: () => setIsSubmitting(false),
+      onError: (errors) => {
+        const firstError = Object.values(errors)[0]
+        setSubmitError(firstError ?? 'Сталася помилка. Перевірте введені дані.')
+      },
     })
   }
 
@@ -328,7 +343,10 @@ export default function Create({
 
           <ReadingSummaryTable rows={summaryRows} />
 
-          <div className="flex justify-end border-t border-gray-100 pt-4">
+          <div className="flex flex-col items-end gap-2 border-t border-gray-100 pt-4">
+            {submitError && (
+              <FormMessage variant="error">{submitError}</FormMessage>
+            )}
             <Button
               type="submit"
               tone="primary"

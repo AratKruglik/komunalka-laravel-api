@@ -109,7 +109,7 @@ describe('ReadingController', function (): void {
 
         $this->actingAs($this->user)
             ->post(route('readings.store'), $payload)
-            ->assertUnprocessable();
+            ->assertSessionHasErrors('readings.0.reading_value');
     });
 
     it('deletes reading', function (): void {

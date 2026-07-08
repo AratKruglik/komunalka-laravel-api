@@ -22,8 +22,8 @@ export const formatApiTariffLabel = (tariff: ApiTariff, unit?: string): string =
 
 const getUnitByUtilityTypeId = (utilityTypeId: number): string => {
   const units: Record<number, string> = {
-    1: 'м³',
-    2: 'кВт·год',
+    1: 'кВт·год',
+    2: 'м³',
     3: 'м³',
     4: 'м³',
     5: 'Гкал',

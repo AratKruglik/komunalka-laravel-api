@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Modules\Address\Http\Resources\AddressResource;
 use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
 use Modules\Billing\Http\Resources\ServiceProviderResource;
@@ -54,7 +55,7 @@ class ReadingCreatePage
         }
 
         return Inertia::render('Readings/Create', [
-            'addresses' => $addresses,
+            'addresses' => AddressResource::collection($addresses),
             'meters' => $meters,
             'readings' => $readings,
             'serviceProviders' => $serviceProviders,

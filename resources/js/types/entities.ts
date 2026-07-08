@@ -25,16 +25,16 @@ export const SERVICE_LABEL_TO_METER_TYPE: Record<ServiceLabel, MeterType> = {
 }
 
 export const UTILITY_TYPE_ID_TO_METER_TYPE: Record<number, MeterType> = {
-  1: 'gas',
-  2: 'electricity',
+  1: 'electricity',
+  2: 'gas',
   3: 'coldWater',
   4: 'hotWater',
   5: 'heat',
 }
 
 export const METER_TYPE_TO_UTILITY_TYPE_ID: Record<MeterType, number> = {
-  gas: 1,
-  electricity: 2,
+  electricity: 1,
+  gas: 2,
   coldWater: 3,
   hotWater: 4,
   heat: 5,

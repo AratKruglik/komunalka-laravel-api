@@ -269,7 +269,8 @@ describe('Readings Store Validation', function (): void {
 
         $this->actingAs($this->user)
             ->post(route('readings.store'), $payload)
-            ->assertUnprocessable();
+            ->assertRedirect()
+            ->assertSessionHasErrors('readings.0.reading_value');
     });
 
     it('accepts very large reading values', function (): void {

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Validation\ValidationException;
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
 use Modules\Billing\Models\ServiceProvider;
@@ -13,7 +14,6 @@ use Modules\Meter\Models\Meter;
 use Modules\Meter\Models\MeterReading;
 use Modules\Shared\Models\Currency;
 use Modules\Shared\Models\UtilityType;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -102,7 +102,7 @@ it('aborts when reading value is less than previous', function () {
     );
 
     app(CreateBatchReadings::class)->handle($this->user->id, $data);
-})->throws(HttpException::class);
+})->throws(ValidationException::class);
 
 it('auto-detects tariff when service provider exists', function () {
     $currency = Currency::factory()->create();
@@ -182,7 +182,7 @@ it('wraps in transaction and rolls back on failure', function () {
 
     try {
         app(CreateBatchReadings::class)->handle($this->user->id, $data);
-    } catch (HttpException) {
+    } catch (ValidationException) {
     }
 
     $this->assertDatabaseCount('meter_readings', 0);

@@ -58,7 +58,8 @@ class MeterReading extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('photos');
+        $this->addMediaCollection('photos')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']);
     }
 
     public function registerMediaConversions(?Media $media = null): void
