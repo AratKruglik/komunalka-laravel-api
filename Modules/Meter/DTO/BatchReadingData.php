@@ -28,6 +28,7 @@ final readonly class BatchReadingData
                 readingDate: $reading['reading_date'],
                 notes: $reading['notes'] ?? null,
                 isEstimated: (bool) ($reading['is_estimated'] ?? false),
+                tariffId: isset($reading['tariff_id']) ? (int) $reading['tariff_id'] : null,
             );
         }
 

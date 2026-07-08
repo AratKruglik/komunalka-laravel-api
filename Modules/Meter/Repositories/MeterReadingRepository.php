@@ -63,4 +63,18 @@ class MeterReadingRepository extends EloquentRepository implements MeterReadingR
             ->with(['meter.utilityType', 'tariff', 'media'])
             ->find($id);
     }
+
+    public function getLatestForMeterAndTariff(int $meterId, ?int $tariffId): ?MeterReading
+    {
+        /** @var MeterReading|null */
+        return $this->newQuery()
+            ->where('meter_id', $meterId)
+            ->when(
+                $tariffId !== null,
+                fn ($q) => $q->where('tariff_id', $tariffId),
+                fn ($q) => $q->whereNull('tariff_id'),
+            )
+            ->orderBy('reading_date', 'desc')
+            ->first();
+    }
 }

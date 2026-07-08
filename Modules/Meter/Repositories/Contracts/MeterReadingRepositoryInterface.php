@@ -24,4 +24,6 @@ interface MeterReadingRepositoryInterface extends RepositoryInterface
     public function getLatestForMeters(array $meterIds): Collection;
 
     public function findWithRelations(int $id): ?MeterReading;
+
+    public function getLatestForMeterAndTariff(int $meterId, ?int $tariffId): ?MeterReading;
 }

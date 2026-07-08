@@ -391,25 +391,31 @@ parameters:
 			path: Modules/Meter/Actions/CreateBatchReadings.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$service_provider_id\.$#'
+			message: '#^Access to an undefined property Modules\\Billing\\Models\\Tariff\:\:\$service_provider_id\.$#'
 			identifier: property.notFound
 			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Billing\\Models\\Tariff\:\:\$utility_type_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Meter/Actions/CreateBatchReadings.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$service_provider_id\.$#'
+			identifier: property.notFound
+			count: 2
 			path: Modules/Meter/Actions/CreateBatchReadings.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Meter\\Models\\Meter\:\:\$utility_type_id\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: Modules/Meter/Actions/CreateBatchReadings.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$reading_value\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Meter/Actions/CreateBatchReadings.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Meter\\Models\\MeterReading\:\:\$tariff_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: Modules/Meter/Actions/CreateBatchReadings.php

@@ -12,5 +12,6 @@ final readonly class CreateMeterReadingData
         public string $readingDate,
         public ?string $notes,
         public bool $isEstimated,
+        public ?int $tariffId = null,
     ) {}
 }

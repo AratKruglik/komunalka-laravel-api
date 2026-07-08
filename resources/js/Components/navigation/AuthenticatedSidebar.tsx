@@ -66,7 +66,7 @@ const defaultSections: SidebarSection[] = [
       },
       {
         label: 'Внести показання',
-        href: '/readings/new',
+        href: '/readings/create',
         icon: FilePlus,
       },
       {

@@ -33,7 +33,7 @@ const actions: QuickAction[] = [
         id: '1',
         icon: Plus,
         label: 'Додати показання',
-        href: '/meters/readings/create',
+        href: '/readings/create',
         variant: 'primary',
     },
     {

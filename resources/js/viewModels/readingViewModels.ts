@@ -108,13 +108,13 @@ const getProviderUnit = (provider: ProviderInput): string => {
     const tariff = getApiPrimaryTariff(provider)
     if (tariff) {
       const unitMap: Record<number, string> = {
-        1: 'м³',
-        2: 'кВт·год',
+        1: 'кВт·год',
+        2: 'м³',
         3: 'м³',
         4: 'м³',
         5: 'Гкал',
       }
-      return unitMap[tariff.utilityType.id] ?? 'од'
+      return tariff.utilityType ? (unitMap[tariff.utilityType.id] ?? 'од') : 'од'
     }
     return 'од'
   }
@@ -134,6 +134,7 @@ const resolveTariff = (provider: ProviderInput, tariffId?: string) => {
 function buildTariffEntries(
   provider: ProviderInput,
   meterReadings: readonly Reading[],
+  initialReading: number | null,
 ): TariffEntryViewModel[] {
   const tariffs = mapTariffs(provider)
   const today = new Date().toISOString().split('T')[0]
@@ -147,7 +148,7 @@ function buildTariffEntries(
       tariffName: tariff.name,
       tariffPrice: tariff.price,
       tariffLabel: tariff.label,
-      previousValue: latestForTariff?.readingValue ?? 0,
+      previousValue: latestForTariff?.readingValue ?? initialReading ?? 0,
       previousDate: latestForTariff?.readingDate ?? today,
     }
   })
@@ -170,7 +171,7 @@ export function toMeterReadingDraftViewModel(
       tariffName: '',
       tariffPrice: 0,
       tariffLabel: `0 грн/${defaultUnit}`,
-      previousValue: latestReading?.readingValue ?? 0,
+      previousValue: latestReading?.readingValue ?? meter.initialReading ?? 0,
       previousDate: latestReading?.readingDate ?? today,
     }
 
@@ -197,7 +198,7 @@ export function toMeterReadingDraftViewModel(
     }
   }
 
-  const tariffEntries = buildTariffEntries(provider, meterReadings)
+  const tariffEntries = buildTariffEntries(provider, meterReadings, meter.initialReading)
   const { tariffs, selected } = resolveTariff(provider)
   const unit = getProviderUnit(provider)
   const firstEntry = tariffEntries[0]

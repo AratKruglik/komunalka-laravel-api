@@ -87,7 +87,7 @@ export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddres
                     )}
                 </div>
 
-                <Link href="/meters/readings/create" className={addButton()}>
+                <Link href="/readings/create" className={addButton()}>
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2.2} />
                     Додати показання
                 </Link>
