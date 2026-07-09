@@ -307,6 +307,7 @@ export function ReadingCard({
               className="border-primary/30 bg-primary/5"
               onFilesSelected={handleDropzoneSelection}
               onClear={onPhotoClear}
+              inputProps={{ accept: 'image/jpeg,image/png,image/webp,image/heic,image/heif' }}
             />
           </div>
 

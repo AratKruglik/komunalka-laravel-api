@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Meter\DTO;
 
+use Illuminate\Http\UploadedFile;
 use Modules\Meter\Http\Requests\UpdateMeterRequest;
 
 final readonly class UpdateMeterData
@@ -20,6 +21,7 @@ final readonly class UpdateMeterData
         public ?float $initialReading,
         public ?string $notes,
         public ?bool $isActive,
+        public ?UploadedFile $photo = null,
     ) {}
 
     public static function fromRequest(UpdateMeterRequest $request): self
@@ -44,6 +46,7 @@ final readonly class UpdateMeterData
             isActive: $request->validated('is_active') !== null
                 ? (bool) $request->validated('is_active')
                 : null,
+            photo: $request->file('photo'),
         );
     }
 

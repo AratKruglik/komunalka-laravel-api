@@ -18,7 +18,7 @@ import { useAuthUser } from '@/lib/useAuthUser';
 export function ProfileTab() {
     const user = useAuthUser();
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, transform, processing, errors } = useForm({
         first_name: user?.firstName ?? '',
         last_name: user?.lastName ?? '',
         phone_number: user?.phoneNumber ?? '',
@@ -46,7 +46,8 @@ export function ProfileTab() {
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        put(route('settings.profile'), {
+        transform((currentData) => ({ ...currentData, _method: 'put' }));
+        post(route('settings.profile'), {
             forceFormData: true,
         });
     };
