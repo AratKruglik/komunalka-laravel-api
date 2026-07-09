@@ -106,7 +106,7 @@ export function AccountTab() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Введіть пароль для підтвердження"
-                            leadingIcon={<Lock className="h-4 w-4 text-text-muted" />}
+                            leadingIcon={<Lock className="h-4 w-4 text-muted" />}
                             autoFocus
                         />
                     </div>

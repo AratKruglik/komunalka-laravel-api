@@ -6,9 +6,9 @@ import { Button, GithubIcon, GoogleIcon, Input, Label, PasswordInput } from '@/C
 const socialButton = tv({
     base: [
         'flex w-full flex-1 items-center justify-center gap-3',
-        'rounded-lg border border-border bg-bg-raised',
-        'px-4 py-2.5 text-sm font-medium text-text-primary',
-        'transition-colors hover:bg-bg-surface',
+        'rounded-lg border border-line bg-raised',
+        'px-4 py-2.5 text-sm font-medium text-foreground',
+        'transition-colors hover:bg-surface',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary',
     ],
 });
@@ -34,13 +34,13 @@ export default function Register() {
             <Head title="Реєстрація" />
 
             <div className="w-full max-w-4xl">
-                <div className="overflow-hidden rounded-lg bg-bg-raised shadow-lg">
+                <div className="overflow-hidden rounded-lg bg-raised shadow-lg">
                     <div className="px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
                         <div className="pb-4 text-center sm:pb-6">
-                            <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">
+                            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
                                 Створити акаунт
                             </h1>
-                            <p className="mt-1 text-sm text-text-secondary sm:text-base">
+                            <p className="mt-1 text-sm text-subtext sm:text-base">
                                 Керуйте всіма комунальними послугами в одному кабінеті
                             </p>
                         </div>
@@ -59,10 +59,10 @@ export default function Register() {
 
                         <div className="relative my-6 sm:my-8">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-border" />
+                                <div className="w-full border-t border-line" />
                             </div>
                             <div className="relative flex justify-center">
-                                <span className="bg-bg-raised px-3 text-xs font-semibold uppercase tracking-[0.25em] text-text-muted sm:text-sm">
+                                <span className="bg-raised px-3 text-xs font-semibold uppercase tracking-[0.25em] text-muted sm:text-sm">
                                     Або
                                 </span>
                             </div>
@@ -78,7 +78,7 @@ export default function Register() {
                             )}
 
                             <div className="space-y-5">
-                                <h3 className="text-lg font-semibold text-text-primary">
+                                <h3 className="text-lg font-semibold text-foreground">
                                     Особиста інформація
                                 </h3>
 
@@ -202,7 +202,7 @@ export default function Register() {
                             </Button>
 
                             <div className="text-center">
-                                <p className="text-sm text-text-secondary">
+                                <p className="text-sm text-subtext">
                                     Вже маєте акаунт?{' '}
                                     <Link
                                         href="/login"

@@ -4,15 +4,15 @@ import { tv } from 'tailwind-variants';
 import type { LucideIcon } from 'lucide-react';
 
 const card = tv({
-    base: 'rounded-xl border border-border bg-bg-raised p-4 shadow-lg sm:p-5 lg:p-6',
+    base: 'rounded-xl border border-line bg-raised p-4 shadow-lg sm:p-5 lg:p-6',
 });
 
 const actionButton = tv({
     base: 'inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-sm font-medium transition-colors',
     variants: {
         variant: {
-            primary: 'bg-primary text-text-inverse hover:bg-primary-dark active:bg-primary-dark',
-            outline: 'border border-border bg-bg-raised text-text-secondary hover:bg-bg-surface',
+            primary: 'bg-primary text-on-primary hover:bg-primary-dark active:bg-primary-dark',
+            outline: 'border border-line bg-raised text-subtext hover:bg-surface',
         },
     },
     defaultVariants: {
@@ -56,7 +56,7 @@ export function QuickActions() {
     return (
         <section className={card()}>
             <header className="mb-3 sm:mb-4">
-                <h2 className="text-base font-semibold leading-6 text-text-primary sm:text-lg sm:leading-7 lg:text-xl">
+                <h2 className="text-base font-semibold leading-6 text-foreground sm:text-lg sm:leading-7 lg:text-xl">
                     Швидкі дії
                 </h2>
             </header>

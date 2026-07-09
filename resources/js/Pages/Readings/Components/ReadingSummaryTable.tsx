@@ -44,20 +44,20 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
   }, 0)
 
   return (
-    <Card className="border-border shadow-lg">
-      <CardHeader className="space-y-2 border-b border-border pb-4">
-        <CardTitle className="text-xl text-text-primary">
+    <Card className="border-line shadow-lg">
+      <CardHeader className="space-y-2 border-b border-line pb-4">
+        <CardTitle className="text-xl text-foreground">
           Підсумок показань
         </CardTitle>
-        <CardDescription className="text-base text-text-muted">
+        <CardDescription className="text-base text-muted">
           Перевірте дані перед відправкою
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 py-4">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border text-sm">
+          <table className="min-w-full divide-y divide-line text-sm">
             <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
+              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-muted">
                 <th className="px-3 py-2">Послуга</th>
                 <th className="px-3 py-2">Попередні</th>
                 <th className="px-3 py-2">Поточні</th>
@@ -66,7 +66,7 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
                 <th className="px-3 py-2">Сума</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-line">
               {rows.map((row) => {
                 const hasValues =
                   row.previousValue !== null && row.currentValue !== null
@@ -78,9 +78,9 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
                 return (
                   <tr
                     key={row.id}
-                    className="text-text-secondary"
+                    className="text-subtext"
                   >
-                    <td className="px-3 py-3 font-medium text-text-primary">
+                    <td className="px-3 py-3 font-medium text-foreground">
                       {row.serviceName}
                     </td>
                     <td className="px-3 py-3">
@@ -108,7 +108,7 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
             </tbody>
           </table>
         </div>
-        <p className="text-right text-sm font-semibold text-text-primary">
+        <p className="text-right text-sm font-semibold text-foreground">
           Загальна сума: {currencyFormatter.format(totalCost)}
         </p>
       </CardContent>

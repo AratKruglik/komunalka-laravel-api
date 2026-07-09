@@ -66,8 +66,8 @@ export function ReadingCard({
 }: ReadingCardProps) {
   const serviceConfig = SERVICE_CONFIG[draft.type]
   const ServiceIcon = serviceConfig?.icon
-  const serviceIconBg = serviceConfig?.iconBg ?? 'bg-bg-surface'
-  const serviceIconColor = serviceConfig?.iconColor ?? 'text-text-muted'
+  const serviceIconBg = serviceConfig?.iconBg ?? 'bg-surface'
+  const serviceIconColor = serviceConfig?.iconColor ?? 'text-muted'
   const isMultiTariff = draft.tariffEntries.length > 1
 
   const tariffBreakdown = draft.tariffEntries.map((entry) => {
@@ -104,7 +104,7 @@ export function ReadingCard({
             inputMode="decimal"
             value={currentVal}
             onChange={(event) => onTariffValueChange(entry.tariffId, event.target.value)}
-            endAdornment={<span className="text-sm text-text-muted">{draft.unit}</span>}
+            endAdornment={<span className="text-sm text-muted">{draft.unit}</span>}
           />
         </div>
 
@@ -113,14 +113,14 @@ export function ReadingCard({
             <Label htmlFor={`${draft.id}-previous`} className="font-medium">
               Попередні показання
             </Label>
-            <span className="text-xs text-text-muted">{formatReadingDate(entry.previousDate)}</span>
+            <span className="text-xs text-muted">{formatReadingDate(entry.previousDate)}</span>
           </div>
           <Input
             id={`${draft.id}-previous`}
             value={entry.previousValue}
             readOnly
-            className="bg-bg-surface text-text-secondary"
-            endAdornment={<span className="text-sm text-text-muted">{draft.unit}</span>}
+            className="bg-surface text-subtext"
+            endAdornment={<span className="text-sm text-muted">{draft.unit}</span>}
           />
         </div>
       </>
@@ -134,11 +134,11 @@ export function ReadingCard({
         return (
           <div
             key={entry.tariffId}
-            className="space-y-3 rounded-lg border border-border bg-bg-surface/50 p-4"
+            className="space-y-3 rounded-lg border border-line bg-surface/50 p-4"
           >
-            <p className="text-sm font-semibold text-text-primary">
+            <p className="text-sm font-semibold text-foreground">
               {entry.tariffName}
-              <span className="ml-2 font-normal text-text-muted">
+              <span className="ml-2 font-normal text-muted">
                 ({entry.tariffLabel})
               </span>
             </p>
@@ -146,7 +146,7 @@ export function ReadingCard({
               <div className="space-y-1">
                 <Label
                   htmlFor={`${draft.id}-${entry.tariffId}-current`}
-                  className="text-xs font-medium text-text-secondary"
+                  className="text-xs font-medium text-subtext"
                 >
                   Поточні показання
                 </Label>
@@ -157,7 +157,7 @@ export function ReadingCard({
                   value={currentVal}
                   onChange={(event) => onTariffValueChange(entry.tariffId, event.target.value)}
                   endAdornment={
-                    <span className="text-xs text-text-muted">{draft.unit}</span>
+                    <span className="text-xs text-muted">{draft.unit}</span>
                   }
                 />
               </div>
@@ -165,11 +165,11 @@ export function ReadingCard({
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor={`${draft.id}-${entry.tariffId}-previous`}
-                    className="text-xs font-medium text-text-secondary"
+                    className="text-xs font-medium text-subtext"
                   >
                     Попередні
                   </Label>
-                  <span className="text-[10px] text-text-muted">
+                  <span className="text-[10px] text-muted">
                     {formatReadingDate(entry.previousDate)}
                   </span>
                 </div>
@@ -177,9 +177,9 @@ export function ReadingCard({
                   id={`${draft.id}-${entry.tariffId}-previous`}
                   value={entry.previousValue}
                   readOnly
-                  className="bg-bg-surface text-text-secondary"
+                  className="bg-surface text-subtext"
                   endAdornment={
-                    <span className="text-xs text-text-muted">{draft.unit}</span>
+                    <span className="text-xs text-muted">{draft.unit}</span>
                   }
                 />
               </div>
@@ -195,22 +195,22 @@ export function ReadingCard({
       const b = tariffBreakdown[0]
       if (!b) return null
       return (
-        <dl className="mt-4 space-y-3 text-sm text-text-secondary">
+        <dl className="mt-4 space-y-3 text-sm text-subtext">
           <div className="flex items-center justify-between">
             <dt>Споживання:</dt>
-            <dd className="font-semibold text-text-primary">
+            <dd className="font-semibold text-foreground">
               {numberFormatter.format(b.consumption)} {draft.unit}
             </dd>
           </div>
           <div className="flex items-center justify-between">
             <dt>Тариф:</dt>
-            <dd className="font-semibold text-text-primary">
+            <dd className="font-semibold text-foreground">
               {b.entry.tariffLabel}
             </dd>
           </div>
           <div className="flex items-center justify-between border-t border-primary/20 pt-3 text-base">
-            <dt className="font-semibold text-text-primary">Вартість:</dt>
-            <dd className="font-semibold text-text-primary">
+            <dt className="font-semibold text-foreground">Вартість:</dt>
+            <dd className="font-semibold text-foreground">
               {currencyFormatter.format(b.cost)}
             </dd>
           </div>
@@ -219,11 +219,11 @@ export function ReadingCard({
     }
 
     return (
-      <dl className="mt-4 space-y-3 text-sm text-text-secondary">
+      <dl className="mt-4 space-y-3 text-sm text-subtext">
         {tariffBreakdown.map((b) => (
           <div key={b.entry.tariffId} className="flex items-center justify-between">
             <dt>{b.entry.tariffName}:</dt>
-            <dd className="font-semibold text-text-primary">
+            <dd className="font-semibold text-foreground">
               {numberFormatter.format(b.consumption)} x{' '}
               {numberFormatter.format(b.entry.tariffPrice)} ={' '}
               {currencyFormatter.format(b.cost)}
@@ -231,8 +231,8 @@ export function ReadingCard({
           </div>
         ))}
         <div className="flex items-center justify-between border-t border-primary/20 pt-3 text-base">
-          <dt className="font-semibold text-text-primary">Загалом:</dt>
-          <dd className="font-semibold text-text-primary">
+          <dt className="font-semibold text-foreground">Загалом:</dt>
+          <dd className="font-semibold text-foreground">
             {currencyFormatter.format(totalCost)}
           </dd>
         </div>
@@ -241,8 +241,8 @@ export function ReadingCard({
   }
 
   return (
-    <Card className="border-border shadow-lg">
-      <CardHeader className="gap-4 border-b border-border pb-5">
+    <Card className="border-line shadow-lg">
+      <CardHeader className="gap-4 border-b border-line pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-3">
@@ -261,12 +261,12 @@ export function ReadingCard({
               ) : null}
               <CardTitle className="text-xl">{draft.serviceName}</CardTitle>
             </div>
-            <div className="text-sm text-text-muted">
+            <div className="text-sm text-muted">
               <p className="font-medium">{draft.meterLabel}</p>
               <p>&#8470; {draft.meterNumber}</p>
             </div>
           </div>
-          <CardDescription className="text-sm text-text-secondary">
+          <CardDescription className="text-sm text-subtext">
             Внесіть актуальні показання та додайте фото лічильника
           </CardDescription>
         </div>
@@ -285,7 +285,7 @@ export function ReadingCard({
               type="date"
               value={readingDate}
               onChange={(event) => onReadingDateChange(event.target.value)}
-              endAdornment={<Calendar className="h-4 w-4 text-text-muted" aria-hidden />}
+              endAdornment={<Calendar className="h-4 w-4 text-muted" aria-hidden />}
             />
           </div>
         </div>
@@ -299,7 +299,7 @@ export function ReadingCard({
               id={`${draft.id}-photo`}
               fileName={photo?.fileName ?? null}
               previewUrl={photo?.previewUrl ?? null}
-              emptyIcon={<Camera className="h-8 w-8 text-text-muted" aria-hidden />}
+              emptyIcon={<Camera className="h-8 w-8 text-muted" aria-hidden />}
               emptyTitle="Перетягніть файл або натисніть, щоб завантажити"
               emptyDescription="Додайте фото для підтвердження показань"
               buttonLabel="Завантажити фото"
@@ -311,7 +311,7 @@ export function ReadingCard({
           </div>
 
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
-            <p className="text-base font-semibold text-text-primary">Розрахунок</p>
+            <p className="text-base font-semibold text-foreground">Розрахунок</p>
             {renderCalculation()}
           </div>
         </div>

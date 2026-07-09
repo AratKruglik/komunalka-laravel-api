@@ -7,8 +7,8 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  primary: 'bg-primary/20 text-text-primary border border-primary/50',
-  neutral: 'bg-bg-surface text-text-secondary border border-border',
+  primary: 'bg-primary/20 text-foreground border border-primary/50',
+  neutral: 'bg-surface text-subtext border border-line',
   success: 'bg-success/15 text-success border border-success/40',
   warning: 'bg-warning/15 text-warning border border-warning/40',
   danger: 'bg-error/15 text-error border border-error/40',

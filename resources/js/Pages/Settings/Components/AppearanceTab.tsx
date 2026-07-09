@@ -96,7 +96,7 @@ export function AppearanceTab() {
                             </option>
                         ))}
                     </Select>
-                    <p className="text-xs text-text-muted">
+                    <p className="text-xs text-muted">
                         Наразі доступна лише українська мова
                     </p>
                 </CardContent>

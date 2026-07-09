@@ -47,8 +47,8 @@ export const RadioCard = forwardRef<HTMLButtonElement, RadioCardProps>(function 
         'w-full rounded-lg border p-4 text-left transition-all',
         selected
           ? 'border-primary bg-primary/10 shadow-[var(--shadow-sm)]'
-          : 'border-border hover:border-primary/60 hover:bg-bg-surface',
-        disabled ? 'cursor-not-allowed opacity-60 hover:bg-bg-raised' : '',
+          : 'border-line hover:border-primary/60 hover:bg-surface',
+        disabled ? 'cursor-not-allowed opacity-60 hover:bg-raised' : '',
         className,
       ]
         .filter(Boolean)
@@ -63,8 +63,8 @@ export const RadioCard = forwardRef<HTMLButtonElement, RadioCardProps>(function 
             className={[
               'flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 aspect-square',
               selected
-                ? 'border-primary bg-bg-raised text-primary'
-                : 'border-border bg-bg-surface text-text-muted',
+                ? 'border-primary bg-raised text-primary'
+                : 'border-line bg-surface text-muted',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -76,7 +76,7 @@ export const RadioCard = forwardRef<HTMLButtonElement, RadioCardProps>(function 
           <p
             className={[
               'text-base font-semibold',
-              selected ? 'text-text-primary' : 'text-text-secondary',
+              selected ? 'text-foreground' : 'text-subtext',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -84,12 +84,12 @@ export const RadioCard = forwardRef<HTMLButtonElement, RadioCardProps>(function 
             {title}
           </p>
           {description ? (
-            <p className="text-sm text-text-muted">{description}</p>
+            <p className="text-sm text-muted">{description}</p>
           ) : null}
         </div>
       </div>
       {helperText ? (
-        <div className="mt-3 text-sm text-text-muted">{helperText}</div>
+        <div className="mt-3 text-sm text-muted">{helperText}</div>
       ) : null}
     </button>
   )

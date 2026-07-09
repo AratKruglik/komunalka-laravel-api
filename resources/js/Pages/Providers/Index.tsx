@@ -59,13 +59,13 @@ export default function Index({ providers }: IndexPageProps) {
         >
             <Head title="Мої провайдери" />
 
-            <section className="w-full overflow-hidden rounded-lg bg-bg-raised shadow-lg border border-border">
+            <section className="w-full overflow-hidden rounded-lg bg-raised shadow-lg border border-line">
                 <div className="flex flex-col gap-3 px-3.5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4 sm:px-5 sm:py-6 lg:px-6">
                     <div>
-                        <h1 className="text-xl font-bold leading-7 text-text-primary sm:text-2xl sm:leading-8">
+                        <h1 className="text-xl font-bold leading-7 text-foreground sm:text-2xl sm:leading-8">
                             Мої провайдери
                         </h1>
-                        <p className="mt-0.5 text-sm leading-5 text-text-secondary sm:mt-1 sm:text-base sm:leading-6">
+                        <p className="mt-0.5 text-sm leading-5 text-subtext sm:mt-1 sm:text-base sm:leading-6">
                             Керуйте постачальниками комунальних послуг
                         </p>
                     </div>
@@ -94,11 +94,11 @@ export default function Index({ providers }: IndexPageProps) {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center gap-4 px-3.5 pb-8 pt-4 sm:px-5 lg:px-6">
-                        <Building2 className="h-12 w-12 text-text-muted" />
-                        <p className="text-center text-lg font-medium text-text-secondary">
+                        <Building2 className="h-12 w-12 text-muted" />
+                        <p className="text-center text-lg font-medium text-subtext">
                             Провайдерів поки немає
                         </p>
-                        <p className="text-center text-sm text-text-muted">
+                        <p className="text-center text-sm text-muted">
                             Додайте першого провайдера для однієї з ваших адрес
                         </p>
                         <Link href="/providers/create">
@@ -119,7 +119,7 @@ export default function Index({ providers }: IndexPageProps) {
                 description={
                     <>
                         Ви впевнені, що хочете видалити провайдера{' '}
-                        <strong className="text-text-primary">
+                        <strong className="text-foreground">
                             {deleteDialog.provider?.name}
                         </strong>
                         ? Цю дію неможливо скасувати.
@@ -142,21 +142,21 @@ interface ProviderCardProps {
 
 function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardProps) {
     return (
-        <article className="space-y-3 rounded-lg border border-border p-4">
+        <article className="space-y-3 rounded-lg border border-line p-4">
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                        <p className="font-medium text-text-primary">
+                        <p className="font-medium text-foreground">
                             {provider.name}
                         </p>
                         {provider.utilityType && (
-                            <span className="rounded-full bg-bg-surface px-2 py-0.5 text-xs font-medium text-text-secondary">
+                            <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-medium text-subtext">
                                 {provider.utilityType.displayName}
                             </span>
                         )}
                     </div>
                     {provider.website && (
-                        <p className="text-sm text-text-muted">
+                        <p className="text-sm text-muted">
                             <a
                                 href={provider.website}
                                 target="_blank"
@@ -174,7 +174,7 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
                             type="button"
                             size="icon"
                             variant="secondary"
-                            className="h-8 w-8 text-text-secondary"
+                            className="h-8 w-8 text-subtext"
                             aria-label={`Редагувати ${provider.name}`}
                         >
                             <Pencil className="h-3.5 w-3.5" />
@@ -184,7 +184,7 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
                         type="button"
                         size="icon"
                         variant="secondary"
-                        className="h-8 w-8 text-text-secondary"
+                        className="h-8 w-8 text-subtext"
                         aria-label={`Видалити ${provider.name}`}
                         onClick={() => onDelete(provider)}
                     >
@@ -194,19 +194,19 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
             </div>
 
             {provider.description && (
-                <p className="text-sm text-text-secondary">{provider.description}</p>
+                <p className="text-sm text-subtext">{provider.description}</p>
             )}
 
             {provider.tariffs.length > 0 && (
                 <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                         Тарифи
                     </p>
                     <div className="flex flex-wrap gap-2">
                         {provider.tariffs.map((tariff) => (
                             <span
                                 key={tariff.id}
-                                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-text-primary"
+                                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-foreground"
                             >
                                 <span>{tariff.name}</span>
                                 <span className="text-[11px] font-medium text-primary-dark">
@@ -219,7 +219,7 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
             )}
 
             {(provider.phone || provider.email) && (
-                <div className="flex flex-wrap gap-4 text-sm text-text-muted">
+                <div className="flex flex-wrap gap-4 text-sm text-muted">
                     {provider.phone && <span>{provider.phone}</span>}
                     {provider.email && <span>{provider.email}</span>}
                 </div>

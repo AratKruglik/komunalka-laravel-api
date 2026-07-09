@@ -329,12 +329,12 @@ export default function Create({
               />
             ))
           ) : (
-            <Card className="border-dashed border-border bg-bg-surface text-center shadow-none">
+            <Card className="border-dashed border-line bg-surface text-center shadow-none">
               <CardContent className="py-10">
-                <p className="text-lg font-semibold text-text-primary">
+                <p className="text-lg font-semibold text-foreground">
                   Немає лічильників для вибраної адреси
                 </p>
-                <p className="mt-2 text-sm text-text-muted">
+                <p className="mt-2 text-sm text-muted">
                   Додайте лічильник у розділі &laquo;Лічильники&raquo;, щоб почати вводити показання
                 </p>
               </CardContent>
@@ -343,7 +343,7 @@ export default function Create({
 
           <ReadingSummaryTable rows={summaryRows} />
 
-          <div className="flex flex-col items-end gap-2 border-t border-border pt-4">
+          <div className="flex flex-col items-end gap-2 border-t border-line pt-4">
             {submitError && (
               <FormMessage variant="error">{submitError}</FormMessage>
             )}

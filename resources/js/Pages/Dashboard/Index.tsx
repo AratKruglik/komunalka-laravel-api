@@ -1,5 +1,6 @@
 import { Head, usePage } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
+import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { useDenormalizeCollection } from '@/lib/useDenormalize';
 import { formatAddressLabel } from '@/lib/formatAddress';
 import { useAuthUser } from '@/lib/useAuthUser';
@@ -83,9 +84,9 @@ export default function Index() {
     const userName = user?.firstName ?? user?.username ?? 'Користувач';
 
     return (
-        <>
+        <AuthenticatedLayout pageTitle="Дашборд">
             <Head title="Головна" />
-            <div className="mx-auto max-w-7xl space-y-4 p-4 sm:space-y-5 sm:p-6 lg:space-y-6 lg:p-8">
+            <div className="mx-auto max-w-7xl space-y-4 sm:space-y-5 lg:space-y-6">
                 <WelcomeHeader
                     userName={userName}
                     addresses={addressOptions}
@@ -104,6 +105,6 @@ export default function Index() {
 
                 <QuickActions />
             </div>
-        </>
+        </AuthenticatedLayout>
     );
 }

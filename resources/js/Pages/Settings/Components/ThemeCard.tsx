@@ -18,7 +18,7 @@ const themeCard = tv({
     variants: {
         selected: {
             true: 'border-primary bg-primary/5 shadow-sm',
-            false: 'border-border bg-bg-raised hover:border-text-muted hover:bg-bg-surface',
+            false: 'border-line bg-raised hover:border-text-muted hover:bg-surface',
         },
     },
     defaultVariants: { selected: false },
@@ -33,14 +33,14 @@ export function ThemeCard({ icon: Icon, label, description, isSelected, onClick 
             onClick={onClick}
             className={themeCard({ selected: isSelected })}
         >
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-surface text-text-secondary">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-subtext">
                 <Icon className="h-5 w-5" strokeWidth={1.7} />
             </span>
             <div>
-                <span className="block text-sm font-semibold text-text-primary">
+                <span className="block text-sm font-semibold text-foreground">
                     {label}
                 </span>
-                <span className="mt-0.5 block text-xs text-text-muted">
+                <span className="mt-0.5 block text-xs text-muted">
                     {description}
                 </span>
             </div>

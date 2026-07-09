@@ -25,8 +25,8 @@ const tabItem = tv({
     ],
     variants: {
         active: {
-            true: 'bg-primary font-medium text-text-inverse',
-            false: 'text-text-secondary hover:bg-bg-surface hover:text-text-primary',
+            true: 'bg-primary font-medium text-on-primary',
+            false: 'text-subtext hover:bg-surface hover:text-foreground',
         },
     },
     defaultVariants: { active: false },
@@ -41,7 +41,7 @@ export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps
     return (
         <>
             <nav
-                className="hidden rounded-xl border border-border bg-bg-raised p-2 md:block"
+                className="hidden rounded-xl border border-line bg-raised p-2 md:block"
                 aria-label="Розділи налаштувань"
             >
                 <ul className="space-y-1" role="tablist">
@@ -61,7 +61,7 @@ export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps
                                     <Icon className="h-5 w-5 shrink-0" />
                                     <div className="min-w-0">
                                         <span className="block text-sm leading-5">{tab.label}</span>
-                                        <span className={`block text-xs leading-4 ${isActive ? 'text-text-inverse/70' : 'text-text-muted'}`}>
+                                        <span className={`block text-xs leading-4 ${isActive ? 'text-on-primary/70' : 'text-muted'}`}>
                                             {tab.description}
                                         </span>
                                     </div>
@@ -74,7 +74,7 @@ export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps
 
             <nav className="overflow-x-auto md:hidden" aria-label="Розділи налаштувань">
                 <ul
-                    className="flex gap-1 rounded-xl border border-border bg-bg-raised p-1.5"
+                    className="flex gap-1 rounded-xl border border-line bg-raised p-1.5"
                     role="tablist"
                 >
                     {TABS.map((tab) => {

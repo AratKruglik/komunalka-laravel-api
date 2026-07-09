@@ -27,7 +27,7 @@ export function Logo({ size = 'md', showText = true, className = '' }: LogoProps
 
   return (
     <div
-      className={['flex items-center font-semibold text-text-primary', sizeConfig.gap, className]
+      className={['flex items-center font-semibold text-foreground', sizeConfig.gap, className]
         .filter(Boolean)
         .join(' ')}
     >

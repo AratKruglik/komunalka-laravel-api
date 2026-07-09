@@ -6,8 +6,8 @@ const selectStyles = tv({
   slots: {
     wrapper: 'relative',
     select:
-      'w-full appearance-none rounded-md border border-border bg-bg-raised bg-no-repeat py-2.5 pr-10 text-base text-text-primary transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:bg-bg-surface disabled:text-text-muted disabled:focus:ring-0 disabled:focus:border-border',
-    iconWrapper: 'pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-muted',
+      'w-full appearance-none rounded-md border border-line bg-raised bg-no-repeat py-2.5 pr-10 text-base text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted disabled:focus:ring-0 disabled:focus:border-line',
+    iconWrapper: 'pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted',
   },
   variants: {
     isInvalid: {
@@ -45,7 +45,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   return (
     <div className={wrapper()}>
       {leadingIcon ? (
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-text-muted">
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-muted">
           {leadingIcon}
         </span>
       ) : null}
@@ -53,7 +53,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         {children}
       </select>
       <span className={iconWrapper()}>
-        <ChevronDown className="h-5 w-5 text-text-muted" />
+        <ChevronDown className="h-5 w-5 text-muted" />
       </span>
     </div>
   )

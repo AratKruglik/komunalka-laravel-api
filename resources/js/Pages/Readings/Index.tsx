@@ -107,14 +107,14 @@ export default function Index({ addresses, readings, filters }: Props) {
         {readingList.length > 0 ? (
           <div className="space-y-4">
             {readingList.map((reading) => (
-              <Card key={reading.id} className="border-border shadow-md">
-                <CardHeader className="flex flex-row items-center justify-between gap-4 border-b border-border pb-4">
+              <Card key={reading.id} className="border-line shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between gap-4 border-b border-line pb-4">
                   <div className="flex items-center gap-3">
                     <div>
                       <CardTitle className="text-base">
                         {reading.meter.name} &#8470; {reading.meter.serialNumber}
                       </CardTitle>
-                      <p className="text-sm text-text-muted">
+                      <p className="text-sm text-muted">
                         {dateFormatter.format(new Date(reading.readingDate))}
                       </p>
                     </div>
@@ -132,23 +132,23 @@ export default function Index({ addresses, readings, filters }: Props) {
                 <CardContent>
                   <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                     <div>
-                      <dt className="text-text-muted">Показання</dt>
-                      <dd className="font-semibold text-text-primary">
+                      <dt className="text-muted">Показання</dt>
+                      <dd className="font-semibold text-foreground">
                         {numberFormatter.format(reading.readingValue)}
                       </dd>
                     </div>
                     {reading.previousReadingValue !== null ? (
                       <div>
-                        <dt className="text-text-muted">Попередні</dt>
-                        <dd className="font-semibold text-text-primary">
+                        <dt className="text-muted">Попередні</dt>
+                        <dd className="font-semibold text-foreground">
                           {numberFormatter.format(reading.previousReadingValue)}
                         </dd>
                       </div>
                     ) : null}
                     {reading.consumption !== null ? (
                       <div>
-                        <dt className="text-text-muted">Споживання</dt>
-                        <dd className="font-semibold text-text-primary">
+                        <dt className="text-muted">Споживання</dt>
+                        <dd className="font-semibold text-foreground">
                           {numberFormatter.format(reading.consumption)}
                         </dd>
                       </div>
@@ -160,28 +160,28 @@ export default function Index({ addresses, readings, filters }: Props) {
                     ) : null}
                   </dl>
                   {reading.notes ? (
-                    <p className="mt-3 text-sm text-text-secondary">{reading.notes}</p>
+                    <p className="mt-3 text-sm text-subtext">{reading.notes}</p>
                   ) : null}
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : filters.address_id ? (
-          <Card className="border-dashed border-border bg-bg-surface text-center shadow-none">
+          <Card className="border-dashed border-line bg-surface text-center shadow-none">
             <CardContent className="py-10">
-              <p className="text-lg font-semibold text-text-primary">
+              <p className="text-lg font-semibold text-foreground">
                 Немає показань для обраної адреси
               </p>
-              <p className="mt-2 text-sm text-text-muted">
+              <p className="mt-2 text-sm text-muted">
                 Внесіть показання, натиснувши кнопку вище
               </p>
             </CardContent>
           </Card>
         ) : (
-          <Card className="border-dashed border-border bg-bg-surface text-center shadow-none">
+          <Card className="border-dashed border-line bg-surface text-center shadow-none">
             <CardContent className="py-10">
-              <p className="text-lg font-semibold text-text-primary">Оберіть адресу</p>
-              <p className="mt-2 text-sm text-text-muted">
+              <p className="text-lg font-semibold text-foreground">Оберіть адресу</p>
+              <p className="mt-2 text-sm text-muted">
                 Виберіть адресу зі списку, щоб переглянути показання
               </p>
             </CardContent>

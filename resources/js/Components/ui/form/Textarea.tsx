@@ -10,7 +10,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
   ref,
 ) {
   const baseClasses =
-    'w-full rounded-md border-[0.5px] border-border bg-bg-raised px-4 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-colors focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+    'w-full rounded-md border-[0.5px] border-line bg-raised px-4 py-2.5 text-base text-foreground placeholder:text-muted transition-colors focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
 
   const invalidClasses =
     'border-error focus:ring-error focus:border-error'
@@ -22,7 +22,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       className={[
         baseClasses,
         isInvalid ? invalidClasses : '',
-        'disabled:cursor-not-allowed disabled:bg-bg-surface disabled:text-text-muted disabled:focus:ring-0 disabled:focus:border-border read-only:focus:ring-0 read-only:focus:border-border',
+        'disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted disabled:focus:ring-0 disabled:focus:border-line read-only:focus:ring-0 read-only:focus:border-line',
         'resize-none',
         className,
       ]

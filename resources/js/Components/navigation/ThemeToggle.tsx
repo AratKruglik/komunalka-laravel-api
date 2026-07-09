@@ -56,7 +56,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-secondary transition-colors hover:bg-bg-surface hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-subtext transition-colors hover:bg-surface hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10"
         title="Перемкнути тему"
       >
         <CurrentIcon className="h-4 w-4" strokeWidth={1.7} />
@@ -66,9 +66,9 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         <div
           role="menu"
           aria-label="Вибір теми"
-          className="absolute right-0 top-full z-10 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-bg-raised shadow-lg"
+          className="absolute right-0 top-full z-10 mt-2 w-48 overflow-hidden rounded-xl border border-line bg-raised shadow-lg"
         >
-          <ul className="divide-y divide-border text-sm text-text-primary">
+          <ul className="divide-y divide-line text-sm text-foreground">
             {themeOptions.map((option) => {
               const Icon = option.icon
               const isActive = theme === option.value
@@ -83,15 +83,15 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
                       setTheme(option.value)
                       setOpen(false)
                     }}
-                    className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-bg-surface"
+                    className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface"
                   >
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-bg-surface text-text-secondary">
+                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-surface text-subtext">
                       <Icon className="h-4 w-4" strokeWidth={1.7} />
                     </span>
                     <span className="flex-1">
                       <span className="block text-sm font-semibold">{option.label}</span>
                       {option.value === 'system' ? (
-                        <span className="block text-xs text-text-muted">
+                        <span className="block text-xs text-muted">
                           Залежить від системи ({resolvedTheme === 'dark' ? 'темна' : 'світла'})
                         </span>
                       ) : null}

@@ -15,7 +15,7 @@ interface ExpenseDistributionProps {
 }
 
 const card = tv({
-    base: 'flex h-full flex-col rounded-xl border border-border bg-bg-raised p-4 shadow-lg sm:p-6',
+    base: 'flex h-full flex-col rounded-xl border border-line bg-raised p-4 shadow-lg sm:p-6',
 });
 
 export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
@@ -40,12 +40,12 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
         <section className={card()}>
             <header className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 className="text-base font-semibold leading-6 text-text-primary sm:text-lg sm:leading-7">
+                    <h2 className="text-base font-semibold leading-6 text-foreground sm:text-lg sm:leading-7">
                         Розподіл витрат
                     </h2>
-                    <p className="mt-1 text-sm text-text-muted">
+                    <p className="mt-1 text-sm text-muted">
                         Загалом:{' '}
-                        <span className="font-semibold text-text-primary">
+                        <span className="font-semibold text-foreground">
                             {formatCurrency(totalExpenses)}
                         </span>
                     </p>
@@ -85,7 +85,7 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                                             const { cx, cy } = viewBox as { cx: number; cy: number };
 
                                             return (
-                                                <text x={cx} y={cy} fill="var(--color-text-primary)" textAnchor="middle">
+                                                <text x={cx} y={cy} fill="var(--color-foreground)" textAnchor="middle">
                                                     <tspan fontSize={12} fontWeight={600} dy={-6}>
                                                         Загалом
                                                     </tspan>
@@ -99,11 +99,11 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                                 </Pie>
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: 'var(--color-bg-raised)',
-                                        border: '1px solid var(--color-border)',
+                                        backgroundColor: 'var(--color-raised)',
+                                        border: '1px solid var(--color-line)',
                                         borderRadius: '8px',
                                         fontSize: '12px',
-                                        color: 'var(--color-text-primary)',
+                                        color: 'var(--color-foreground)',
                                     }}
                                     formatter={(value) => [formatCurrency(Number(value)), 'Сума']}
                                 />
@@ -112,11 +112,11 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                     </div>
                 </div>
 
-                <div className="flex w-full flex-col justify-center space-y-3 text-sm text-text-secondary">
+                <div className="flex w-full flex-col justify-center space-y-3 text-sm text-subtext">
                     {chartData.map((item) => (
                         <div
                             key={item.name}
-                            className="flex items-center justify-between rounded-lg bg-bg-surface px-3 py-2"
+                            className="flex items-center justify-between rounded-lg bg-surface px-3 py-2"
                         >
                             <span className="inline-flex items-center gap-2">
                                 <span
@@ -125,7 +125,7 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                                 />
                                 {item.name}
                             </span>
-                            <span className="font-semibold text-text-primary">
+                            <span className="font-semibold text-foreground">
                                 {formatCurrency(item.value)}
                             </span>
                         </div>

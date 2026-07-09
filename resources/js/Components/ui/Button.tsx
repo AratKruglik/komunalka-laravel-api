@@ -7,10 +7,10 @@ const button = tv({
   base: 'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50',
   variants: {
     variant: {
-      primary: 'bg-primary text-text-inverse hover:bg-primary-dark active:bg-primary-dark',
+      primary: 'bg-primary text-on-primary hover:bg-primary-dark active:bg-primary-dark',
       secondary:
-        'border border-border bg-transparent text-text-primary hover:border-text-muted',
-      ghost: 'bg-transparent text-text-secondary hover:bg-bg-surface hover:text-text-primary',
+        'border border-line bg-transparent text-foreground hover:border-text-muted',
+      ghost: 'bg-transparent text-subtext hover:bg-surface hover:text-foreground',
       danger: 'bg-error text-white hover:bg-error/90 active:bg-error/80',
     },
     size: {

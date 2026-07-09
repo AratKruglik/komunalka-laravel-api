@@ -114,20 +114,20 @@ export function AuthenticatedSidebar({
     ? 'flex h-full w-full'
     : 'relative hidden w-60 shrink-0 lg:flex'
 
-  const innerClasses = `flex h-full w-full flex-col border-r border-border bg-bg-surface dark:bg-bg-primary ${
+  const innerClasses = `flex h-full w-full flex-col border-r border-line bg-surface dark:bg-canvas ${
     isMobile ? 'shadow-2xl' : 'sticky top-0 min-h-full'
   }`
 
   return (
     <aside className={containerClasses}>
       <div className={innerClasses}>
-        <div className="flex h-14 items-center gap-3 border-b border-border px-3 sm:h-16 sm:px-4 lg:h-[65px]">
+        <div className="flex h-14 items-center gap-3 border-b border-line px-3 sm:h-16 sm:px-4 lg:h-[65px]">
           <Logo size="md" />
           {isMobile ? (
             <button
               type="button"
               onClick={onClose}
-              className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-text-muted transition-colors hover:bg-bg-raised hover:text-text-primary active:bg-bg-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-9 sm:w-9"
+              className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-line text-muted transition-colors hover:bg-raised hover:text-foreground active:bg-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-9 sm:w-9"
               aria-label="Закрити меню"
             >
               <X className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -142,7 +142,7 @@ export function AuthenticatedSidebar({
         >
           {sections.map((section) => (
             <div key={section.heading} className="space-y-2 sm:space-y-3">
-              <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-text-muted sm:px-4 sm:text-xs">
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-muted sm:px-4 sm:text-xs">
                 {section.heading}
               </p>
 
@@ -185,8 +185,8 @@ function SidebarNavLink({
       <div
         className={`flex h-10 items-center gap-2.5 px-3 text-sm transition-colors sm:h-11 sm:gap-3 sm:px-4 sm:text-base lg:h-12 ${
           active
-            ? 'bg-primary font-medium text-text-inverse'
-            : 'text-text-secondary hover:bg-bg-raised hover:text-text-primary active:bg-bg-raised'
+            ? 'bg-primary font-medium text-on-primary'
+            : 'text-subtext hover:bg-raised hover:text-foreground active:bg-raised'
         }`}
       >
         <Icon className="h-4 w-4 flex-shrink-0 sm:h-[18px] sm:w-[18px]" />
@@ -196,7 +196,7 @@ function SidebarNavLink({
             className={`ml-auto inline-flex flex-shrink-0 items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold sm:px-2 sm:text-xs ${
               item.badgeTone === 'info'
                 ? 'bg-info/15 text-info'
-                : 'bg-primary/20 text-text-primary'
+                : 'bg-primary/20 text-foreground'
             }`}
           >
             {item.badge}
@@ -223,15 +223,15 @@ function MobileUserSection({
   ]
 
   return (
-    <div className="border-t border-border bg-bg-surface md:hidden">
-      <div className="flex items-center gap-3 border-b border-border bg-bg-raised px-3 py-3 sm:px-4 sm:py-4">
+    <div className="border-t border-line bg-surface md:hidden">
+      <div className="flex items-center gap-3 border-b border-line bg-raised px-3 py-3 sm:px-4 sm:py-4">
         <UserAvatar src={user.avatarUrl} name={user.name} size="md" />
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-text-primary sm:text-base">
+          <p className="truncate text-sm font-medium text-foreground sm:text-base">
             {user.name}
           </p>
-          <p className="truncate text-xs text-text-muted sm:text-sm">
+          <p className="truncate text-xs text-muted sm:text-sm">
             {user.email}
           </p>
         </div>
@@ -276,8 +276,8 @@ function MobileUserSection({
               <div
                 className={`flex h-10 items-center gap-2.5 px-3 text-sm transition-colors sm:h-11 sm:gap-3 sm:px-4 sm:text-base ${
                   active
-                    ? 'bg-primary font-medium text-text-inverse'
-                    : 'text-text-secondary hover:bg-bg-raised hover:text-text-primary active:bg-bg-raised'
+                    ? 'bg-primary font-medium text-on-primary'
+                    : 'text-subtext hover:bg-raised hover:text-foreground active:bg-raised'
                 }`}
               >
                 <Icon className="h-4 w-4 flex-shrink-0 sm:h-[18px] sm:w-[18px]" />

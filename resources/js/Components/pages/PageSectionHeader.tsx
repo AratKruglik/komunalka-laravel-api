@@ -28,21 +28,21 @@ export function PageSectionHeader({
 }: PageSectionHeaderProps) {
   const headerClasses = [
     'flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
-    withBorder ? 'border-b border-border pb-5' : '',
+    withBorder ? 'border-b border-line pb-5' : '',
     className,
   ]
     .filter(Boolean)
     .join(' ')
 
   const titleClasses = [
-    'text-2xl font-semibold text-text-primary',
+    'text-2xl font-semibold text-foreground',
     titleClassName,
   ]
     .filter(Boolean)
     .join(' ')
 
   const descriptionClasses = [
-    'text-base text-text-secondary',
+    'text-base text-subtext',
     descriptionClassName,
   ]
     .filter(Boolean)

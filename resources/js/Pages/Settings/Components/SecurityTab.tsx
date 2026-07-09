@@ -165,7 +165,7 @@ export function SecurityTab({ connectedProviders }: SecurityTabProps) {
                             value={unlinkPassword}
                             onChange={(e) => setUnlinkPassword(e.target.value)}
                             placeholder="Ваш пароль"
-                            leadingIcon={<Lock className="h-4 w-4 text-text-muted" />}
+                            leadingIcon={<Lock className="h-4 w-4 text-muted" />}
                             autoFocus
                         />
                     </div>

@@ -131,7 +131,7 @@ export function AddressForm({
                 <PageSectionHeader
                     title={title}
                     description={description}
-                    titleClassName="text-2xl font-bold text-text-primary"
+                    titleClassName="text-2xl font-bold text-foreground"
                 />
 
                 <CardContent className="space-y-8">
@@ -142,7 +142,7 @@ export function AddressForm({
                             <Label htmlFor="address_type_id">
                                 Тип нерухомості<span className="text-error">*</span>
                             </Label>
-                            <p className="text-sm text-text-muted">
+                            <p className="text-sm text-muted">
                                 Оберіть тип нерухомості, для якої додаєте адресу
                             </p>
                         </div>
@@ -311,13 +311,13 @@ export function AddressForm({
                             </Label>
                         </div>
 
-                        <p className="text-sm text-text-muted">
+                        <p className="text-sm text-muted">
                             <span className="text-error">*</span> Обов&apos;язкові поля
                         </p>
                     </fieldset>
 
                     {!isAddressTypeSelected && !address ? (
-                        <p className="rounded-md border border-dashed border-border bg-bg-surface px-4 py-3 text-sm text-text-secondary">
+                        <p className="rounded-md border border-dashed border-line bg-surface px-4 py-3 text-sm text-subtext">
                             Оберіть тип нерухомості, щоб заповнити адресу
                         </p>
                     ) : null}
@@ -355,7 +355,7 @@ function FormStepper({ steps }: FormStepperProps) {
     const columnTemplate = `repeat(${steps.length * 2 - 1}, minmax(0, 1fr))`
 
     return (
-        <div className="rounded-lg border border-border bg-bg-surface p-4">
+        <div className="rounded-lg border border-line bg-surface p-4">
             <ol
                 className="flex flex-col gap-4 md:grid md:items-center md:gap-4"
                 style={{ gridTemplateColumns: columnTemplate }}
@@ -403,19 +403,19 @@ function getStatusClasses(status: StepStatus) {
             return {
                 circle: 'border-primary bg-primary/10 text-primary',
                 icon: 'h-6 w-6',
-                label: 'text-text-primary',
+                label: 'text-foreground',
             }
         case 'current':
             return {
-                circle: 'border-primary bg-bg-raised text-primary',
+                circle: 'border-primary bg-raised text-primary',
                 icon: 'h-6 w-6',
-                label: 'text-text-primary',
+                label: 'text-foreground',
             }
         default:
             return {
-                circle: 'border-border bg-bg-raised text-text-muted',
+                circle: 'border-line bg-raised text-muted',
                 icon: 'h-6 w-6',
-                label: 'text-text-muted',
+                label: 'text-muted',
             }
     }
 }

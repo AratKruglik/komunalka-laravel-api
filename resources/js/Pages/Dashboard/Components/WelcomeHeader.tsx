@@ -18,11 +18,11 @@ interface WelcomeHeaderProps {
 }
 
 const welcomeCard = tv({
-    base: 'rounded-xl border border-border bg-bg-raised p-4 shadow-lg sm:p-5 lg:p-6',
+    base: 'rounded-xl border border-line bg-raised p-4 shadow-lg sm:p-5 lg:p-6',
 });
 
 const addButton = tv({
-    base: 'inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-primary-dark active:bg-primary-dark sm:w-auto sm:px-5 sm:text-base',
+    base: 'inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-on-primary transition-colors hover:bg-primary-dark active:bg-primary-dark sm:w-auto sm:px-5 sm:text-base',
 });
 
 export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddressChange }: WelcomeHeaderProps) {
@@ -54,10 +54,10 @@ export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddres
         <section className={welcomeCard()}>
             <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-between">
                 <div className="space-y-2.5 sm:space-y-3">
-                    <h1 className="text-lg font-bold text-text-primary sm:text-xl lg:text-2xl">
+                    <h1 className="text-lg font-bold text-foreground sm:text-xl lg:text-2xl">
                         Вітаємо, {userName}!
                     </h1>
-                    <p className="text-xs text-text-secondary sm:text-sm lg:text-base">
+                    <p className="text-xs text-subtext sm:text-sm lg:text-base">
                         Ось огляд ваших комунальних послуг за {currentMonth}
                     </p>
                     {addressOptions.length > 0 && (
@@ -79,7 +79,7 @@ export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddres
                                     ))}
                                 </Select>
                                 {selectedAddress?.description && (
-                                    <span className="hidden text-xs text-text-muted sm:inline lg:text-sm">
+                                    <span className="hidden text-xs text-muted sm:inline lg:text-sm">
                                         {selectedAddress.description}
                                     </span>
                                 )}

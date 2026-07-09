@@ -11,7 +11,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <div
       ref={ref}
       className={[
-        'rounded-lg border border-border bg-bg-surface text-text-primary shadow-[var(--shadow-sm)]',
+        'rounded-lg border border-line bg-surface text-foreground shadow-[var(--shadow-sm)]',
         className,
       ]
         .filter(Boolean)
@@ -31,7 +31,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardSectionProps>(function 
     <div
       ref={ref}
       className={[
-        'flex flex-col gap-1.5 border-b border-border px-6 py-5',
+        'flex flex-col gap-1.5 border-b border-line px-6 py-5',
         className,
       ]
         .filter(Boolean)
@@ -47,7 +47,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadi
       <h3
         ref={ref}
         className={[
-          'text-lg font-semibold tracking-tight text-text-primary',
+          'text-lg font-semibold tracking-tight text-foreground',
           className,
         ]
           .filter(Boolean)
@@ -64,7 +64,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
       <p
         ref={ref}
         className={[
-          'text-sm text-text-secondary',
+          'text-sm text-subtext',
           className,
         ].filter(Boolean).join(' ')}
         {...props}
@@ -94,7 +94,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardSectionProps>(function 
     <div
       ref={ref}
       className={[
-        'flex items-center justify-end gap-3 border-t border-border px-6 py-4',
+        'flex items-center justify-end gap-3 border-t border-line px-6 py-4',
         className,
       ]
         .filter(Boolean)

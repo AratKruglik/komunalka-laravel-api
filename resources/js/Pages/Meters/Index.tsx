@@ -89,8 +89,8 @@ export default function Index({ meters: metersDocument, addresses: addressesDocu
                         </div>
 
                         {meters.length === 0 ? (
-                            <div className="rounded-xl border border-dashed border-border bg-bg-surface p-8 text-center">
-                                <p className="text-text-secondary">
+                            <div className="rounded-xl border border-dashed border-line bg-surface p-8 text-center">
+                                <p className="text-subtext">
                                     {selectedAddressId
                                         ? 'Для цієї адреси поки що немає збережених лічильників.'
                                         : 'У вас поки що немає лічильників.'}

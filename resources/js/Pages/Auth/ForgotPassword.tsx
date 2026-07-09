@@ -18,12 +18,12 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Забули пароль" />
 
             <div className="w-full max-w-[448px]">
-                <div className="overflow-hidden rounded-lg bg-bg-raised shadow-lg">
-                    <div className="bg-bg-raised px-6 pt-6 pb-7">
-                        <h1 className="text-center text-xl font-bold text-text-primary">
+                <div className="overflow-hidden rounded-lg bg-raised shadow-lg">
+                    <div className="bg-raised px-6 pt-6 pb-7">
+                        <h1 className="text-center text-xl font-bold text-foreground">
                             Комуналка
                         </h1>
-                        <p className="text-center text-sm text-text-secondary">
+                        <p className="text-center text-sm text-subtext">
                             Відновлення доступу до акаунту
                         </p>
                     </div>
@@ -37,7 +37,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                             </div>
                         )}
 
-                        <div className="mb-6 text-sm text-text-secondary">
+                        <div className="mb-6 text-sm text-subtext">
                             Забули пароль? Без проблем. Просто вкажіть вашу адресу електронної пошти,
                             і ми надішлемо вам посилання для встановлення нового пароля.
                         </div>
@@ -81,8 +81,8 @@ export default function ForgotPassword({ status }: { status?: string }) {
                         </div>
                     </div>
 
-                    <div className="bg-bg-surface px-6 py-4 text-center">
-                        <p className="text-xs text-text-muted">
+                    <div className="bg-surface px-6 py-4 text-center">
+                        <p className="text-xs text-muted">
                             &copy; 2023 Комуналка. Всі права захищені.
                         </p>
                     </div>

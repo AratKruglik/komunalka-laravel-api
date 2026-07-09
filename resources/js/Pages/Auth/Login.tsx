@@ -7,8 +7,8 @@ import { Button, Checkbox, GithubIcon, GoogleIcon, Input, Label, PasswordInput }
 const socialButton = tv({
     base: [
         'flex items-center justify-center',
-        'rounded-md border border-border bg-bg-raised',
-        'py-2.5 transition-colors hover:bg-bg-surface',
+        'rounded-md border border-line bg-raised',
+        'py-2.5 transition-colors hover:bg-surface',
     ],
 });
 
@@ -29,23 +29,23 @@ export default function Login() {
             <Head title="Вхід" />
 
             <div className="w-full max-w-[448px]">
-                <div className="overflow-hidden rounded-lg bg-bg-raised shadow-lg">
-                    <div className="bg-bg-raised px-6 pt-6 pb-7">
-                        <h1 className="text-center text-xl font-bold text-text-primary">
+                <div className="overflow-hidden rounded-lg bg-raised shadow-lg">
+                    <div className="bg-raised px-6 pt-6 pb-7">
+                        <h1 className="text-center text-xl font-bold text-foreground">
                             Комуналка
                         </h1>
-                        <p className="text-center text-sm text-text-secondary">
+                        <p className="text-center text-sm text-subtext">
                             Управління комунальними послугами
                         </p>
                     </div>
 
-                    <div className="flex border-b border-border">
-                        <span className="flex-1 border-b-2 border-primary px-4 py-3 text-center text-base font-medium text-text-primary">
+                    <div className="flex border-b border-line">
+                        <span className="flex-1 border-b-2 border-primary px-4 py-3 text-center text-base font-medium text-foreground">
                             Вхід
                         </span>
                         <Link
                             href="/register"
-                            className="flex-1 border-b-2 border-transparent px-4 py-3 text-center text-base font-medium text-text-muted transition-colors hover:text-text-secondary"
+                            className="flex-1 border-b-2 border-transparent px-4 py-3 text-center text-base font-medium text-muted transition-colors hover:text-subtext"
                         >
                             Реєстрація
                         </Link>
@@ -114,10 +114,10 @@ export default function Login() {
 
                         <div className="relative my-4 sm:my-5">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-border" />
+                                <div className="w-full border-t border-line" />
                             </div>
                             <div className="relative flex justify-center text-xs sm:text-sm">
-                                <span className="bg-bg-raised px-2 text-text-muted">
+                                <span className="bg-raised px-2 text-muted">
                                     Увійти через соцмережі
                                 </span>
                             </div>
@@ -137,13 +137,13 @@ export default function Login() {
                                 className={socialButton()}
                                 aria-label="Увійти через GitHub"
                             >
-                                <GithubIcon size={16} className="text-text-primary" />
+                                <GithubIcon size={16} className="text-foreground" />
                             </a>
                         </div>
                     </div>
 
-                    <div className="bg-bg-surface px-6 py-4 text-center">
-                        <p className="text-xs text-text-muted">
+                    <div className="bg-surface px-6 py-4 text-center">
+                        <p className="text-xs text-muted">
                             &copy; 2023 Комуналка. Всі права захищені.
                         </p>
                     </div>

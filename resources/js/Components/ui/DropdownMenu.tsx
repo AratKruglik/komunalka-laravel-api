@@ -5,7 +5,7 @@ const dropdownMenu = tv({
   slots: {
     container: 'relative',
     menu: [
-      'absolute z-50 min-w-[180px] rounded-xl border border-border bg-bg-raised py-1.5 shadow-lg',
+      'absolute z-50 min-w-[180px] rounded-xl border border-line bg-raised py-1.5 shadow-lg',
       'animate-in fade-in-0 zoom-in-95 duration-150',
     ],
     item: [
@@ -22,7 +22,7 @@ const dropdownMenu = tv({
     },
     itemTone: {
       default: {
-        item: 'text-text-primary hover:bg-bg-surface focus-visible:bg-bg-surface',
+        item: 'text-foreground hover:bg-surface focus-visible:bg-surface',
       },
       danger: {
         item: 'text-error hover:bg-error/10 focus-visible:bg-error/10',

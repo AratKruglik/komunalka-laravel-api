@@ -25,15 +25,15 @@ interface ConsumptionChartProps {
 type PeriodFilter = '3months' | '6months' | '1year';
 
 const chartCard = tv({
-    base: 'rounded-xl border border-border bg-bg-raised p-3.5 shadow-lg sm:p-5 lg:p-6',
+    base: 'rounded-xl border border-line bg-raised p-3.5 shadow-lg sm:p-5 lg:p-6',
 });
 
 const periodButton = tv({
     base: 'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm',
     variants: {
         active: {
-            true: 'bg-primary text-text-inverse',
-            false: 'border border-border bg-bg-raised text-text-secondary hover:bg-bg-surface',
+            true: 'bg-primary text-on-primary',
+            false: 'border border-line bg-raised text-subtext hover:bg-surface',
         },
     },
 });
@@ -72,7 +72,7 @@ export function ConsumptionChart({ data }: ConsumptionChartProps) {
     return (
         <section className={chartCard()}>
             <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-center sm:justify-between lg:mb-6">
-                <h2 className="text-base font-semibold leading-6 text-text-primary sm:text-lg sm:leading-7 lg:text-xl">
+                <h2 className="text-base font-semibold leading-6 text-foreground sm:text-lg sm:leading-7 lg:text-xl">
                     Графік споживання
                 </h2>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -91,16 +91,16 @@ export function ConsumptionChart({ data }: ConsumptionChartProps) {
 
             <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-                    <XAxis dataKey="month" stroke="var(--color-text-muted)" style={{ fontSize: '12px' }} />
-                    <YAxis stroke="var(--color-text-muted)" style={{ fontSize: '12px' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line)" />
+                    <XAxis dataKey="month" stroke="var(--color-muted)" style={{ fontSize: '12px' }} />
+                    <YAxis stroke="var(--color-muted)" style={{ fontSize: '12px' }} />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: 'var(--color-bg-raised)',
-                            border: '1px solid var(--color-border)',
+                            backgroundColor: 'var(--color-raised)',
+                            border: '1px solid var(--color-line)',
                             borderRadius: '8px',
                             fontSize: '12px',
-                            color: 'var(--color-text-primary)',
+                            color: 'var(--color-foreground)',
                         }}
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} iconType="line" />

@@ -159,7 +159,7 @@ export function ProviderForm({
                 <PageSectionHeader
                     title={title}
                     description={description}
-                    titleClassName="text-2xl font-bold text-text-primary"
+                    titleClassName="text-2xl font-bold text-foreground"
                 />
 
                 <CardContent className="space-y-8">
@@ -229,13 +229,13 @@ export function ProviderForm({
                     </FormField>
 
                     {submitMethod === 'post' && (
-                        <div className="space-y-4 rounded-xl border border-border bg-bg-surface p-4">
+                        <div className="space-y-4 rounded-xl border border-line bg-surface p-4">
                             <div className="flex flex-wrap items-start justify-between gap-3">
                                 <div className="space-y-1">
-                                    <p className="text-sm font-semibold text-text-primary">
+                                    <p className="text-sm font-semibold text-foreground">
                                         Тарифи провайдера
                                     </p>
-                                    <p className="text-sm text-text-muted">
+                                    <p className="text-sm text-muted">
                                         Додайте денний, нічний чи інші плани
                                     </p>
                                 </div>
@@ -255,11 +255,11 @@ export function ProviderForm({
                                 {form.data.tariffs.map((tariff, index) => (
                                     <div
                                         key={index}
-                                        className="rounded-lg border border-border bg-bg-raised p-4 shadow-md"
+                                        className="rounded-lg border border-line bg-raised p-4 shadow-md"
                                     >
                                         <div className="flex items-center justify-between gap-3">
-                                            <div className="flex items-center gap-3 text-sm font-semibold text-text-primary">
-                                                <span className="grid size-9 place-items-center rounded-full bg-bg-surface text-text-secondary">
+                                            <div className="flex items-center gap-3 text-sm font-semibold text-foreground">
+                                                <span className="grid size-9 place-items-center rounded-full bg-surface text-subtext">
                                                     {index + 1}
                                                 </span>
                                                 <span>{tariff.name || 'Новий тариф'}</span>
@@ -307,7 +307,7 @@ export function ProviderForm({
                                                     value={tariff.base_rate}
                                                     onChange={(e) => updateTariff(index, 'base_rate', e.target.value)}
                                                     endAdornment={
-                                                        <span className="text-sm font-medium text-text-secondary">
+                                                        <span className="text-sm font-medium text-subtext">
                                                             грн/{selectedUtilityType?.unit ?? 'од.'}
                                                         </span>
                                                     }
@@ -328,7 +328,7 @@ export function ProviderForm({
                                                     value={tariff.service_fee}
                                                     onChange={(e) => updateTariff(index, 'service_fee', e.target.value)}
                                                     endAdornment={
-                                                        <span className="text-sm font-medium text-text-secondary">
+                                                        <span className="text-sm font-medium text-subtext">
                                                             грн
                                                         </span>
                                                     }
@@ -404,7 +404,7 @@ export function ProviderForm({
                         />
                     </FormField>
 
-                    <p className="text-sm text-text-muted">
+                    <p className="text-sm text-muted">
                         <span className="text-error">*</span> Обов&apos;язкові поля
                     </p>
                 </CardContent>

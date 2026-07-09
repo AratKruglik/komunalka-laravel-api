@@ -26,12 +26,12 @@ export default function ResetPassword({
             <Head title="Скидання пароля" />
 
             <div className="w-full max-w-[448px]">
-                <div className="overflow-hidden rounded-lg bg-bg-raised shadow-lg">
-                    <div className="bg-bg-raised px-6 pt-6 pb-7">
-                        <h1 className="text-center text-xl font-bold text-text-primary">
+                <div className="overflow-hidden rounded-lg bg-raised shadow-lg">
+                    <div className="bg-raised px-6 pt-6 pb-7">
+                        <h1 className="text-center text-xl font-bold text-foreground">
                             Комуналка
                         </h1>
-                        <p className="text-center text-sm text-text-secondary">
+                        <p className="text-center text-sm text-subtext">
                             Встановлення нового пароля
                         </p>
                     </div>
@@ -49,7 +49,7 @@ export default function ResetPassword({
                                     type="email"
                                     value={form.data.email}
                                     onChange={(e) => form.setData('email', e.target.value)}
-                                    className="bg-bg-surface text-text-muted"
+                                    className="bg-surface text-muted"
                                     placeholder="ваша@пошта.com"
                                     autoComplete="email"
                                     required
@@ -89,8 +89,8 @@ export default function ResetPassword({
                         </form>
                     </div>
 
-                    <div className="bg-bg-surface px-6 py-4 text-center">
-                        <p className="text-xs text-text-muted">
+                    <div className="bg-surface px-6 py-4 text-center">
+                        <p className="text-xs text-muted">
                             &copy; 2023 Комуналка. Всі права захищені.
                         </p>
                     </div>

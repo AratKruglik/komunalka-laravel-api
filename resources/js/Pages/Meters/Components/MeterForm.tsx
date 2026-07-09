@@ -187,7 +187,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 placeholder="Введіть серійний номер лічильника"
                                 isInvalid={Boolean(form.errors.serial_number)}
                             />
-                            <FormMessage variant="default" className="text-xs text-text-muted">
+                            <FormMessage variant="default" className="text-xs text-muted">
                                 Приклад: AE123456789
                             </FormMessage>
                             <FormMessage variant="error">{form.errors.serial_number}</FormMessage>
@@ -238,7 +238,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 value={form.data.installation_date}
                                 onChange={(e) => form.setData('installation_date', e.target.value)}
                                 isInvalid={Boolean(form.errors.installation_date)}
-                                endAdornment={<CalendarDays className="h-5 w-5 text-text-muted" />}
+                                endAdornment={<CalendarDays className="h-5 w-5 text-muted" />}
                             />
                             <FormMessage variant="error">{form.errors.installation_date}</FormMessage>
                         </div>
@@ -256,7 +256,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 value={form.data.initial_reading}
                                 onChange={(e) => form.setData('initial_reading', e.target.value)}
                                 isInvalid={Boolean(form.errors.initial_reading)}
-                                endAdornment={<span className="text-sm text-text-muted">{selectedUnit}</span>}
+                                endAdornment={<span className="text-sm text-muted">{selectedUnit}</span>}
                             />
                             <FormMessage variant="error">{form.errors.initial_reading}</FormMessage>
                         </div>
@@ -294,9 +294,9 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                         type="checkbox"
                                         checked={form.data.is_active}
                                         onChange={(e) => form.setData('is_active', e.target.checked)}
-                                        className="h-5 w-5 rounded border-border text-primary focus:ring-primary"
+                                        className="h-5 w-5 rounded border-line text-primary focus:ring-primary"
                                     />
-                                    <span className="text-sm text-text-secondary">Лічильник активний</span>
+                                    <span className="text-sm text-subtext">Лічильник активний</span>
                                 </label>
                             </div>
                         ) : null}
@@ -321,7 +321,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 id="meter-photo"
                                 previewUrl={photoPreview}
                                 fileName={form.data.photo?.name ?? null}
-                                emptyIcon={<Camera className="h-10 w-10 text-text-muted" />}
+                                emptyIcon={<Camera className="h-10 w-10 text-muted" />}
                                 emptyTitle="Завантажте фото лічильника"
                                 emptyDescription="Перетягніть файл або натисніть кнопку"
                                 helperText="Максимум 10 МБ"
@@ -335,7 +335,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                     </section>
                 </CardContent>
 
-                <CardFooter className="flex flex-col gap-4 border-t border-border px-6 py-5 sm:flex-row sm:justify-between">
+                <CardFooter className="flex flex-col gap-4 border-t border-line px-6 py-5 sm:flex-row sm:justify-between">
                     <Button
                         type="button"
                         variant="secondary"

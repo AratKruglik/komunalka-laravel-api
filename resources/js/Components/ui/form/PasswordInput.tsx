@@ -22,7 +22,7 @@ const passwordStrengthStyles: Record<
   PasswordStrength,
   { width: string; barClass: string; textClass: string; label: string }
 > = {
-  none: { width: '0%', barClass: 'bg-border', textClass: 'text-text-muted', label: 'Не введено' },
+  none: { width: '0%', barClass: 'bg-border', textClass: 'text-muted', label: 'Не введено' },
   weak: { width: '33%', barClass: 'bg-error', textClass: 'text-error', label: 'Слабкий' },
   medium: { width: '66%', barClass: 'bg-warning', textClass: 'text-warning', label: 'Середній' },
   strong: { width: '100%', barClass: 'bg-success', textClass: 'text-success', label: 'Надійний' },
@@ -79,13 +79,13 @@ export function PasswordInput({
         type={isVisible ? 'text' : 'password'}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        leadingIcon={<Lock className="h-4 w-4 text-text-muted" />}
+        leadingIcon={<Lock className="h-4 w-4 text-muted" />}
         endAdornment={
           endAdornment ?? (
             <button
               type="button"
               onClick={() => setIsVisible(!isVisible)}
-              className="rounded-md p-2 text-text-muted transition hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed"
+              className="rounded-md p-2 text-muted transition hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed"
               aria-label={isVisible ? 'Приховати пароль' : 'Показати пароль'}
               disabled={disabled}
             >
@@ -109,7 +109,7 @@ export function PasswordInput({
             />
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-text-muted">Надійність паролю:</span>
+            <span className="text-muted">Надійність паролю:</span>
             <span className={['font-medium', strengthStyle.textClass].join(' ')}>
               {strengthStyle.label}
             </span>
@@ -121,7 +121,7 @@ export function PasswordInput({
               return (
                 <li
                   key={index}
-                  className="flex items-center gap-2 text-xs text-text-secondary"
+                  className="flex items-center gap-2 text-xs text-subtext"
                 >
                   {isSatisfied ? (
                     <CheckCircle2 className="h-3 w-3 text-success" />

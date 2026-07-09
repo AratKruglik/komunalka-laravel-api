@@ -28,14 +28,14 @@ export function AuthenticatedTopbar({
   isSidebarOpen,
 }: AuthenticatedTopbarProps) {
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-bg-primary/95 backdrop-blur supports-[backdrop-filter]:bg-bg-primary/80">
+    <header className="sticky top-0 z-20 border-b border-line bg-canvas/95 backdrop-blur supports-[backdrop-filter]:bg-canvas/80">
       <div className="flex w-full flex-col gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 md:flex-row md:items-center md:justify-between md:px-6 md:py-4">
         <div className="flex items-start gap-2 sm:gap-3">
           {onMenuToggle ? (
             <button
               type="button"
               onClick={onMenuToggle}
-              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-border text-text-secondary transition-colors hover:bg-bg-surface hover:text-text-primary active:bg-bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10 lg:hidden"
+              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-line text-subtext transition-colors hover:bg-surface hover:text-foreground active:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10 lg:hidden"
               aria-label="Відкрити меню"
               aria-expanded={isSidebarOpen}
             >
@@ -44,11 +44,11 @@ export function AuthenticatedTopbar({
           ) : null}
 
           <div className="min-w-0 flex-1 leading-tight">
-            <h1 className="text-lg font-semibold text-text-primary sm:text-xl md:text-[22px]">
+            <h1 className="text-lg font-semibold text-foreground sm:text-xl md:text-[22px]">
               {title}
             </h1>
             {subtitle ? (
-              <p className="mt-0.5 text-xs font-medium text-text-muted sm:mt-1 sm:text-sm md:text-[15px]">
+              <p className="mt-0.5 text-xs font-medium text-muted sm:mt-1 sm:text-sm md:text-[15px]">
                 {subtitle}
               </p>
             ) : null}
@@ -59,7 +59,7 @@ export function AuthenticatedTopbar({
           <ThemeToggle />
           <button
             type="button"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition-colors hover:bg-bg-surface hover:text-text-primary active:bg-bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-muted transition-colors hover:bg-surface hover:text-foreground active:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10"
             aria-label="Повідомлення"
           >
             <Bell className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={1.6} />
@@ -144,23 +144,23 @@ function UserMenu({ user, variant = 'default', className }: UserMenuProps) {
         aria-expanded={open}
         className={`${
           isCompact
-            ? `${iconContainer({ size: 'md' })} border border-border bg-bg-raised text-text-secondary shadow-sm hover:shadow`
-            : 'inline-flex items-center gap-3 rounded-full bg-bg-raised px-3 py-1.5 text-left text-text-primary shadow-sm transition-colors hover:shadow-md'
+            ? `${iconContainer({ size: 'md' })} border border-line bg-raised text-subtext shadow-sm hover:shadow`
+            : 'inline-flex items-center gap-3 rounded-full bg-raised px-3 py-1.5 text-left text-foreground shadow-sm transition-colors hover:shadow-md'
         } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
       >
         <UserAvatar src={user.avatarUrl} name={user.name} className={isCompact ? 'h-9 w-9' : ''} />
         {!isCompact ? (
           <>
             <span className="flex min-w-0 flex-col">
-              <span className="truncate text-sm font-medium text-text-primary">
+              <span className="truncate text-sm font-medium text-foreground">
                 {user.name}
               </span>
-              <span className="hidden truncate text-xs text-text-muted sm:inline">
+              <span className="hidden truncate text-xs text-muted sm:inline">
                 {user.email}
               </span>
             </span>
             <ChevronDown
-              className={`h-4 w-4 text-text-muted transition-transform ${
+              className={`h-4 w-4 text-muted transition-transform ${
                 open ? '-scale-y-100' : ''
               }`}
             />
@@ -172,7 +172,7 @@ function UserMenu({ user, variant = 'default', className }: UserMenuProps) {
         <div
           role="menu"
           aria-label="Меню користувача"
-          className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-bg-raised shadow-[0_18px_40px_-20px_rgba(15,23,42,0.28)]"
+          className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-line bg-raised shadow-[0_18px_40px_-20px_rgba(15,23,42,0.28)]"
         >
           <ul className="flex flex-col py-2">
             {menuItems.map((item) => (
@@ -183,7 +183,7 @@ function UserMenu({ user, variant = 'default', className }: UserMenuProps) {
                   className={`w-full px-4 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-none ${
                     item.tone === 'danger'
                       ? 'text-error hover:bg-error/10 focus-visible:bg-error/10'
-                      : 'text-text-primary hover:bg-bg-surface focus-visible:bg-bg-surface'
+                      : 'text-foreground hover:bg-surface focus-visible:bg-surface'
                   }`}
                   onClick={() => handleMenuItemClick(item)}
                 >

@@ -28,7 +28,7 @@ const statusBadge = tv({
     variants: {
         active: {
             true: 'bg-success/10 text-success border border-success/30',
-            false: 'bg-bg-surface text-text-muted border border-border',
+            false: 'bg-surface text-muted border border-line',
         },
     },
 });
@@ -43,7 +43,7 @@ export function MeterCard({ meter, onDelete }: MeterCardProps) {
     };
 
     return (
-        <div className="relative flex flex-col gap-4 rounded-xl border border-border bg-bg-surface p-4 pr-10 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-4 pr-10 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div className="absolute right-3 top-3">
                 <DropdownMenu
                     trigger={
@@ -64,27 +64,27 @@ export function MeterCard({ meter, onDelete }: MeterCardProps) {
 
             <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-base font-semibold text-text-primary">{meter.name}</p>
+                    <p className="text-base font-semibold text-foreground">{meter.name}</p>
                     <span className={statusBadge({ active: meter.isActive })}>
                         {meter.isActive ? 'Активний' : 'Неактивний'}
                     </span>
                 </div>
-                <p className="text-sm text-text-secondary">
-                    Серійний №: <span className="font-medium text-text-primary">{meter.serialNumber}</span>
+                <p className="text-sm text-subtext">
+                    Серійний №: <span className="font-medium text-foreground">{meter.serialNumber}</span>
                 </p>
                 {meter.location ? (
-                    <p className="text-sm text-text-secondary">
-                        Локація: <span className="font-medium text-text-primary">{meter.location}</span>
+                    <p className="text-sm text-subtext">
+                        Локація: <span className="font-medium text-foreground">{meter.location}</span>
                     </p>
                 ) : null}
                 {meter.serviceProvider ? (
-                    <p className="text-sm text-text-secondary">
-                        Провайдер: <span className="font-medium text-text-primary">{meter.serviceProvider.name}</span>
+                    <p className="text-sm text-subtext">
+                        Провайдер: <span className="font-medium text-foreground">{meter.serviceProvider.name}</span>
                     </p>
                 ) : null}
                 {meter.utilityType ? (
-                    <p className="text-sm text-text-secondary">
-                        Тип: <span className="font-medium text-text-primary">{meter.utilityType.displayName}</span>
+                    <p className="text-sm text-subtext">
+                        Тип: <span className="font-medium text-foreground">{meter.utilityType.displayName}</span>
                     </p>
                 ) : null}
             </div>
