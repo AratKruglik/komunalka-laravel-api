@@ -13,9 +13,9 @@ interface FormFieldProps {
 export function FormField({ id, label, required, error, children }: FormFieldProps) {
     return (
         <div className="space-y-2">
-            <Label htmlFor={id} className="flex items-center gap-1 text-dark dark:text-slate-100">
+            <Label htmlFor={id} className="flex items-center gap-1">
                 {label}
-                {required ? <span className="text-red-500">*</span> : null}
+                {required ? <span className="text-error">*</span> : null}
             </Label>
             {children}
             {error ? <FormMessage variant="error">{error}</FormMessage> : null}

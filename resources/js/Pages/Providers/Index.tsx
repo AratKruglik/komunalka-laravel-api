@@ -173,9 +173,8 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
                         <Button
                             type="button"
                             size="icon"
-                            variant="outline"
-                            tone="neutral"
-                            className="h-8 w-8 text-gray-600"
+                            variant="secondary"
+                            className="h-8 w-8 text-text-secondary"
                             aria-label={`Редагувати ${provider.name}`}
                         >
                             <Pencil className="h-3.5 w-3.5" />
@@ -184,9 +183,8 @@ function ProviderCard({ provider, onDelete, formatTariffLabel }: ProviderCardPro
                     <Button
                         type="button"
                         size="icon"
-                        variant="outline"
-                        tone="neutral"
-                        className="h-8 w-8 text-gray-600"
+                        variant="secondary"
+                        className="h-8 w-8 text-text-secondary"
                         aria-label={`Видалити ${provider.name}`}
                         onClick={() => onDelete(provider)}
                     >

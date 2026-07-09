@@ -28,21 +28,21 @@ export function PageSectionHeader({
 }: PageSectionHeaderProps) {
   const headerClasses = [
     'flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
-    withBorder ? 'border-b border-gray-200 pb-5' : '',
+    withBorder ? 'border-b border-border pb-5' : '',
     className,
   ]
     .filter(Boolean)
     .join(' ')
 
   const titleClasses = [
-    'text-2xl font-semibold text-gray-900',
+    'text-2xl font-semibold text-text-primary',
     titleClassName,
   ]
     .filter(Boolean)
     .join(' ')
 
   const descriptionClasses = [
-    'text-base text-gray-600',
+    'text-base text-text-secondary',
     descriptionClassName,
   ]
     .filter(Boolean)
@@ -55,7 +55,7 @@ export function PageSectionHeader({
       label,
       icon,
       className: ctaClassName,
-      tone = 'primary',
+      variant = 'primary',
       size = 'md',
       type = 'button',
       ...ctaRest
@@ -63,7 +63,7 @@ export function PageSectionHeader({
 
     ctaContent = (
       <Button
-        tone={tone}
+        variant={variant}
         size={size}
         type={type}
         className={[

@@ -241,8 +241,7 @@ export function ProviderForm({
                                 </div>
                                 <Button
                                     type="button"
-                                    variant="outline"
-                                    tone="primary"
+                                    variant="secondary"
                                     size="sm"
                                     className="gap-2"
                                     onClick={addTariff}
@@ -269,7 +268,6 @@ export function ProviderForm({
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    tone="neutral"
                                                     size="sm"
                                                     className="text-sm"
                                                     onClick={() => removeTariff(index)}
@@ -414,8 +412,7 @@ export function ProviderForm({
                 <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                     <Button
                         type="button"
-                        variant="outline"
-                        tone="neutral"
+                        variant="secondary"
                         onClick={handleCancel}
                         disabled={form.processing}
                     >

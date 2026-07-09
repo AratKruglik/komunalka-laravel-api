@@ -338,8 +338,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                 <CardFooter className="flex flex-col gap-4 border-t border-gray-200 px-6 py-5 dark:border-slate-800 sm:flex-row sm:justify-between">
                     <Button
                         type="button"
-                        variant="outline"
-                        tone="neutral"
+                        variant="secondary"
                         onClick={() => window.history.back()}
                     >
                         Скасувати

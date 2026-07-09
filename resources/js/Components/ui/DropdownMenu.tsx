@@ -5,8 +5,7 @@ const dropdownMenu = tv({
   slots: {
     container: 'relative',
     menu: [
-      'absolute z-50 min-w-[180px] rounded-xl border border-gray-100 bg-white py-1.5 shadow-lg',
-      'dark:border-slate-800 dark:bg-slate-900',
+      'absolute z-50 min-w-[180px] rounded-xl border border-border bg-bg-raised py-1.5 shadow-lg',
       'animate-in fade-in-0 zoom-in-95 duration-150',
     ],
     item: [
@@ -23,16 +22,10 @@ const dropdownMenu = tv({
     },
     itemTone: {
       default: {
-        item: [
-          'text-gray-700 hover:bg-gray-100 focus-visible:bg-gray-100',
-          'dark:text-slate-100 dark:hover:bg-slate-800 dark:focus-visible:bg-slate-800',
-        ],
+        item: 'text-text-primary hover:bg-bg-surface focus-visible:bg-bg-surface',
       },
       danger: {
-        item: [
-          'text-red-600 hover:bg-red-50 focus-visible:bg-red-50',
-          'dark:text-red-400 dark:hover:bg-red-950/40 dark:focus-visible:bg-red-950/40',
-        ],
+        item: 'text-error hover:bg-error/10 focus-visible:bg-error/10',
       },
     },
   },

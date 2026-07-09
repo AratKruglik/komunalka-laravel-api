@@ -349,7 +349,7 @@ export default function Create({
             )}
             <Button
               type="submit"
-              tone="primary"
+              variant="primary"
               size="md"
               className="min-w-[220px]"
               loading={isSubmitting}

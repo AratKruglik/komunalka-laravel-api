@@ -27,7 +27,7 @@ export function Logo({ size = 'md', showText = true, className = '' }: LogoProps
 
   return (
     <div
-      className={['flex items-center font-semibold text-[var(--color-text-dark)] dark:text-amber-200', sizeConfig.gap, className]
+      className={['flex items-center font-semibold text-text-primary', sizeConfig.gap, className]
         .filter(Boolean)
         .join(' ')}
     >
@@ -40,7 +40,7 @@ export function Logo({ size = 'md', showText = true, className = '' }: LogoProps
       >
         <path
           d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"
-          className="fill-primary stroke-primary-stroke drop-shadow dark:stroke-amber-300 dark:fill-amber-300"
+          className="fill-primary stroke-primary-stroke drop-shadow"
           strokeWidth="1"
           strokeLinecap="round"
           strokeLinejoin="round"

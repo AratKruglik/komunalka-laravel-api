@@ -13,34 +13,32 @@ const dialog = tv({
       'relative',
       'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
       'w-[420px] max-w-[calc(100vw-2rem)]',
-      'rounded-xl border border-gray-200 bg-white p-6 shadow-xl',
-      'dark:border-slate-800 dark:bg-slate-900',
+      'rounded-xl border border-border bg-bg-raised p-6 shadow-xl',
       'animate-in fade-in-0 zoom-in-95 duration-200',
     ],
     closeButton: [
-      'absolute right-4 top-4 rounded-full p-1.5 text-gray-400 transition-colors',
-      'hover:bg-gray-100 hover:text-gray-600',
-      'dark:hover:bg-slate-800 dark:hover:text-slate-200',
+      'absolute right-4 top-4 rounded-full p-1.5 text-text-muted transition-colors',
+      'hover:bg-bg-surface hover:text-text-primary',
       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
     ],
     body: 'flex flex-col items-center text-center',
     iconWrapper: [
       'mb-4 flex h-12 w-12 items-center justify-center rounded-full',
     ],
-    title: 'text-lg font-semibold text-gray-900 dark:text-slate-50',
-    description: 'mt-2 max-w-[320px] text-sm text-gray-600 dark:text-slate-400',
+    title: 'text-lg font-semibold text-text-primary',
+    description: 'mt-2 max-w-[320px] text-sm text-text-secondary',
     footer: 'mt-6 flex justify-center gap-3',
   },
   variants: {
     variant: {
       danger: {
-        iconWrapper: 'bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400',
+        iconWrapper: 'bg-error/15 text-error',
       },
       warning: {
-        iconWrapper: 'bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400',
+        iconWrapper: 'bg-warning/15 text-warning',
       },
       info: {
-        iconWrapper: 'bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400',
+        iconWrapper: 'bg-info/15 text-info',
       },
     },
   },
@@ -97,7 +95,7 @@ export function ConfirmDialog({
 
   if (!isOpen) return null
 
-  const confirmTone = variant === 'danger' ? 'danger' : variant === 'warning' ? 'warning' : 'primary'
+  const confirmVariant = variant === 'danger' ? 'danger' : 'primary'
 
   return (
     <>
@@ -135,8 +133,7 @@ export function ConfirmDialog({
         <div className={styles.footer()}>
           <Button
             type="button"
-            variant="outline"
-            tone="neutral"
+            variant="secondary"
             onClick={onClose}
             disabled={isLoading}
           >
@@ -144,8 +141,7 @@ export function ConfirmDialog({
           </Button>
           <Button
             type="button"
-            variant="solid"
-            tone={confirmTone}
+            variant={confirmVariant}
             onClick={onConfirm}
             loading={isLoading}
           >

@@ -51,7 +51,6 @@ export function MeterCard({ meter, onDelete }: MeterCardProps) {
                             type="button"
                             size="icon"
                             variant="ghost"
-                            tone="neutral"
                             className="h-8 w-8"
                             aria-label={`Дії для ${meter.name}`}
                         >

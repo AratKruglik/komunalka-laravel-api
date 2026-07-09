@@ -12,10 +12,10 @@ const spinner = tv({
     },
     tone: {
       primary: 'text-primary',
-      warning: 'text-[var(--color-warning)]',
-      danger: 'text-[var(--color-error)]',
-      success: 'text-[var(--color-success)]',
-      info: 'text-blue-500',
+      warning: 'text-warning',
+      danger: 'text-error',
+      success: 'text-success',
+      info: 'text-info',
     },
   },
   defaultVariants: {

@@ -59,7 +59,7 @@ export function AccountTab() {
                     <CardDescription>Завантажте копію ваших даних</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button variant="outline" tone="primary">
+                    <Button variant="secondary">
                         <Download className="h-4 w-4" />
                         Експортувати дані (CSV)
                     </Button>
@@ -82,8 +82,7 @@ export function AccountTab() {
                 ) : null}
 
                 <Button
-                    variant="outline"
-                    tone="danger"
+                    variant="danger"
                     className="mt-4"
                     onClick={handleOpenConfirm}
                 >

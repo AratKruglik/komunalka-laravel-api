@@ -80,7 +80,7 @@ export function AuthenticatedLayout({
 
   return (
     <>
-      <div className="flex min-h-screen overflow-x-hidden bg-neutral-50 text-gray-900 dark:bg-slate-950 dark:text-slate-100">
+      <div className="flex min-h-screen overflow-x-hidden bg-bg-primary text-text-primary">
         <AuthenticatedSidebar sections={sidebarSections} />
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -109,17 +109,17 @@ export function AuthenticatedLayout({
             </div>
           </main>
 
-          <footer className="border-t border-gray-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-            <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-3 px-3 py-4 text-sm text-gray-500 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+          <footer className="border-t border-border bg-bg-primary">
+            <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-3 px-3 py-4 text-sm text-text-secondary sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
               <p className="text-xs sm:text-sm">&copy; {new Date().getFullYear()} Комуналка. Всі права захищені.</p>
               <div className="flex flex-wrap gap-3 text-xs sm:gap-4 sm:text-sm">
-                <a href="#" className="transition-colors hover:text-gray-900 dark:text-slate-300 dark:hover:text-white">
+                <a href="#" className="transition-colors hover:text-text-primary">
                   Умови використання
                 </a>
-                <a href="#" className="transition-colors hover:text-gray-900 dark:text-slate-300 dark:hover:text-white">
+                <a href="#" className="transition-colors hover:text-text-primary">
                   Політика конфіденційності
                 </a>
-                <a href="#" className="transition-colors hover:text-gray-900 dark:text-slate-300 dark:hover:text-white">
+                <a href="#" className="transition-colors hover:text-text-primary">
                   Контакти
                 </a>
               </div>

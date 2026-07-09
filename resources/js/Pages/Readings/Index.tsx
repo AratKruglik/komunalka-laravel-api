@@ -121,8 +121,8 @@ export default function Index({ addresses, readings, filters }: Props) {
                   </div>
                   <Button
                     variant="ghost"
-                    tone="danger"
                     size="icon"
+                    className="text-error hover:bg-error/10 hover:text-error"
                     onClick={() => setDeletingId(reading.id)}
                     aria-label="Видалити показання"
                   >

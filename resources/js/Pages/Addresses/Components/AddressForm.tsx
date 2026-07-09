@@ -326,8 +326,7 @@ export function AddressForm({
                 <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                     <Button
                         type="button"
-                        variant="outline"
-                        tone="neutral"
+                        variant="secondary"
                         onClick={handleCancel}
                         disabled={form.processing}
                     >

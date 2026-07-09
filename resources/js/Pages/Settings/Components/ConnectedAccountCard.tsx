@@ -52,8 +52,7 @@ export function ConnectedAccountCard({
 
                 {isConnected ? (
                     <Button
-                        variant="outline"
-                        tone="danger"
+                        variant="danger"
                         size="sm"
                         onClick={onDisconnect}
                     >
@@ -61,8 +60,7 @@ export function ConnectedAccountCard({
                     </Button>
                 ) : (
                     <Button
-                        variant="outline"
-                        tone="primary"
+                        variant="secondary"
                         size="sm"
                         onClick={onConnect}
                     >
