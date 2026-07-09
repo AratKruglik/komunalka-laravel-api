@@ -43,8 +43,8 @@ export function AddressCard({ address, onDelete }: AddressCardProps) {
     }
 
     const surfaceClasses = address.isPrimary
-        ? 'border-2 border-primary bg-primary-bg dark:border-amber-300 dark:bg-amber-200/10'
-        : 'border border-gray-200 bg-white dark:border-slate-800 dark:bg-slate-900'
+        ? 'border-2 border-primary bg-primary/10'
+        : 'border border-border bg-bg-raised'
 
     return (
         <article
@@ -54,14 +54,14 @@ export function AddressCard({ address, onDelete }: AddressCardProps) {
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
                         address.isPrimary
-                            ? 'bg-primary text-text-dark dark:bg-amber-300 dark:text-slate-900'
-                            : 'border border-gray-200 bg-white text-gray-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200'
+                            ? 'bg-primary text-text-inverse'
+                            : 'border border-border bg-bg-raised text-text-secondary'
                     }`}>
                         <Icon className="h-3.5 w-3.5" />
                         {address.addressType.name}
                     </span>
                     {address.isPrimary ? (
-                        <span className="inline-flex items-center gap-2 rounded-full bg-primary text-text-dark px-3 py-1 text-xs font-semibold dark:bg-amber-300 dark:text-slate-900">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-primary text-text-inverse px-3 py-1 text-xs font-semibold">
                             <Star className="h-3.5 w-3.5" />
                             Основна
                         </span>
@@ -88,14 +88,14 @@ export function AddressCard({ address, onDelete }: AddressCardProps) {
             </div>
 
             <Link href={`/addresses/${address.id}/edit`} className="block space-y-1 sm:space-y-1.5">
-                <h3 className="text-base font-bold leading-6 text-text-dark dark:text-slate-100 sm:text-lg sm:leading-7 lg:text-[18px]">
+                <h3 className="text-base font-bold leading-6 text-text-primary sm:text-lg sm:leading-7 lg:text-[18px]">
                     {title}
                 </h3>
-                <p className="text-xs text-gray-600 dark:text-slate-400 sm:text-sm">{subtitle}</p>
+                <p className="text-xs text-text-muted sm:text-sm">{subtitle}</p>
             </Link>
 
             {address.apartmentNumber ? (
-                <p className="text-xs text-gray-500 dark:text-slate-400">
+                <p className="text-xs text-text-muted">
                     кв./оф. {address.apartmentNumber}
                 </p>
             ) : null}

@@ -44,20 +44,20 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
   }, 0)
 
   return (
-    <Card className="border-gray-100 shadow-lg dark:border-slate-800 dark:bg-slate-900">
-      <CardHeader className="space-y-2 border-b border-gray-200 pb-4 dark:border-slate-800">
-        <CardTitle className="text-xl text-gray-900 dark:text-slate-50">
+    <Card className="border-border shadow-lg">
+      <CardHeader className="space-y-2 border-b border-border pb-4">
+        <CardTitle className="text-xl text-text-primary">
           Підсумок показань
         </CardTitle>
-        <CardDescription className="text-base text-gray-600 dark:text-slate-400">
+        <CardDescription className="text-base text-text-muted">
           Перевірте дані перед відправкою
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 py-4">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100 text-sm dark:divide-slate-800">
+          <table className="min-w-full divide-y divide-border text-sm">
             <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
                 <th className="px-3 py-2">Послуга</th>
                 <th className="px-3 py-2">Попередні</th>
                 <th className="px-3 py-2">Поточні</th>
@@ -66,7 +66,7 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
                 <th className="px-3 py-2">Сума</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-border">
               {rows.map((row) => {
                 const hasValues =
                   row.previousValue !== null && row.currentValue !== null
@@ -78,9 +78,9 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
                 return (
                   <tr
                     key={row.id}
-                    className="text-gray-700 dark:text-slate-300"
+                    className="text-text-secondary"
                   >
-                    <td className="px-3 py-3 font-medium text-gray-900 dark:text-slate-100">
+                    <td className="px-3 py-3 font-medium text-text-primary">
                       {row.serviceName}
                     </td>
                     <td className="px-3 py-3">
@@ -108,7 +108,7 @@ export function ReadingSummaryTable({ rows }: ReadingSummaryTableProps) {
             </tbody>
           </table>
         </div>
-        <p className="text-right text-sm font-semibold text-gray-800 dark:text-slate-100">
+        <p className="text-right text-sm font-semibold text-text-primary">
           Загальна сума: {currencyFormatter.format(totalCost)}
         </p>
       </CardContent>

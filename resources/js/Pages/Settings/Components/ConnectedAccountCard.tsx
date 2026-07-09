@@ -12,8 +12,7 @@ interface ConnectedAccountCardProps {
 const providerRow = tv({
     base: [
         'flex items-center justify-between gap-4',
-        'rounded-lg border border-gray-200 bg-white p-4',
-        'dark:border-slate-700 dark:bg-slate-800/50',
+        'rounded-lg border border-border bg-bg-raised p-4',
     ],
 });
 
@@ -40,7 +39,7 @@ export function ConnectedAccountCard({
         <div className={providerRow()}>
             <div className="flex items-center gap-3">
                 {Icon ? <Icon size={20} /> : null}
-                <span className="text-sm font-medium text-gray-900 dark:text-slate-100">
+                <span className="text-sm font-medium text-text-primary">
                     {label}
                 </span>
             </div>

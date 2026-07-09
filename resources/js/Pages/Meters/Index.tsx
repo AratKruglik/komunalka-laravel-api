@@ -61,7 +61,7 @@ export default function Index({ meters: metersDocument, addresses: addressesDocu
             <Head title="Лічильники" />
 
             <div className="space-y-6">
-                <Card className="border border-gray-200 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+                <Card className="shadow-lg">
                     <PageSectionHeader
                         title="Мої лічильники"
                         description="Всі лічильники, прив'язані до ваших адрес"
@@ -73,7 +73,7 @@ export default function Index({ meters: metersDocument, addresses: addressesDocu
                     />
                     <CardContent className="space-y-5">
                         <div className="space-y-2 w-full">
-                            <Label htmlFor="address-filter" className="text-sm font-semibold text-gray-600 dark:text-slate-100">
+                            <Label htmlFor="address-filter" className="text-sm font-semibold">
                                 Фільтр за адресою
                             </Label>
                             <Select
@@ -89,8 +89,8 @@ export default function Index({ meters: metersDocument, addresses: addressesDocu
                         </div>
 
                         {meters.length === 0 ? (
-                            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800">
-                                <p className="text-gray-600 dark:text-slate-300">
+                            <div className="rounded-xl border border-dashed border-border bg-bg-surface p-8 text-center">
+                                <p className="text-text-secondary">
                                     {selectedAddressId
                                         ? 'Для цієї адреси поки що немає збережених лічильників.'
                                         : 'У вас поки що немає лічильників.'}

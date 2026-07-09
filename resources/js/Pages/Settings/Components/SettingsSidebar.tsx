@@ -25,14 +25,8 @@ const tabItem = tv({
     ],
     variants: {
         active: {
-            true: [
-                'bg-primary-bg font-medium text-text-dark',
-                'dark:bg-amber-300/20 dark:text-amber-200',
-            ],
-            false: [
-                'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
-                'dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white',
-            ],
+            true: 'bg-primary font-medium text-text-inverse',
+            false: 'text-text-secondary hover:bg-bg-surface hover:text-text-primary',
         },
     },
     defaultVariants: { active: false },
@@ -47,7 +41,7 @@ export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps
     return (
         <>
             <nav
-                className="hidden rounded-xl border border-gray-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-900 md:block"
+                className="hidden rounded-xl border border-border bg-bg-raised p-2 md:block"
                 aria-label="Розділи налаштувань"
             >
                 <ul className="space-y-1" role="tablist">
@@ -67,7 +61,7 @@ export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps
                                     <Icon className="h-5 w-5 shrink-0" />
                                     <div className="min-w-0">
                                         <span className="block text-sm leading-5">{tab.label}</span>
-                                        <span className="block text-xs leading-4 text-gray-400 dark:text-slate-500">
+                                        <span className={`block text-xs leading-4 ${isActive ? 'text-text-inverse/70' : 'text-text-muted'}`}>
                                             {tab.description}
                                         </span>
                                     </div>
@@ -80,7 +74,7 @@ export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps
 
             <nav className="overflow-x-auto md:hidden" aria-label="Розділи налаштувань">
                 <ul
-                    className="flex gap-1 rounded-xl border border-gray-200 bg-white p-1.5 dark:border-slate-800 dark:bg-slate-900"
+                    className="flex gap-1 rounded-xl border border-border bg-bg-raised p-1.5"
                     role="tablist"
                 >
                     {TABS.map((tab) => {

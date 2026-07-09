@@ -29,24 +29,8 @@
   /* Border Colors */
   --color-border: #E5E7EB;
 
-  /* --- ALIASES (TEMPORARY FOR MIGRATION) --- */
-  --color-bg-secondary: var(--color-bg-surface);
-  --color-bg-tertiary: var(--color-bg-surface);
-  --color-text-tertiary: var(--color-text-muted);
-  --color-border-primary: var(--color-border);
-  --color-border-secondary: var(--color-border);
-  --color-text-dark: var(--color-text-primary);
-  --color-text-placeholder: var(--color-text-muted);
-  --color-badge-danger: var(--color-error);
-  --color-link: var(--color-primary-dark);
-  --color-link-hover: var(--color-primary);
-
-  /* Legacy colours (to be removed once Etap 3/4 migrate their usages) */
-  --color-primary-light: #FFE44D;
-  --color-primary-bg: #FFF0A0;
-  --color-primary-active: #FFB700;
+  /* Decorative accent (Logo icon outline) */
   --color-primary-stroke: #FFA500;
-  --color-error-dark: #D92D20;
 
   /* Spacing Scale */
   --spacing-xs: 0.25rem;
@@ -102,13 +86,6 @@
   --color-text-inverse: #000000;
 
   --color-border: #2E2E2E;
-
-  /* --- ALIASES DARK (TEMPORARY FOR MIGRATION) --- */
-  --color-bg-secondary: var(--color-bg-surface);
-  --color-bg-tertiary: var(--color-bg-surface);
-  --color-text-tertiary: var(--color-text-muted);
-  --color-border-primary: var(--color-border);
-  --color-border-secondary: var(--color-border);
 }
 
 body {

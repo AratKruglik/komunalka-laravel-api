@@ -27,15 +27,15 @@
 - [x] Чекпойнт: `tsc --noEmit` чисто, grep хардкоду чистий; `yarn build` — прогнати в Docker пізніше
 
 ## Етап 4 — Сторінки + партіали (~52 файли)
-- [ ] Auth: Login/Register/ForgotPassword/ResetPassword
-- [ ] Dashboard + партіали (WelcomeHeader, ConsumptionChart, ExpenseDistribution, RecentReadingsTable, QuickActions) — багатоколірна палітра графіків
-- [ ] Addresses (Index/Create/Edit + AddressCard/AddressForm)
-- [ ] Meters (Index/Create/Edit + MeterCard/MeterForm)
-- [ ] Providers (Index/Create/Edit + ProviderForm)
-- [ ] Readings (Index/Create + ReadingCard/ReadingSummaryTable)
-- [ ] Settings (усі таби + SettingsSidebar/ThemeCard/ConnectedAccountCard)
-- [ ] Фінальний grep старих утиліт → 0 посилань → видалити alias з app.css
-- [ ] Чекпойнт: повний `tsc`, `yarn build`, візуальний прохід усіх сторінок
+- [x] Auth: Login/Register/ForgotPassword/ResetPassword (переписані на shared-компоненти Input/Label/Button/PasswordInput/GoogleIcon/GithubIcon)
+- [x] Dashboard + партіали (WelcomeHeader, ConsumptionChart, ExpenseDistribution, RecentReadingsTable, QuickActions) — UTILITY_COLORS/LABELS винесено в `constants/utilityColors.ts`, chart chrome (grid/axis/tooltip) адаптовано під тему через CSS vars
+- [x] Addresses (Index/Create/Edit + AddressCard/AddressForm) — виправлено контраст тексту на золотому фоні (text-inverse)
+- [x] Meters (Index/Create/Edit + MeterCard/MeterForm)
+- [x] Providers (Index/Create/Edit + ProviderForm) — off-brand yellow/amber замінено на primary-токени
+- [x] Readings (Index/Create + ReadingCard/ReadingSummaryTable)
+- [x] Settings (усі таби + SettingsSidebar/ThemeCard/ConnectedAccountCard) — active tab = золото/text-inverse
+- [x] Фінальний grep старих утиліт → 0 посилань → alias-блоки видалено з app.css (light + dark), прибрано невживані primary-light/bg/active, error-dark
+- [x] Чекпойнт: `tsc --noEmit` чисто по всьому проєкту; `yarn build` — не вдалося прогнати локально (відсутній native-біндінг rolldown, Docker не запущений), прогнати в Docker
 
 ## Верифікація (перед завершенням)
 - [ ] `docker compose exec app php artisan test tests/Browser/` — усі зелені

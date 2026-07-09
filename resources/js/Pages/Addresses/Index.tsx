@@ -56,13 +56,13 @@ export default function Index({ addresses }: IndexPageProps) {
         >
             <Head title="Мої адреси" />
 
-            <section className="w-full overflow-hidden rounded-lg bg-white shadow-lg dark:border dark:border-slate-800 dark:bg-slate-900">
+            <section className="w-full overflow-hidden rounded-lg bg-bg-raised shadow-lg border border-border">
                 <div className="flex flex-col gap-3 px-3.5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4 sm:px-5 sm:py-6 lg:px-6">
                     <div>
-                        <h1 className="text-xl font-bold leading-7 text-gray-800 dark:text-slate-100 sm:text-2xl sm:leading-8 lg:text-[24px] lg:leading-[32px]">
+                        <h1 className="text-xl font-bold leading-7 text-text-primary sm:text-2xl sm:leading-8 lg:text-[24px] lg:leading-[32px]">
                             Мої адреси
                         </h1>
-                        <p className="mt-0.5 text-sm leading-5 text-gray-600 dark:text-slate-400 sm:mt-1 sm:text-base sm:leading-6 lg:text-[16px] lg:leading-[24px]">
+                        <p className="mt-0.5 text-sm leading-5 text-text-secondary sm:mt-1 sm:text-base sm:leading-6 lg:text-[16px] lg:leading-[24px]">
                             Керуйте адресами для комунальних послуг
                         </p>
                     </div>
@@ -90,7 +90,7 @@ export default function Index({ addresses }: IndexPageProps) {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center gap-4 px-3.5 pb-8 pt-4 sm:px-5 lg:px-6">
-                        <p className="text-center text-sm text-gray-500 dark:text-slate-400">
+                        <p className="text-center text-sm text-text-muted">
                             У вас ще немає збережених адрес
                         </p>
                         <Link href="/addresses/create">
@@ -111,7 +111,7 @@ export default function Index({ addresses }: IndexPageProps) {
                 description={
                     <>
                         Ви впевнені, що хочете видалити адресу{' '}
-                        <strong className="text-gray-900 dark:text-slate-50">
+                        <strong className="text-text-primary">
                             {deleteDialog.addressTitle}
                         </strong>
                         ? Цю дію неможливо скасувати.

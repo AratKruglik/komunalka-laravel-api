@@ -21,7 +21,7 @@ interface RecentReadingsTableProps {
 }
 
 const card = tv({
-    base: 'rounded-xl border border-neutral-200 bg-white p-4 shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-5 lg:p-6',
+    base: 'rounded-xl border border-border bg-bg-raised p-4 shadow-lg sm:p-5 lg:p-6',
 });
 
 const formatDate = (dateString: string) => {
@@ -37,7 +37,7 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
     return (
         <section className={card()}>
             <header className="mb-4 flex flex-col gap-2 sm:mb-5 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-base font-semibold leading-6 text-neutral-900 dark:text-slate-50 sm:text-lg sm:leading-7 lg:text-xl">
+                <h2 className="text-base font-semibold leading-6 text-text-primary sm:text-lg sm:leading-7 lg:text-xl">
                     Останні показання
                 </h2>
             </header>
@@ -47,37 +47,37 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
                 {readings.map((reading) => {
                     const differenceColor =
                         reading.consumption > 0
-                            ? 'text-emerald-600'
+                            ? 'text-success'
                             : reading.consumption < 0
-                              ? 'text-rose-600'
-                              : 'text-neutral-500';
+                              ? 'text-error'
+                              : 'text-text-muted';
 
                     return (
                         <div
                             key={reading.id}
-                            className="rounded-lg border border-neutral-200 bg-neutral-50 p-3.5 dark:border-slate-800 dark:bg-slate-800"
+                            className="rounded-lg border border-border bg-bg-surface p-3.5"
                         >
                             <div className="mb-3 flex items-center gap-3">
                                 <div className="flex-1">
-                                    <h3 className="text-sm font-semibold leading-5 text-neutral-800 dark:text-slate-100">
+                                    <h3 className="text-sm font-semibold leading-5 text-text-primary">
                                         {reading.meter.utilityType.displayName}
                                     </h3>
-                                    <p className="mt-0.5 text-xs leading-4 text-neutral-500 dark:text-slate-400">
+                                    <p className="mt-0.5 text-xs leading-4 text-text-muted">
                                         {formatDate(reading.readingDate)} &middot; {reading.meter.name}
                                     </p>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-neutral-500">
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
                                         Показання
                                     </p>
-                                    <p className="mt-1 text-sm font-semibold leading-5 text-neutral-800 dark:text-slate-50">
+                                    <p className="mt-1 text-sm font-semibold leading-5 text-text-primary">
                                         {reading.readingValue} {reading.meter.utilityType.unit}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-neutral-500">
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
                                         Споживання
                                     </p>
                                     <p className={`mt-1 text-sm font-semibold leading-5 ${differenceColor}`}>
@@ -95,17 +95,17 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
             <div className="hidden md:block">
                 <table className="w-full table-auto">
                     <thead>
-                        <tr className="border-b border-neutral-200 dark:border-slate-800">
-                            <th className="pb-3 pr-4 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-neutral-500 dark:text-slate-400">
+                        <tr className="border-b border-border">
+                            <th className="pb-3 pr-4 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
                                 Послуга
                             </th>
-                            <th className="pb-3 pr-4 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-neutral-500 dark:text-slate-400">
+                            <th className="pb-3 pr-4 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
                                 Дата
                             </th>
-                            <th className="pb-3 pr-4 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-neutral-500 dark:text-slate-400">
+                            <th className="pb-3 pr-4 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
                                 Показання
                             </th>
-                            <th className="pb-3 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-neutral-500 dark:text-slate-400">
+                            <th className="pb-3 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
                                 Споживання
                             </th>
                         </tr>
@@ -114,29 +114,29 @@ export function RecentReadingsTable({ readings }: RecentReadingsTableProps) {
                         {readings.map((reading, index) => {
                             const differenceColor =
                                 reading.consumption > 0
-                                    ? 'text-emerald-600'
+                                    ? 'text-success'
                                     : reading.consumption < 0
-                                      ? 'text-rose-600'
-                                      : 'text-neutral-500 dark:text-slate-400';
+                                      ? 'text-error'
+                                      : 'text-text-muted';
 
                             return (
                                 <tr
                                     key={reading.id}
-                                    className={`transition-colors hover:bg-neutral-50 dark:hover:bg-slate-800 ${
+                                    className={`transition-colors hover:bg-bg-surface ${
                                         index !== readings.length - 1
-                                            ? 'border-b border-neutral-200 dark:border-slate-800'
+                                            ? 'border-b border-border'
                                             : ''
                                     }`}
                                 >
                                     <td className="py-4 pr-4">
-                                        <span className="text-sm font-semibold leading-5 text-neutral-800 dark:text-slate-100">
+                                        <span className="text-sm font-semibold leading-5 text-text-primary">
                                             {reading.meter.utilityType.displayName}
                                         </span>
                                     </td>
-                                    <td className="py-4 pr-4 text-sm leading-5 text-neutral-700 dark:text-slate-300">
+                                    <td className="py-4 pr-4 text-sm leading-5 text-text-secondary">
                                         {formatDate(reading.readingDate)}
                                     </td>
-                                    <td className="py-4 pr-4 text-sm leading-5 text-neutral-700 dark:text-slate-300">
+                                    <td className="py-4 pr-4 text-sm leading-5 text-text-secondary">
                                         {reading.readingValue} {reading.meter.utilityType.unit}
                                     </td>
                                     <td className={`py-4 text-sm font-semibold leading-5 ${differenceColor}`}>

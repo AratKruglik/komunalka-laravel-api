@@ -66,8 +66,8 @@ export function ReadingCard({
 }: ReadingCardProps) {
   const serviceConfig = SERVICE_CONFIG[draft.type]
   const ServiceIcon = serviceConfig?.icon
-  const serviceIconBg = serviceConfig?.iconBg ?? 'bg-gray-100'
-  const serviceIconColor = serviceConfig?.iconColor ?? 'text-gray-600'
+  const serviceIconBg = serviceConfig?.iconBg ?? 'bg-bg-surface'
+  const serviceIconColor = serviceConfig?.iconColor ?? 'text-text-muted'
   const isMultiTariff = draft.tariffEntries.length > 1
 
   const tariffBreakdown = draft.tariffEntries.map((entry) => {
@@ -95,7 +95,7 @@ export function ReadingCard({
     return (
       <>
         <div className="space-y-2">
-          <Label htmlFor={`${draft.id}-current`} className="text-sm font-medium text-gray-700">
+          <Label htmlFor={`${draft.id}-current`} className="text-sm font-medium">
             Поточні показання
           </Label>
           <Input
@@ -104,23 +104,23 @@ export function ReadingCard({
             inputMode="decimal"
             value={currentVal}
             onChange={(event) => onTariffValueChange(entry.tariffId, event.target.value)}
-            endAdornment={<span className="text-sm text-gray-500">{draft.unit}</span>}
+            endAdornment={<span className="text-sm text-text-muted">{draft.unit}</span>}
           />
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <Label htmlFor={`${draft.id}-previous`} className="font-medium text-gray-700">
+            <Label htmlFor={`${draft.id}-previous`} className="font-medium">
               Попередні показання
             </Label>
-            <span className="text-xs text-gray-500">{formatReadingDate(entry.previousDate)}</span>
+            <span className="text-xs text-text-muted">{formatReadingDate(entry.previousDate)}</span>
           </div>
           <Input
             id={`${draft.id}-previous`}
             value={entry.previousValue}
             readOnly
-            className="bg-gray-50 text-gray-700"
-            endAdornment={<span className="text-sm text-gray-500">{draft.unit}</span>}
+            className="bg-bg-surface text-text-secondary"
+            endAdornment={<span className="text-sm text-text-muted">{draft.unit}</span>}
           />
         </div>
       </>
@@ -134,11 +134,11 @@ export function ReadingCard({
         return (
           <div
             key={entry.tariffId}
-            className="space-y-3 rounded-lg border border-gray-100 bg-gray-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50"
+            className="space-y-3 rounded-lg border border-border bg-bg-surface/50 p-4"
           >
-            <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">
+            <p className="text-sm font-semibold text-text-primary">
               {entry.tariffName}
-              <span className="ml-2 font-normal text-gray-500 dark:text-slate-400">
+              <span className="ml-2 font-normal text-text-muted">
                 ({entry.tariffLabel})
               </span>
             </p>
@@ -146,7 +146,7 @@ export function ReadingCard({
               <div className="space-y-1">
                 <Label
                   htmlFor={`${draft.id}-${entry.tariffId}-current`}
-                  className="text-xs font-medium text-gray-600 dark:text-slate-300"
+                  className="text-xs font-medium text-text-secondary"
                 >
                   Поточні показання
                 </Label>
@@ -157,7 +157,7 @@ export function ReadingCard({
                   value={currentVal}
                   onChange={(event) => onTariffValueChange(entry.tariffId, event.target.value)}
                   endAdornment={
-                    <span className="text-xs text-gray-500 dark:text-slate-400">{draft.unit}</span>
+                    <span className="text-xs text-text-muted">{draft.unit}</span>
                   }
                 />
               </div>
@@ -165,11 +165,11 @@ export function ReadingCard({
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor={`${draft.id}-${entry.tariffId}-previous`}
-                    className="text-xs font-medium text-gray-600 dark:text-slate-300"
+                    className="text-xs font-medium text-text-secondary"
                   >
                     Попередні
                   </Label>
-                  <span className="text-[10px] text-gray-400 dark:text-slate-500">
+                  <span className="text-[10px] text-text-muted">
                     {formatReadingDate(entry.previousDate)}
                   </span>
                 </div>
@@ -177,9 +177,9 @@ export function ReadingCard({
                   id={`${draft.id}-${entry.tariffId}-previous`}
                   value={entry.previousValue}
                   readOnly
-                  className="bg-gray-50 text-gray-700 dark:bg-slate-900/50 dark:text-slate-300"
+                  className="bg-bg-surface text-text-secondary"
                   endAdornment={
-                    <span className="text-xs text-gray-500 dark:text-slate-400">{draft.unit}</span>
+                    <span className="text-xs text-text-muted">{draft.unit}</span>
                   }
                 />
               </div>
@@ -195,22 +195,22 @@ export function ReadingCard({
       const b = tariffBreakdown[0]
       if (!b) return null
       return (
-        <dl className="mt-4 space-y-3 text-sm text-gray-600 dark:text-slate-300">
+        <dl className="mt-4 space-y-3 text-sm text-text-secondary">
           <div className="flex items-center justify-between">
             <dt>Споживання:</dt>
-            <dd className="font-semibold text-gray-900 dark:text-slate-100">
+            <dd className="font-semibold text-text-primary">
               {numberFormatter.format(b.consumption)} {draft.unit}
             </dd>
           </div>
           <div className="flex items-center justify-between">
             <dt>Тариф:</dt>
-            <dd className="font-semibold text-gray-900 dark:text-slate-100">
+            <dd className="font-semibold text-text-primary">
               {b.entry.tariffLabel}
             </dd>
           </div>
-          <div className="flex items-center justify-between border-t border-primary/20 pt-3 text-base dark:border-amber-300/30">
-            <dt className="font-semibold text-gray-900 dark:text-slate-100">Вартість:</dt>
-            <dd className="font-semibold text-gray-900 dark:text-slate-100">
+          <div className="flex items-center justify-between border-t border-primary/20 pt-3 text-base">
+            <dt className="font-semibold text-text-primary">Вартість:</dt>
+            <dd className="font-semibold text-text-primary">
               {currencyFormatter.format(b.cost)}
             </dd>
           </div>
@@ -219,20 +219,20 @@ export function ReadingCard({
     }
 
     return (
-      <dl className="mt-4 space-y-3 text-sm text-gray-600 dark:text-slate-300">
+      <dl className="mt-4 space-y-3 text-sm text-text-secondary">
         {tariffBreakdown.map((b) => (
           <div key={b.entry.tariffId} className="flex items-center justify-between">
             <dt>{b.entry.tariffName}:</dt>
-            <dd className="font-semibold text-gray-900 dark:text-slate-100">
+            <dd className="font-semibold text-text-primary">
               {numberFormatter.format(b.consumption)} x{' '}
               {numberFormatter.format(b.entry.tariffPrice)} ={' '}
               {currencyFormatter.format(b.cost)}
             </dd>
           </div>
         ))}
-        <div className="flex items-center justify-between border-t border-primary/20 pt-3 text-base dark:border-amber-300/30">
-          <dt className="font-semibold text-gray-900 dark:text-slate-100">Загалом:</dt>
-          <dd className="font-semibold text-gray-900 dark:text-slate-100">
+        <div className="flex items-center justify-between border-t border-primary/20 pt-3 text-base">
+          <dt className="font-semibold text-text-primary">Загалом:</dt>
+          <dd className="font-semibold text-text-primary">
             {currencyFormatter.format(totalCost)}
           </dd>
         </div>
@@ -241,8 +241,8 @@ export function ReadingCard({
   }
 
   return (
-    <Card className="border-gray-100 shadow-lg">
-      <CardHeader className="gap-4 border-b border-gray-100 pb-5">
+    <Card className="border-border shadow-lg">
+      <CardHeader className="gap-4 border-b border-border pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-3">
@@ -261,12 +261,12 @@ export function ReadingCard({
               ) : null}
               <CardTitle className="text-xl">{draft.serviceName}</CardTitle>
             </div>
-            <div className="text-sm text-gray-500">
-              <p className="font-medium text-gray-700">{draft.meterLabel}</p>
+            <div className="text-sm text-text-muted">
+              <p className="font-medium">{draft.meterLabel}</p>
               <p>&#8470; {draft.meterNumber}</p>
             </div>
           </div>
-          <CardDescription className="text-sm text-gray-600">
+          <CardDescription className="text-sm text-text-secondary">
             Внесіть актуальні показання та додайте фото лічильника
           </CardDescription>
         </div>
@@ -277,7 +277,7 @@ export function ReadingCard({
           {isMultiTariff ? renderMultiTariff() : renderSingleTariff()}
 
           <div className="space-y-2">
-            <Label htmlFor={`${draft.id}-date`} className="text-sm font-medium text-gray-700">
+            <Label htmlFor={`${draft.id}-date`} className="text-sm font-medium">
               Дата зняття показань
             </Label>
             <Input
@@ -285,33 +285,33 @@ export function ReadingCard({
               type="date"
               value={readingDate}
               onChange={(event) => onReadingDateChange(event.target.value)}
-              endAdornment={<Calendar className="h-4 w-4 text-gray-400" aria-hidden />}
+              endAdornment={<Calendar className="h-4 w-4 text-text-muted" aria-hidden />}
             />
           </div>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700 dark:text-slate-100">
+            <Label className="text-sm font-medium">
               Фото лічильника
             </Label>
             <PhotoDropzone
               id={`${draft.id}-photo`}
               fileName={photo?.fileName ?? null}
               previewUrl={photo?.previewUrl ?? null}
-              emptyIcon={<Camera className="h-8 w-8 text-gray-400" aria-hidden />}
+              emptyIcon={<Camera className="h-8 w-8 text-text-muted" aria-hidden />}
               emptyTitle="Перетягніть файл або натисніть, щоб завантажити"
               emptyDescription="Додайте фото для підтвердження показань"
               buttonLabel="Завантажити фото"
               variant="full"
-              className="border-blue-200 bg-blue-50 dark:border-slate-600 dark:bg-slate-900/60"
+              className="border-primary/30 bg-primary/5"
               onFilesSelected={handleDropzoneSelection}
               onClear={onPhotoClear}
             />
           </div>
 
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-amber-300/30 dark:bg-amber-200/10">
-            <p className="text-base font-semibold text-gray-900 dark:text-slate-100">Розрахунок</p>
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <p className="text-base font-semibold text-text-primary">Розрахунок</p>
             {renderCalculation()}
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useMemo, useState, useId, type ChangeEvent } from 'react';
 import { Link } from '@inertiajs/react';
 import { tv } from 'tailwind-variants';
 import { Plus } from 'lucide-react';
+import { Label, Select } from '@/Components/ui';
 
 interface AddressOption {
     id: number;
@@ -17,11 +18,11 @@ interface WelcomeHeaderProps {
 }
 
 const welcomeCard = tv({
-    base: 'rounded-xl border border-neutral-200 bg-white p-4 shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-5 lg:p-6',
+    base: 'rounded-xl border border-border bg-bg-raised p-4 shadow-lg sm:p-5 lg:p-6',
 });
 
 const addButton = tv({
-    base: 'inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-primary-dark active:bg-yellow-600 sm:w-auto sm:px-5 sm:text-base',
+    base: 'inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-primary-dark active:bg-primary-dark sm:w-auto sm:px-5 sm:text-base',
 });
 
 export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddressChange }: WelcomeHeaderProps) {
@@ -53,32 +54,32 @@ export function WelcomeHeader({ userName, addresses, selectedAddressId, onAddres
         <section className={welcomeCard()}>
             <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-between">
                 <div className="space-y-2.5 sm:space-y-3">
-                    <h1 className="text-lg font-bold text-neutral-900 dark:text-slate-50 sm:text-xl lg:text-2xl">
+                    <h1 className="text-lg font-bold text-text-primary sm:text-xl lg:text-2xl">
                         Вітаємо, {userName}!
                     </h1>
-                    <p className="text-xs text-neutral-600 dark:text-slate-400 sm:text-sm lg:text-base">
+                    <p className="text-xs text-text-secondary sm:text-sm lg:text-base">
                         Ось огляд ваших комунальних послуг за {currentMonth}
                     </p>
                     {addressOptions.length > 0 && (
                         <div className="flex flex-col gap-2">
-                            <label htmlFor={selectId} className="text-sm font-medium text-neutral-700 dark:text-slate-300 sm:text-base">
+                            <Label htmlFor={selectId} className="sm:text-base">
                                 Адреса обліку
-                            </label>
+                            </Label>
                             <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
-                                <select
+                                <Select
                                     id={selectId}
                                     value={activeAddressId}
                                     onChange={handleAddressChange}
-                                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 sm:w-72 sm:text-base"
+                                    className="w-full sm:w-72"
                                 >
                                     {addressOptions.map((option) => (
                                         <option key={option.id} value={option.id}>
                                             {option.label}
                                         </option>
                                     ))}
-                                </select>
+                                </Select>
                                 {selectedAddress?.description && (
-                                    <span className="hidden text-xs text-neutral-500 sm:inline lg:text-sm">
+                                    <span className="hidden text-xs text-text-muted sm:inline lg:text-sm">
                                         {selectedAddress.description}
                                     </span>
                                 )}

@@ -127,11 +127,11 @@ export function AddressForm({
 
     return (
         <form className="space-y-4" onSubmit={handleSubmit}>
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+            <Card className="shadow-lg">
                 <PageSectionHeader
                     title={title}
                     description={description}
-                    titleClassName="text-2xl font-bold text-dark dark:text-slate-100"
+                    titleClassName="text-2xl font-bold text-text-primary"
                 />
 
                 <CardContent className="space-y-8">
@@ -140,9 +140,9 @@ export function AddressForm({
                     <section className="space-y-4">
                         <div>
                             <Label htmlFor="address_type_id">
-                                Тип нерухомості<span className="text-red-500">*</span>
+                                Тип нерухомості<span className="text-error">*</span>
                             </Label>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">
+                            <p className="text-sm text-text-muted">
                                 Оберіть тип нерухомості, для якої додаєте адресу
                             </p>
                         </div>
@@ -306,18 +306,18 @@ export function AddressForm({
                                 checked={form.data.is_primary}
                                 onChange={(e) => form.setData('is_primary', (e.target as HTMLInputElement).checked)}
                             />
-                            <Label htmlFor="is_primary" className="!mb-0 cursor-pointer text-dark dark:text-slate-100">
+                            <Label htmlFor="is_primary" className="!mb-0 cursor-pointer">
                                 Встановити як основну адресу
                             </Label>
                         </div>
 
-                        <p className="text-sm text-gray-500 dark:text-slate-400">
-                            <span className="text-red-500">*</span> Обов&apos;язкові поля
+                        <p className="text-sm text-text-muted">
+                            <span className="text-error">*</span> Обов&apos;язкові поля
                         </p>
                     </fieldset>
 
                     {!isAddressTypeSelected && !address ? (
-                        <p className="rounded-md border border-dashed border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        <p className="rounded-md border border-dashed border-border bg-bg-surface px-4 py-3 text-sm text-text-secondary">
                             Оберіть тип нерухомості, щоб заповнити адресу
                         </p>
                     ) : null}
@@ -355,7 +355,7 @@ function FormStepper({ steps }: FormStepperProps) {
     const columnTemplate = `repeat(${steps.length * 2 - 1}, minmax(0, 1fr))`
 
     return (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-lg border border-border bg-bg-surface p-4">
             <ol
                 className="flex flex-col gap-4 md:grid md:items-center md:gap-4"
                 style={{ gridTemplateColumns: columnTemplate }}
@@ -386,7 +386,7 @@ function FormStepper({ steps }: FormStepperProps) {
                                         aria-hidden
                                         className={['hidden h-1 w-full rounded-full md:block', getConnectorClass(step.status, nextStatus)].join(' ')}
                                     />
-                                    <div className="mx-auto block h-6 w-px rounded-full bg-gray-200 dark:bg-slate-700 md:hidden" aria-hidden />
+                                    <div className="mx-auto block h-6 w-px rounded-full bg-border md:hidden" aria-hidden />
                                 </Fragment>
                             ) : null}
                         </Fragment>
@@ -401,28 +401,28 @@ function getStatusClasses(status: StepStatus) {
     switch (status) {
         case 'completed':
             return {
-                circle: 'border-primary bg-primary/10 text-primary dark:border-amber-300 dark:bg-amber-200/10 dark:text-amber-200',
+                circle: 'border-primary bg-primary/10 text-primary',
                 icon: 'h-6 w-6',
-                label: 'text-dark dark:text-slate-100',
+                label: 'text-text-primary',
             }
         case 'current':
             return {
-                circle: 'border-primary bg-white text-primary dark:border-amber-300 dark:bg-slate-900 dark:text-amber-200',
+                circle: 'border-primary bg-bg-raised text-primary',
                 icon: 'h-6 w-6',
-                label: 'text-dark dark:text-slate-100',
+                label: 'text-text-primary',
             }
         default:
             return {
-                circle: 'border-gray-200 bg-white text-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400',
+                circle: 'border-border bg-bg-raised text-text-muted',
                 icon: 'h-6 w-6',
-                label: 'text-gray-500 dark:text-slate-400',
+                label: 'text-text-muted',
             }
     }
 }
 
 function getConnectorClass(current: StepStatus, next?: StepStatus) {
-    if (current === 'completed' && next === 'completed') return 'bg-primary dark:bg-amber-300'
-    if (current === 'completed' && next === 'current') return 'bg-primary/70 dark:bg-amber-300/70'
-    if (current === 'current') return 'bg-primary/50 dark:bg-amber-300/50'
-    return 'bg-gray-200 dark:bg-slate-700'
+    if (current === 'completed' && next === 'completed') return 'bg-primary'
+    if (current === 'completed' && next === 'current') return 'bg-primary/70'
+    if (current === 'current') return 'bg-primary/50'
+    return 'bg-border'
 }

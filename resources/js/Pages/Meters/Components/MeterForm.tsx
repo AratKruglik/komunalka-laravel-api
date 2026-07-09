@@ -109,7 +109,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <Card className="border border-gray-200 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <Card className="shadow-sm">
                 <PageSectionHeader
                     title={isEditing ? `Редагування: ${meter?.name}` : 'Додати новий лічильник'}
                     description={
@@ -122,8 +122,8 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                 <CardContent className="space-y-8">
                     {!isEditing ? (
                         <section className="space-y-3">
-                            <Label htmlFor="address_id" className="text-base font-semibold text-gray-800 dark:text-slate-200">
-                                Оберіть адресу <span className="text-red-500">*</span>
+                            <Label htmlFor="address_id" className="text-base font-semibold">
+                                Оберіть адресу <span className="text-error">*</span>
                             </Label>
                             <Select
                                 id="address_id"
@@ -143,7 +143,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                     <section className="grid gap-6 lg:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="utility_type_id">
-                                Тип послуги <span className="text-red-500">*</span>
+                                Тип послуги <span className="text-error">*</span>
                             </Label>
                             <Select
                                 id="utility_type_id"
@@ -162,7 +162,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
 
                         <div className="space-y-2">
                             <Label htmlFor="name">
-                                Назва <span className="text-red-500">*</span>
+                                Назва <span className="text-error">*</span>
                             </Label>
                             <Input
                                 id="name"
@@ -178,7 +178,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                     <section className="grid gap-6 lg:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="serial_number">
-                                Серійний номер <span className="text-red-500">*</span>
+                                Серійний номер <span className="text-error">*</span>
                             </Label>
                             <Input
                                 id="serial_number"
@@ -187,7 +187,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 placeholder="Введіть серійний номер лічильника"
                                 isInvalid={Boolean(form.errors.serial_number)}
                             />
-                            <FormMessage variant="default" className="text-xs text-gray-500">
+                            <FormMessage variant="default" className="text-xs text-text-muted">
                                 Приклад: AE123456789
                             </FormMessage>
                             <FormMessage variant="error">{form.errors.serial_number}</FormMessage>
@@ -238,14 +238,14 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 value={form.data.installation_date}
                                 onChange={(e) => form.setData('installation_date', e.target.value)}
                                 isInvalid={Boolean(form.errors.installation_date)}
-                                endAdornment={<CalendarDays className="h-5 w-5 text-gray-400" />}
+                                endAdornment={<CalendarDays className="h-5 w-5 text-text-muted" />}
                             />
                             <FormMessage variant="error">{form.errors.installation_date}</FormMessage>
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="initial_reading">
-                                Початкові показання <span className="text-red-500">*</span>
+                                Початкові показання <span className="text-error">*</span>
                             </Label>
                             <Input
                                 id="initial_reading"
@@ -256,7 +256,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 value={form.data.initial_reading}
                                 onChange={(e) => form.setData('initial_reading', e.target.value)}
                                 isInvalid={Boolean(form.errors.initial_reading)}
-                                endAdornment={<span className="text-sm text-gray-500">{selectedUnit}</span>}
+                                endAdornment={<span className="text-sm text-text-muted">{selectedUnit}</span>}
                             />
                             <FormMessage variant="error">{form.errors.initial_reading}</FormMessage>
                         </div>
@@ -288,15 +288,15 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
 
                         {isEditing ? (
                             <div className="space-y-2">
-                                <Label className="text-base font-semibold text-gray-800 dark:text-slate-200">Статус</Label>
+                                <Label className="text-base font-semibold">Статус</Label>
                                 <label className="flex cursor-pointer items-center gap-3">
                                     <input
                                         type="checkbox"
                                         checked={form.data.is_active}
                                         onChange={(e) => form.setData('is_active', e.target.checked)}
-                                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary dark:border-slate-600"
+                                        className="h-5 w-5 rounded border-border text-primary focus:ring-primary"
                                     />
-                                    <span className="text-sm text-gray-700 dark:text-slate-300">Лічильник активний</span>
+                                    <span className="text-sm text-text-secondary">Лічильник активний</span>
                                 </label>
                             </div>
                         ) : null}
@@ -321,7 +321,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 id="meter-photo"
                                 previewUrl={photoPreview}
                                 fileName={form.data.photo?.name ?? null}
-                                emptyIcon={<Camera className="h-10 w-10 text-gray-400" />}
+                                emptyIcon={<Camera className="h-10 w-10 text-text-muted" />}
                                 emptyTitle="Завантажте фото лічильника"
                                 emptyDescription="Перетягніть файл або натисніть кнопку"
                                 helperText="Максимум 10 МБ"
@@ -335,7 +335,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                     </section>
                 </CardContent>
 
-                <CardFooter className="flex flex-col gap-4 border-t border-gray-200 px-6 py-5 dark:border-slate-800 sm:flex-row sm:justify-between">
+                <CardFooter className="flex flex-col gap-4 border-t border-border px-6 py-5 sm:flex-row sm:justify-between">
                     <Button
                         type="button"
                         variant="secondary"
