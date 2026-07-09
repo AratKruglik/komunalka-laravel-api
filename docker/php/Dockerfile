@@ -94,6 +94,12 @@ COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 RUN echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/memory-limit.ini
 
+# Raise upload limits above the app's largest validated file size (photo: 10MB)
+RUN { \
+        echo 'upload_max_filesize = 15M'; \
+        echo 'post_max_size = 16M'; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
+
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.memory_consumption=256'; \

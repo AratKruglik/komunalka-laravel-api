@@ -61,6 +61,12 @@ RUN pecl install xdebug pcov && \
 # Configure PHP settings
 RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/memory-limit.ini
 
+# Raise upload limits above the app's largest validated file size (photo: 10MB)
+RUN { \
+        echo 'upload_max_filesize = 15M'; \
+        echo 'post_max_size = 16M'; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
+
 # Configure OPcache for development (revalidate on every request)
 RUN { \
         echo 'opcache.enable=1'; \
