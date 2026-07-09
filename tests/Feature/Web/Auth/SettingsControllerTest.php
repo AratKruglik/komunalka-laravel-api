@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Modules\Auth\Models\User;
 
 describe('SettingsController', function (): void {
@@ -50,6 +52,68 @@ describe('SettingsController', function (): void {
         expect($this->user->first_name)->toBe('Тарас')
             ->and($this->user->last_name)->toBe('Шевченко')
             ->and($this->user->phone_number)->toBe('+380501234567');
+    });
+
+    it('uploads avatar via spoofed POST and stores it in the avatar collection', function (): void {
+        Storage::fake('public');
+
+        $response = $this->actingAs($this->user)
+            ->post(route('settings.profile'), [
+                '_method' => 'put',
+                'first_name' => $this->user->first_name,
+                'last_name' => $this->user->last_name,
+                'avatar' => UploadedFile::fake()->image('avatar.jpg'),
+            ]);
+
+        $response->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->user->refresh();
+
+        expect($this->user->getMedia('avatar'))->toHaveCount(1)
+            ->and($this->user->getFirstMedia('avatar')->collection_name)->toBe('avatar');
+
+        $this->assertDatabaseHas('media', [
+            'model_type' => User::class,
+            'model_id' => $this->user->getKey(),
+            'collection_name' => 'avatar',
+        ]);
+    });
+
+    it('rejects avatar with disallowed mime type', function (): void {
+        Storage::fake('public');
+
+        $response = $this->actingAs($this->user)
+            ->post(route('settings.profile'), [
+                '_method' => 'put',
+                'avatar' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
+            ]);
+
+        $response->assertSessionHasErrors('avatar');
+
+        $this->assertDatabaseMissing('media', [
+            'model_type' => User::class,
+            'model_id' => $this->user->getKey(),
+            'collection_name' => 'avatar',
+        ]);
+    });
+
+    it('rejects oversized avatar', function (): void {
+        Storage::fake('public');
+
+        $response = $this->actingAs($this->user)
+            ->post(route('settings.profile'), [
+                '_method' => 'put',
+                'avatar' => UploadedFile::fake()->image('big-avatar.jpg')->size(2049),
+            ]);
+
+        $response->assertSessionHasErrors('avatar');
+
+        $this->assertDatabaseMissing('media', [
+            'model_type' => User::class,
+            'model_id' => $this->user->getKey(),
+            'collection_name' => 'avatar',
+        ]);
     });
 
     it('updates user password', function (): void {

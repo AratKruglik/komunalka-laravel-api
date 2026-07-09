@@ -32,6 +32,10 @@ class UpdateMeter
         /** @var Meter $meter */
         $meter = $this->meterRepository->update($meter, $data->toArray());
 
+        if ($data->photo) {
+            $meter->addMedia($data->photo)->toMediaCollection('photo');
+        }
+
         return $meter->load(['utilityType', 'serviceProvider']);
     }
 

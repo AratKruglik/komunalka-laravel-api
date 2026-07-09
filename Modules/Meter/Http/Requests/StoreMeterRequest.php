@@ -29,7 +29,7 @@ class StoreMeterRequest extends FormRequest
             'initial_reading' => ['required', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
-            'photo' => ['nullable', 'image', 'max:10240'],
+            'photo' => ['nullable', 'mimes:jpeg,png,gif,heic,heif', 'max:10240'],
         ];
     }
 
@@ -57,7 +57,7 @@ class StoreMeterRequest extends FormRequest
             'initial_reading.numeric' => 'Початкове показання має бути числом.',
             'initial_reading.min' => 'Початкове показання не може бути від\'ємним.',
             'is_active.boolean' => 'Поле активності має бути булевим значенням.',
-            'photo.image' => 'Файл має бути зображенням.',
+            'photo.mimes' => 'Дозволені формати: JPEG, PNG, GIF, HEIC, HEIF.',
             'photo.max' => 'Розмір фото не може перевищувати 10 МБ.',
         ];
     }

@@ -28,6 +28,7 @@ class UpdateMeterRequest extends FormRequest
             'initial_reading' => ['sometimes', 'numeric', 'min:0'],
             'notes' => ['sometimes', 'nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
+            'photo' => ['sometimes', 'nullable', 'mimes:jpeg,png,gif,heic,heif', 'max:10240'],
         ];
     }
 
@@ -48,6 +49,8 @@ class UpdateMeterRequest extends FormRequest
             'initial_reading.numeric' => 'Початкове показання має бути числом.',
             'initial_reading.min' => 'Початкове показання не може бути від\'ємним.',
             'is_active.boolean' => 'Поле активності має бути булевим значенням.',
+            'photo.mimes' => 'Дозволені формати: JPEG, PNG, GIF, HEIC, HEIF.',
+            'photo.max' => 'Розмір фото не може перевищувати 10 МБ.',
         ];
     }
 }

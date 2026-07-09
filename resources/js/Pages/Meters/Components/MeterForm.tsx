@@ -99,7 +99,10 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
         event.preventDefault();
 
         if (isEditing && meter) {
-            form.put(route('meters.update', meter.id));
+            form.transform((data) => ({ ...data, _method: 'put' }));
+            form.post(route('meters.update', meter.id), {
+                forceFormData: true,
+            });
         } else {
             form.post(route('meters.store'), {
                 forceFormData: true,
@@ -327,7 +330,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 helperText="Максимум 10 МБ"
                                 onFilesSelected={handlePhotoSelected}
                                 onClear={handlePhotoClear}
-                                inputProps={{ accept: 'image/*' }}
+                                inputProps={{ accept: 'image/jpeg,image/png,image/gif,image/heic,image/heif' }}
                                 previewHeight={160}
                             />
                             <FormMessage variant="error">{form.errors.photo}</FormMessage>
