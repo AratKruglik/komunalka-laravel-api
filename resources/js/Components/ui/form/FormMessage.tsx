@@ -8,9 +8,9 @@ export interface FormMessageProps extends HTMLAttributes<HTMLParagraphElement> {
 }
 
 const variantStyles: Record<FormMessageVariant, string> = {
-  default: 'text-gray-600',
+  default: 'text-subtext',
   success: 'text-success',
-  error: 'text-red-500',
+  error: 'text-error',
 }
 
 export const FormMessage = forwardRef<HTMLParagraphElement, FormMessageProps>(

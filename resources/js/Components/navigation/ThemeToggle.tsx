@@ -56,7 +56,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-50 sm:h-10 sm:w-10"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-subtext transition-colors hover:bg-surface hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-10 sm:w-10"
         title="Перемкнути тему"
       >
         <CurrentIcon className="h-4 w-4" strokeWidth={1.7} />
@@ -66,9 +66,9 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         <div
           role="menu"
           aria-label="Вибір теми"
-          className="absolute right-0 top-full z-10 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900"
+          className="absolute right-0 top-full z-10 mt-2 w-48 overflow-hidden rounded-xl border border-line bg-raised shadow-lg"
         >
-          <ul className="divide-y divide-gray-100 text-sm text-gray-800 dark:divide-slate-800 dark:text-slate-100">
+          <ul className="divide-y divide-line text-sm text-foreground">
             {themeOptions.map((option) => {
               const Icon = option.icon
               const isActive = theme === option.value
@@ -83,21 +83,21 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
                       setTheme(option.value)
                       setOpen(false)
                     }}
-                    className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-slate-800"
+                    className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface"
                   >
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-100">
+                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-surface text-subtext">
                       <Icon className="h-4 w-4" strokeWidth={1.7} />
                     </span>
                     <span className="flex-1">
                       <span className="block text-sm font-semibold">{option.label}</span>
                       {option.value === 'system' ? (
-                        <span className="block text-xs text-gray-500 dark:text-slate-400">
+                        <span className="block text-xs text-muted">
                           Залежить від системи ({resolvedTheme === 'dark' ? 'темна' : 'світла'})
                         </span>
                       ) : null}
                     </span>
                     {isActive ? (
-                      <Check className="h-4 w-4 text-primary dark:text-amber-300" strokeWidth={2} />
+                      <Check className="h-4 w-4 text-primary" strokeWidth={2} />
                     ) : null}
                   </button>
                 </li>

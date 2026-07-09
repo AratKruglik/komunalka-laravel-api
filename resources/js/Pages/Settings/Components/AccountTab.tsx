@@ -16,8 +16,7 @@ import { Download, Lock } from 'lucide-react';
 
 const dangerZone = tv({
     base: [
-        'rounded-xl border-2 border-red-200 bg-red-50 p-4',
-        'dark:border-red-800/50 dark:bg-red-950/20',
+        'rounded-xl border-2 border-error/30 bg-error/10 p-4',
         'sm:p-5 lg:p-6',
     ],
 });
@@ -53,13 +52,13 @@ export function AccountTab() {
 
     return (
         <div className="space-y-6">
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800">
+            <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle>Експорт даних</CardTitle>
                     <CardDescription>Завантажте копію ваших даних</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button variant="outline" tone="primary">
+                    <Button variant="secondary">
                         <Download className="h-4 w-4" />
                         Експортувати дані (CSV)
                     </Button>
@@ -67,10 +66,10 @@ export function AccountTab() {
             </Card>
 
             <div className={dangerZone()}>
-                <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">
+                <h3 className="text-lg font-semibold text-error">
                     Небезпечна зона
                 </h3>
-                <p className="mt-1 text-sm text-red-600/80 dark:text-red-300/70">
+                <p className="mt-1 text-sm text-error/80">
                     Видалення акаунта призведе до безповоротної втрати всіх ваших даних, включаючи
                     адреси, лічильники та показники.
                 </p>
@@ -82,8 +81,7 @@ export function AccountTab() {
                 ) : null}
 
                 <Button
-                    variant="outline"
-                    tone="danger"
+                    variant="danger"
                     className="mt-4"
                     onClick={handleOpenConfirm}
                 >
@@ -108,7 +106,7 @@ export function AccountTab() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Введіть пароль для підтвердження"
-                            leadingIcon={<Lock className="h-4 w-4 text-neutral-500" />}
+                            leadingIcon={<Lock className="h-4 w-4 text-muted" />}
                             autoFocus
                         />
                     </div>

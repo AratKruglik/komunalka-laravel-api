@@ -155,11 +155,11 @@ export function ProviderForm({
 
     return (
         <form className="space-y-4" onSubmit={handleSubmit}>
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+            <Card className="shadow-lg">
                 <PageSectionHeader
                     title={title}
                     description={description}
-                    titleClassName="text-2xl font-bold text-dark dark:text-slate-100"
+                    titleClassName="text-2xl font-bold text-foreground"
                 />
 
                 <CardContent className="space-y-8">
@@ -229,20 +229,19 @@ export function ProviderForm({
                     </FormField>
 
                     {submitMethod === 'post' && (
-                        <div className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+                        <div className="space-y-4 rounded-xl border border-line bg-surface p-4">
                             <div className="flex flex-wrap items-start justify-between gap-3">
                                 <div className="space-y-1">
-                                    <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">
+                                    <p className="text-sm font-semibold text-foreground">
                                         Тарифи провайдера
                                     </p>
-                                    <p className="text-sm text-gray-500 dark:text-slate-400">
+                                    <p className="text-sm text-muted">
                                         Додайте денний, нічний чи інші плани
                                     </p>
                                 </div>
                                 <Button
                                     type="button"
-                                    variant="outline"
-                                    tone="primary"
+                                    variant="secondary"
                                     size="sm"
                                     className="gap-2"
                                     onClick={addTariff}
@@ -256,11 +255,11 @@ export function ProviderForm({
                                 {form.data.tariffs.map((tariff, index) => (
                                     <div
                                         key={index}
-                                        className="rounded-lg border border-gray-200 bg-white p-4 shadow-md dark:border-slate-700 dark:bg-slate-800"
+                                        className="rounded-lg border border-line bg-raised p-4 shadow-md"
                                     >
                                         <div className="flex items-center justify-between gap-3">
-                                            <div className="flex items-center gap-3 text-sm font-semibold text-gray-800 dark:text-slate-100">
-                                                <span className="grid size-9 place-items-center rounded-full bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-100">
+                                            <div className="flex items-center gap-3 text-sm font-semibold text-foreground">
+                                                <span className="grid size-9 place-items-center rounded-full bg-surface text-subtext">
                                                     {index + 1}
                                                 </span>
                                                 <span>{tariff.name || 'Новий тариф'}</span>
@@ -269,7 +268,6 @@ export function ProviderForm({
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    tone="neutral"
                                                     size="sm"
                                                     className="text-sm"
                                                     onClick={() => removeTariff(index)}
@@ -309,7 +307,7 @@ export function ProviderForm({
                                                     value={tariff.base_rate}
                                                     onChange={(e) => updateTariff(index, 'base_rate', e.target.value)}
                                                     endAdornment={
-                                                        <span className="text-sm font-medium text-gray-600 dark:text-slate-200">
+                                                        <span className="text-sm font-medium text-subtext">
                                                             грн/{selectedUtilityType?.unit ?? 'од.'}
                                                         </span>
                                                     }
@@ -330,7 +328,7 @@ export function ProviderForm({
                                                     value={tariff.service_fee}
                                                     onChange={(e) => updateTariff(index, 'service_fee', e.target.value)}
                                                     endAdornment={
-                                                        <span className="text-sm font-medium text-gray-600 dark:text-slate-200">
+                                                        <span className="text-sm font-medium text-subtext">
                                                             грн
                                                         </span>
                                                     }
@@ -406,16 +404,15 @@ export function ProviderForm({
                         />
                     </FormField>
 
-                    <p className="text-sm text-gray-500 dark:text-slate-400">
-                        <span className="text-red-500">*</span> Обов&apos;язкові поля
+                    <p className="text-sm text-muted">
+                        <span className="text-error">*</span> Обов&apos;язкові поля
                     </p>
                 </CardContent>
 
                 <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                     <Button
                         type="button"
-                        variant="outline"
-                        tone="neutral"
+                        variant="secondary"
                         onClick={handleCancel}
                         disabled={form.processing}
                     >

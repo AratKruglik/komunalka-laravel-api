@@ -10,6 +10,7 @@ import {
     Legend,
 } from 'recharts';
 import { tv } from 'tailwind-variants';
+import { UTILITY_COLORS, UTILITY_LABELS } from '@/constants/utilityColors';
 
 interface ConsumptionDataPoint {
     month: string;
@@ -24,34 +25,18 @@ interface ConsumptionChartProps {
 type PeriodFilter = '3months' | '6months' | '1year';
 
 const chartCard = tv({
-    base: 'rounded-xl border border-neutral-200 bg-white p-3.5 shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-5 lg:p-6',
+    base: 'rounded-xl border border-line bg-raised p-3.5 shadow-lg sm:p-5 lg:p-6',
 });
 
 const periodButton = tv({
     base: 'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm',
     variants: {
         active: {
-            true: 'bg-blue-600 text-white',
-            false: 'border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300',
+            true: 'bg-primary text-on-primary',
+            false: 'border border-line bg-raised text-subtext hover:bg-surface',
         },
     },
 });
-
-const UTILITY_COLORS: Record<string, string> = {
-    electricity: '#F59E0B',
-    gas: '#3B82F6',
-    'cold-water': '#06B6D4',
-    'hot-water': '#EF4444',
-    heating: '#8B5CF6',
-};
-
-const UTILITY_LABELS: Record<string, string> = {
-    electricity: 'Електроенергія',
-    gas: 'Газ',
-    'cold-water': 'Холодна вода',
-    'hot-water': 'Гаряча вода',
-    heating: 'Опалення',
-};
 
 const periodOptions: { value: PeriodFilter; label: string }[] = [
     { value: '1year', label: 'За рік' },
@@ -87,7 +72,7 @@ export function ConsumptionChart({ data }: ConsumptionChartProps) {
     return (
         <section className={chartCard()}>
             <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-center sm:justify-between lg:mb-6">
-                <h2 className="text-base font-semibold leading-6 text-neutral-900 dark:text-slate-50 sm:text-lg sm:leading-7 lg:text-xl">
+                <h2 className="text-base font-semibold leading-6 text-foreground sm:text-lg sm:leading-7 lg:text-xl">
                     Графік споживання
                 </h2>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -106,15 +91,16 @@ export function ConsumptionChart({ data }: ConsumptionChartProps) {
 
             <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis dataKey="month" stroke="#6B7280" style={{ fontSize: '12px' }} />
-                    <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line)" />
+                    <XAxis dataKey="month" stroke="var(--color-muted)" style={{ fontSize: '12px' }} />
+                    <YAxis stroke="var(--color-muted)" style={{ fontSize: '12px' }} />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #E5E7EB',
+                            backgroundColor: 'var(--color-raised)',
+                            border: '1px solid var(--color-line)',
                             borderRadius: '8px',
                             fontSize: '12px',
+                            color: 'var(--color-foreground)',
                         }}
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} iconType="line" />

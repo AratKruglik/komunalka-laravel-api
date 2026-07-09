@@ -54,7 +54,7 @@ export function AppearanceTab() {
 
     return (
         <div className="space-y-6">
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800">
+            <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle>Тема оформлення</CardTitle>
                     <CardDescription>Оберіть тему для інтерфейсу</CardDescription>
@@ -79,7 +79,7 @@ export function AppearanceTab() {
                 </CardContent>
             </Card>
 
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800">
+            <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle>Мова інтерфейсу</CardTitle>
                     <CardDescription>Оберіть мову відображення</CardDescription>
@@ -96,7 +96,7 @@ export function AppearanceTab() {
                             </option>
                         ))}
                     </Select>
-                    <p className="text-xs text-gray-500 dark:text-slate-400">
+                    <p className="text-xs text-muted">
                         Наразі доступна лише українська мова
                     </p>
                 </CardContent>

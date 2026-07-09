@@ -57,7 +57,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
       role="alert"
       className={[
         'flex gap-3 rounded-lg border px-4 py-3 text-sm shadow-[var(--shadow-sm)]',
-        'bg-white text-[var(--color-text-dark)]',
+        'bg-raised text-foreground',
         className,
       ]
         .filter(Boolean)
@@ -70,7 +70,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           {icon ?? variantIcons[variant]}
         </span>
       ) : null}
-      <div className="flex flex-1 flex-col gap-1 text-[var(--color-text-dark)]">{children}</div>
+      <div className="flex flex-1 flex-col gap-1 text-foreground">{children}</div>
     </div>
   )
 })
@@ -102,7 +102,7 @@ export const AlertDescription = forwardRef<HTMLParagraphElement, AlertDescriptio
     return (
       <p
         ref={ref}
-        className={['text-sm text-[var(--color-text-secondary)]', className]
+        className={['text-sm text-subtext', className]
           .filter(Boolean)
           .join(' ')}
         {...props}

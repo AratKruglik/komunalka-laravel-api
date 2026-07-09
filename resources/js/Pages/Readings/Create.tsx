@@ -280,7 +280,7 @@ export default function Create({
       <Head title="Внести показання" />
 
       <div className="space-y-6">
-        <Card className="border border-gray-200 shadow-lg">
+        <Card className="shadow-lg">
           <PageSectionHeader
             title="Оберіть адресу для внесення показань"
             description="Всі налаштування, прив'язані до адреси, синхронізуються з вашим обліковим записом"
@@ -293,7 +293,7 @@ export default function Create({
           />
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="address-select" className="text-sm font-semibold text-gray-700">
+              <Label htmlFor="address-select" className="text-sm font-semibold">
                 Адреса
               </Label>
               <Select
@@ -329,12 +329,12 @@ export default function Create({
               />
             ))
           ) : (
-            <Card className="border-dashed border-gray-200 bg-gray-50 text-center shadow-none">
+            <Card className="border-dashed border-line bg-surface text-center shadow-none">
               <CardContent className="py-10">
-                <p className="text-lg font-semibold text-gray-800">
+                <p className="text-lg font-semibold text-foreground">
                   Немає лічильників для вибраної адреси
                 </p>
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-muted">
                   Додайте лічильник у розділі &laquo;Лічильники&raquo;, щоб почати вводити показання
                 </p>
               </CardContent>
@@ -343,13 +343,13 @@ export default function Create({
 
           <ReadingSummaryTable rows={summaryRows} />
 
-          <div className="flex flex-col items-end gap-2 border-t border-gray-100 pt-4">
+          <div className="flex flex-col items-end gap-2 border-t border-line pt-4">
             {submitError && (
               <FormMessage variant="error">{submitError}</FormMessage>
             )}
             <Button
               type="submit"
-              tone="primary"
+              variant="primary"
               size="md"
               className="min-w-[220px]"
               loading={isSubmitting}

@@ -76,7 +76,7 @@ export function SecurityTab({ connectedProviders }: SecurityTabProps) {
     return (
         <div className="space-y-6">
             <form onSubmit={handlePasswordSubmit}>
-                <Card className="border border-gray-200 shadow-lg dark:border-slate-800">
+                <Card className="shadow-lg">
                     <CardHeader>
                         <CardTitle>Зміна паролю</CardTitle>
                         <CardDescription>
@@ -132,7 +132,7 @@ export function SecurityTab({ connectedProviders }: SecurityTabProps) {
                 </Card>
             </form>
 
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800">
+            <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle>Під&apos;єднані акаунти</CardTitle>
                     <CardDescription>
@@ -165,7 +165,7 @@ export function SecurityTab({ connectedProviders }: SecurityTabProps) {
                             value={unlinkPassword}
                             onChange={(e) => setUnlinkPassword(e.target.value)}
                             placeholder="Ваш пароль"
-                            leadingIcon={<Lock className="h-4 w-4 text-neutral-500" />}
+                            leadingIcon={<Lock className="h-4 w-4 text-muted" />}
                             autoFocus
                         />
                     </div>

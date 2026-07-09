@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from 'recharts';
 import { tv } from 'tailwind-variants';
+import { UTILITY_COLORS } from '@/constants/utilityColors';
 
 interface ExpenseItem {
     type: string;
@@ -14,16 +15,8 @@ interface ExpenseDistributionProps {
 }
 
 const card = tv({
-    base: 'flex h-full flex-col rounded-xl border border-neutral-200 bg-white p-4 shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-6',
+    base: 'flex h-full flex-col rounded-xl border border-line bg-raised p-4 shadow-lg sm:p-6',
 });
-
-const UTILITY_COLORS: Record<string, string> = {
-    electricity: '#F59E0B',
-    gas: '#3B82F6',
-    'cold-water': '#06B6D4',
-    'hot-water': '#EF4444',
-    heating: '#8B5CF6',
-};
 
 export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
     const chartData = useMemo(
@@ -47,12 +40,12 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
         <section className={card()}>
             <header className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 className="text-base font-semibold leading-6 text-neutral-900 dark:text-slate-50 sm:text-lg sm:leading-7">
+                    <h2 className="text-base font-semibold leading-6 text-foreground sm:text-lg sm:leading-7">
                         Розподіл витрат
                     </h2>
-                    <p className="mt-1 text-sm text-neutral-500 dark:text-slate-400">
+                    <p className="mt-1 text-sm text-muted">
                         Загалом:{' '}
-                        <span className="font-semibold text-neutral-900 dark:text-slate-100">
+                        <span className="font-semibold text-foreground">
                             {formatCurrency(totalExpenses)}
                         </span>
                     </p>
@@ -92,7 +85,7 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                                             const { cx, cy } = viewBox as { cx: number; cy: number };
 
                                             return (
-                                                <text x={cx} y={cy} fill="#111827" textAnchor="middle">
+                                                <text x={cx} y={cy} fill="var(--color-foreground)" textAnchor="middle">
                                                     <tspan fontSize={12} fontWeight={600} dy={-6}>
                                                         Загалом
                                                     </tspan>
@@ -106,10 +99,11 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                                 </Pie>
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: '#fff',
-                                        border: '1px solid #E5E7EB',
+                                        backgroundColor: 'var(--color-raised)',
+                                        border: '1px solid var(--color-line)',
                                         borderRadius: '8px',
                                         fontSize: '12px',
+                                        color: 'var(--color-foreground)',
                                     }}
                                     formatter={(value) => [formatCurrency(Number(value)), 'Сума']}
                                 />
@@ -118,11 +112,11 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                     </div>
                 </div>
 
-                <div className="flex w-full flex-col justify-center space-y-3 text-sm text-neutral-600 dark:text-slate-300">
+                <div className="flex w-full flex-col justify-center space-y-3 text-sm text-subtext">
                     {chartData.map((item) => (
                         <div
                             key={item.name}
-                            className="flex items-center justify-between rounded-lg bg-neutral-50 px-3 py-2 dark:bg-slate-800"
+                            className="flex items-center justify-between rounded-lg bg-surface px-3 py-2"
                         >
                             <span className="inline-flex items-center gap-2">
                                 <span
@@ -131,7 +125,7 @@ export function ExpenseDistribution({ data }: ExpenseDistributionProps) {
                                 />
                                 {item.name}
                             </span>
-                            <span className="font-semibold text-neutral-900 dark:text-slate-100">
+                            <span className="font-semibold text-foreground">
                                 {formatCurrency(item.value)}
                             </span>
                         </div>

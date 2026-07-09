@@ -53,7 +53,7 @@ export function ProfileTab() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <Card className="border border-gray-200 shadow-lg dark:border-slate-800">
+            <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle>Особисті дані</CardTitle>
                     <CardDescription>Оновіть вашу персональну інформацію</CardDescription>
@@ -65,7 +65,7 @@ export function ProfileTab() {
                             id="avatar"
                             previewUrl={avatarPreview}
                             fileName={data.avatar?.name}
-                            emptyIcon={<Camera className="h-8 w-8 text-gray-400" />}
+                            emptyIcon={<Camera className="h-8 w-8 text-muted" />}
                             emptyTitle="Завантажте фото"
                             emptyDescription="JPG, PNG, GIF або HEIC до 2 МБ"
                             buttonLabel="Обрати фото"
@@ -84,7 +84,7 @@ export function ProfileTab() {
                                 id="first_name"
                                 value={data.first_name}
                                 onChange={(e) => setData('first_name', e.target.value)}
-                                leadingIcon={<User className="h-4 w-4 text-neutral-500" />}
+                                leadingIcon={<User className="h-4 w-4 text-muted" />}
                                 placeholder="Ваше ім'я"
                                 disabled={processing}
                                 isInvalid={Boolean(errors.first_name)}
@@ -98,7 +98,7 @@ export function ProfileTab() {
                                 id="last_name"
                                 value={data.last_name}
                                 onChange={(e) => setData('last_name', e.target.value)}
-                                leadingIcon={<User className="h-4 w-4 text-neutral-500" />}
+                                leadingIcon={<User className="h-4 w-4 text-muted" />}
                                 placeholder="Ваше прізвище"
                                 disabled={processing}
                                 isInvalid={Boolean(errors.last_name)}
@@ -113,11 +113,11 @@ export function ProfileTab() {
                             id="email"
                             type="email"
                             value={user?.email ?? ''}
-                            leadingIcon={<Mail className="h-4 w-4 text-neutral-500" />}
+                            leadingIcon={<Mail className="h-4 w-4 text-muted" />}
                             disabled
                             readOnly
                         />
-                        <p className="text-xs text-gray-500 dark:text-slate-400">
+                        <p className="text-xs text-muted">
                             Електронну пошту неможливо змінити
                         </p>
                     </div>
@@ -128,7 +128,7 @@ export function ProfileTab() {
                             id="phone_number"
                             value={data.phone_number}
                             onChange={(e) => setData('phone_number', e.target.value)}
-                            leadingIcon={<Phone className="h-4 w-4 text-neutral-500" />}
+                            leadingIcon={<Phone className="h-4 w-4 text-muted" />}
                             placeholder="+380 XX XXX XX XX"
                             disabled={processing}
                             isInvalid={Boolean(errors.phone_number)}

@@ -111,13 +111,11 @@ export function PhotoDropzone({
   }
 
   const wrapperClasses = [
-    'flex min-h-[220px] cursor-pointer flex-col gap-3 rounded-2xl border border-dashed text-gray-600 transition dark:text-slate-200',
+    'flex min-h-[220px] cursor-pointer flex-col gap-3 rounded-2xl border border-dashed text-subtext transition',
     variant === 'full' ? 'px-5 py-5 sm:px-6 sm:py-6' : 'px-4 py-4',
     isDragActive
-      ? 'border-primary bg-primary/10 dark:border-amber-300 dark:bg-amber-200/15'
-      : variant === 'full'
-        ? 'border-sky-200 bg-sky-50 hover:border-primary hover:bg-primary/5 dark:border-slate-600 dark:bg-slate-800/80 dark:hover:border-amber-300 dark:hover:bg-amber-200/10'
-        : 'border-gray-300 bg-gray-50 hover:border-primary hover:bg-primary/5 dark:border-slate-600 dark:bg-slate-900/60 dark:hover:border-amber-300 dark:hover:bg-amber-200/10',
+      ? 'border-primary bg-primary/10'
+      : 'border-line bg-surface hover:border-primary hover:bg-primary/5',
     hasPreview && variant === 'default' ? 'items-stretch text-left' : 'items-center text-center',
     className,
   ]
@@ -137,19 +135,18 @@ export function PhotoDropzone({
         variant === 'full' ? (
           <div className="flex w-full flex-col gap-4 text-left">
             <div
-              className="relative w-full overflow-hidden rounded-[24px] bg-white shadow-inner dark:bg-slate-900"
+              className="relative w-full overflow-hidden rounded-[24px] bg-raised shadow-inner"
               style={{ minHeight: previewHeight }}
             >
               <img src={previewUrl ?? ''} alt={fileName ?? 'Превʼю фото'} className="h-full w-full object-cover" />
             </div>
-            <div className="text-sm text-gray-600">
-              <p className="font-semibold text-gray-900">{fileName}</p>
-              {helperText ? <p className="text-xs text-gray-500">{helperText}</p> : null}
+            <div className="text-sm text-subtext">
+              <p className="font-semibold text-foreground">{fileName}</p>
+              {helperText ? <p className="text-xs text-muted">{helperText}</p> : null}
             </div>
             <Button
               type="button"
               variant="ghost"
-              tone="neutral"
               size="sm"
               className="self-start"
               onClick={(event) => {
@@ -162,8 +159,8 @@ export function PhotoDropzone({
           </div>
         ) : (
           <div className="flex w-full flex-col gap-3">
-            <div className="w-full rounded-lg border border-gray-200 bg-white shadow-inner dark:border-slate-700 dark:bg-slate-900">
-              <div className="w-full overflow-hidden rounded-lg bg-gray-50 dark:bg-slate-800" style={{ minHeight: previewHeight }}>
+            <div className="w-full rounded-lg border border-line bg-raised shadow-inner">
+              <div className="w-full overflow-hidden rounded-lg bg-surface" style={{ minHeight: previewHeight }}>
                 <img
                   src={previewUrl ?? ''}
                   alt={fileName ?? 'Превʼю фото'}
@@ -171,14 +168,13 @@ export function PhotoDropzone({
                 />
               </div>
             </div>
-            <div className="text-center text-sm text-gray-500 dark:text-slate-400 sm:text-left">
-              <p className="text-sm font-medium text-gray-800 dark:text-slate-100">{fileName}</p>
-              {helperText ? <p className="text-xs text-gray-500">{helperText}</p> : null}
+            <div className="text-center text-sm text-muted sm:text-left">
+              <p className="text-sm font-medium text-foreground">{fileName}</p>
+              {helperText ? <p className="text-xs text-muted">{helperText}</p> : null}
             </div>
             <Button
               type="button"
               variant="ghost"
-              tone="neutral"
               size="sm"
               className="self-center sm:self-start"
               onClick={(event) => {
@@ -193,10 +189,10 @@ export function PhotoDropzone({
       ) : (
         <>
           {emptyIcon}
-          {emptyTitle ? <p className="text-base font-medium text-gray-800 dark:text-slate-100">{emptyTitle}</p> : null}
-          {emptyDescription ? <p className="text-sm text-gray-500 dark:text-slate-400">{emptyDescription}</p> : null}
+          {emptyTitle ? <p className="text-base font-medium text-foreground">{emptyTitle}</p> : null}
+          {emptyDescription ? <p className="text-sm text-muted">{emptyDescription}</p> : null}
           {buttonLabel ? (
-            <Button type="button" variant="outline" tone="neutral" size="sm" className="pointer-events-none">
+            <Button type="button" variant="secondary" size="sm" className="pointer-events-none">
               {buttonLabel}
             </Button>
           ) : null}
