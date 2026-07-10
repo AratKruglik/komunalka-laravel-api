@@ -1,8 +1,7 @@
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { tv } from 'tailwind-variants';
-import { Button, DropdownMenu, Spinner, type DropdownMenuItem } from '@/Components/ui';
-import { resolveMediaSrc } from '@/lib/media';
+import { Button, DropdownMenu, MediaThumbnail, type DropdownMenuItem } from '@/Components/ui';
 import type { Meter } from '@/types/entities';
 
 interface MeterCardProps {
@@ -35,8 +34,6 @@ const statusBadge = tv({
 });
 
 export function MeterCard({ meter, onDelete }: MeterCardProps) {
-    const thumbnailSrc = resolveMediaSrc(meter.photo, 'optimized_url');
-
     const handleMenuSelect = (item: DropdownMenuItem) => {
         if (item.id === 'edit') {
             router.visit(route('meters.edit', meter.id));
@@ -93,24 +90,12 @@ export function MeterCard({ meter, onDelete }: MeterCardProps) {
             </div>
 
             {meter.photo ? (
-                <div className="relative flex-shrink-0">
-                    {thumbnailSrc ? (
-                        <img
-                            src={thumbnailSrc}
-                            alt={`Фото ${meter.name}`}
-                            className="h-16 w-16 rounded-lg object-cover"
-                        />
-                    ) : (
-                        <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-line bg-surface">
-                            <Spinner size="sm" />
-                        </div>
-                    )}
-                    {meter.photo.is_processing ? (
-                        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60">
-                            <Spinner size="xs" className="text-white" />
-                        </span>
-                    ) : null}
-                </div>
+                <MediaThumbnail
+                    media={meter.photo}
+                    alt={`Фото ${meter.name}`}
+                    size="sm"
+                    className="flex-shrink-0"
+                />
             ) : null}
         </div>
     );

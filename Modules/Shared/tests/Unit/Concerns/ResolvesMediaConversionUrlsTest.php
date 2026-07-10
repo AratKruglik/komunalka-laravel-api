@@ -8,6 +8,7 @@ use Modules\Address\Models\Address;
 use Modules\Meter\Models\Meter;
 use Modules\Shared\Concerns\ResolvesMediaConversionUrls;
 use Modules\Shared\Models\UtilityType;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 beforeEach(function (): void {
     Storage::fake('public');
@@ -16,7 +17,7 @@ beforeEach(function (): void {
     {
         use ResolvesMediaConversionUrls;
 
-        public function resolve(?\Spatie\MediaLibrary\MediaCollections\Models\Media $media, array $conversions = ['optimized', 'thumbnail']): ?array
+        public function resolve(?Media $media, array $conversions = ['optimized', 'thumbnail']): ?array
         {
             return $this->resolveMediaConversionUrls($media, $conversions);
         }

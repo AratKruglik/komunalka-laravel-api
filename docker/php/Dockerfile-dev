@@ -116,10 +116,15 @@ ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 # Copy supervisor configuration
 COPY docker/php/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy entrypoint script (kept outside /var/www so the dev volume mount does not shadow it)
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Set working directory
 WORKDIR /var/www
 
 EXPOSE 80 443 443/udp 5173
 
-# Use supervisor as entrypoint to manage multiple processes
-ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]
+# Entrypoint ensures runtime setup (e.g. storage:link) before handing off to supervisor
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]
