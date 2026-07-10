@@ -112,6 +112,9 @@ RUN { \
 
 COPY docker/php/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 WORKDIR /var/www
 
 COPY --from=builder --chown=www-data:www-data /build /var/www
@@ -122,4 +125,5 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 
 EXPOSE 80 443 443/udp
 
-ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]

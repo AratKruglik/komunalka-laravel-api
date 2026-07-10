@@ -25,3 +25,10 @@ Thumbs.db
 http-client.private.env.json
 /docs/plans
 /tests/Browser/Screenshots
+
+# design-sync
+/.ds-sync/
+/ds-bundle/
+/.design-sync/.cache/
+/.design-sync/learnings/
+/.design-sync/node_modules

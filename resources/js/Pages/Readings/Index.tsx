@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Head, router } from '@inertiajs/react'
+import { useEffect, useState } from 'react'
+import { Head, router, usePoll } from '@inertiajs/react'
 import { Plus, Trash2 } from 'lucide-react'
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout'
 import { PageSectionHeader } from '@/Components/pages'
@@ -13,9 +13,11 @@ import {
   Select,
   Badge,
   ConfirmDialog,
+  MediaThumbnail,
 } from '@/Components/ui'
 import { useDenormalizeCollection, useDenormalizeAuto } from '@/lib/useDenormalize'
 import { formatFullAddressLabel } from '@/lib/formatAddress'
+import { resolveMediaSrc } from '@/lib/media'
 import type { PageProps } from '@/types'
 import type { JsonApiCollectionDocument } from '@/types/jsonapi'
 import type { Address, Reading } from '@/types/entities'
@@ -46,6 +48,20 @@ export default function Index({ addresses, readings, filters }: Props) {
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const addressList = useDenormalizeCollection<Address>(addresses)
   const readingList = useDenormalizeAuto<ReadingWithMeterName>(readings)
+
+  const hasProcessingPhoto = readingList.some((reading) =>
+    reading.photos.some((photo) => photo.is_processing),
+  )
+  const readingsPoll = usePoll(4000, { only: ['readings'] })
+
+  useEffect(() => {
+    if (hasProcessingPhoto) {
+      readingsPoll.start()
+    } else {
+      readingsPoll.stop()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasProcessingPhoto])
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     router.visit(`/readings?address_id=${event.target.value}`, {
@@ -161,6 +177,19 @@ export default function Index({ addresses, readings, filters }: Props) {
                   </dl>
                   {reading.notes ? (
                     <p className="mt-3 text-sm text-subtext">{reading.notes}</p>
+                  ) : null}
+                  {reading.photos.length > 0 ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {reading.photos.map((photo) => (
+                        <MediaThumbnail
+                          key={photo.id}
+                          media={photo}
+                          size="md"
+                          alt={`Фото показання від ${dateFormatter.format(new Date(reading.readingDate))}`}
+                          href={resolveMediaSrc(photo, 'optimized_url') ?? photo.original_url}
+                        />
+                      ))}
+                    </div>
                   ) : null}
                 </CardContent>
               </Card>
