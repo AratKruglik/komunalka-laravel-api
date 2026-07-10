@@ -13,6 +13,7 @@ import {
     Label,
     PhotoDropzone,
 } from '@/Components/ui';
+import { resolveMediaSrc } from '@/lib/media';
 import { useAuthUser } from '@/lib/useAuthUser';
 
 export function ProfileTab() {
@@ -25,23 +26,27 @@ export function ProfileTab() {
         avatar: null as File | null,
     });
 
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(
-        user?.avatarOptimizedUrl ?? null,
-    );
+    // Only the freshly-picked (not-yet-uploaded) file's blob preview is local state.
+    // The saved avatar's src is derived from `user` on every render (below), so a
+    // poll/reload response that flips `is_processing` to false is reflected immediately
+    // instead of being stuck at whatever this state was seeded to on mount.
+    const [selectedFileBlobUrl, setSelectedFileBlobUrl] = useState<string | null>(null);
+
+    const savedAvatarSrc = resolveMediaSrc(user?.avatar, 'optimized_url');
+    const avatarPreview = selectedFileBlobUrl ?? savedAvatarSrc;
 
     const handleAvatarSelected = (files: FileList | null) => {
         const file = files?.[0] ?? null;
         setData('avatar', file);
 
         if (file) {
-            const url = URL.createObjectURL(file);
-            setAvatarPreview(url);
+            setSelectedFileBlobUrl(URL.createObjectURL(file));
         }
     };
 
     const handleAvatarClear = () => {
         setData('avatar', null);
-        setAvatarPreview(user?.avatarOptimizedUrl ?? null);
+        setSelectedFileBlobUrl(null);
     };
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -74,6 +79,7 @@ export function ProfileTab() {
                             onClear={handleAvatarClear}
                             inputProps={{ accept: 'image/jpeg,image/png,image/gif,image/heic,image/heif' }}
                             previewHeight={200}
+                            isProcessing={!selectedFileBlobUrl && (user?.avatar?.is_processing ?? false)}
                         />
                         {errors.avatar ? <FormMessage variant="error">{errors.avatar}</FormMessage> : null}
                     </div>

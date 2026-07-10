@@ -8,10 +8,13 @@ use App\Http\Resources\InertiaJsonApiResource;
 use Illuminate\Http\Request;
 use Modules\Billing\Http\Resources\TariffResource;
 use Modules\Meter\Models\MeterReading;
+use Modules\Shared\Concerns\ResolvesMediaConversionUrls;
 
 /** @mixin MeterReading */
 class MeterReadingResource extends InertiaJsonApiResource
 {
+    use ResolvesMediaConversionUrls;
+
     /** @return array<string, mixed> */
     public function toAttributes(Request $request): array
     {
@@ -24,9 +27,7 @@ class MeterReadingResource extends InertiaJsonApiResource
             'is_estimated' => $this->is_estimated,
             'photos' => $this->getMedia('photos')->map(fn ($media) => [
                 'id' => $media->getKey(),
-                'original_url' => $media->getUrl(),
-                'optimized_url' => $media->getUrl('optimized'),
-                'thumbnail_url' => $media->getUrl('thumbnail'),
+                ...$this->resolveMediaConversionUrls($media) ?? [],
             ]),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

@@ -1,4 +1,5 @@
 import type { MeterType } from '@/constants/meterTypes'
+import type { MediaConversionUrls } from './media'
 import type { ProviderTariff } from './providers'
 
 export type ServiceLabel =
@@ -104,16 +105,13 @@ export interface Meter {
     id: number
     name: string
   } | null
-  photoUrl: string | null
+  photo: MediaConversionUrls | null
   createdAt: string
   updatedAt: string
 }
 
-export interface ReadingPhoto {
+export interface ReadingPhoto extends MediaConversionUrls {
   id: number
-  originalUrl: string
-  optimizedUrl: string
-  thumbnailUrl: string
 }
 
 export interface Reading {

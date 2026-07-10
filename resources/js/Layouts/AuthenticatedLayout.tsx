@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
-import { usePage } from '@inertiajs/react'
+import { usePage, usePoll } from '@inertiajs/react'
 import {
   AuthenticatedSidebar,
   type SidebarSection,
@@ -10,6 +10,7 @@ import {
   type TopbarUser,
 } from '@/Components/navigation/AuthenticatedTopbar'
 import { Alert, AlertDescription } from '@/Components/ui'
+import { resolveMediaSrc } from '@/lib/media'
 import { useAuthUser } from '@/lib/useAuthUser'
 import type { PageProps } from '@/types'
 
@@ -40,7 +41,8 @@ export function AuthenticatedLayout({
       return {
         name: fullName,
         email: authUser.email,
-        avatarUrl: authUser.avatarThumbnailUrl ?? undefined,
+        avatarUrl: resolveMediaSrc(authUser.avatar, 'thumbnail_url') ?? undefined,
+        avatarIsProcessing: authUser.avatar?.is_processing ?? false,
       }
     }
     return {
@@ -48,6 +50,22 @@ export function AuthenticatedLayout({
       email: '',
     }
   }, [authUser])
+
+  const isAvatarProcessing = authUser?.avatar?.is_processing ?? false
+  const avatarPoll = usePoll(4000, { only: ['auth'] })
+
+  useEffect(() => {
+    if (isAvatarProcessing) {
+      avatarPoll.start()
+    } else {
+      avatarPoll.stop()
+    }
+    // `avatarPoll` intentionally omitted: usePoll returns a new wrapper object each
+    // render around the same underlying stable poll controller, so including it here
+    // would re-trigger start()/stop() on every render instead of only when processing
+    // state actually changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAvatarProcessing])
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((previous) => !previous)
