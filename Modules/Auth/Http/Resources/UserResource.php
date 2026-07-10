@@ -8,10 +8,13 @@ use App\Http\Resources\InertiaJsonApiResource;
 use Illuminate\Http\Request;
 use Modules\Address\Http\Resources\AddressResource;
 use Modules\Auth\Models\User;
+use Modules\Shared\Concerns\ResolvesMediaConversionUrls;
 
 /** @mixin User */
 class UserResource extends InertiaJsonApiResource
 {
+    use ResolvesMediaConversionUrls;
+
     /** @return array<string, mixed> */
     public function toAttributes(Request $request): array
     {
@@ -27,13 +30,9 @@ class UserResource extends InertiaJsonApiResource
             'last_login_at' => $this->last_login_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
-            'avatar_optimized_url' => $this->when(
+            'avatar' => $this->when(
                 $this->relationLoaded('media'),
-                fn () => $this->getFirstMediaUrl('avatar', 'optimized') ?: null,
-            ),
-            'avatar_thumbnail_url' => $this->when(
-                $this->relationLoaded('media'),
-                fn () => $this->getFirstMediaUrl('avatar', 'thumbnail') ?: null,
+                fn () => $this->resolveMediaConversionUrls($this->getFirstMedia('avatar')),
             ),
         ];
     }

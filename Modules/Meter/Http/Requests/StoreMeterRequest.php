@@ -59,6 +59,7 @@ class StoreMeterRequest extends FormRequest
             'is_active.boolean' => 'Поле активності має бути булевим значенням.',
             'photo.mimes' => 'Дозволені формати: JPEG, PNG, GIF, HEIC, HEIF.',
             'photo.max' => 'Розмір фото не може перевищувати 10 МБ.',
+            'photo.uploaded' => 'Не вдалося завантажити фото. Спробуйте зменшити розмір файлу та повторити.',
         ];
     }
 }

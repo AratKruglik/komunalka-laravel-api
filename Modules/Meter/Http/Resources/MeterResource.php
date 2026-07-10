@@ -8,11 +8,14 @@ use App\Http\Resources\InertiaJsonApiResource;
 use Illuminate\Http\Request;
 use Modules\Billing\Http\Resources\ServiceProviderResource;
 use Modules\Meter\Models\Meter;
+use Modules\Shared\Concerns\ResolvesMediaConversionUrls;
 use Modules\Shared\Http\Resources\UtilityTypeResource;
 
 /** @mixin Meter */
 class MeterResource extends InertiaJsonApiResource
 {
+    use ResolvesMediaConversionUrls;
+
     /** @return array<string, mixed> */
     public function toAttributes(Request $request): array
     {
@@ -27,7 +30,7 @@ class MeterResource extends InertiaJsonApiResource
             'notes' => $this->notes,
             'is_active' => $this->is_active,
             'address_id' => $this->address_id,
-            'photo_url' => $this->getFirstMediaUrl('photo', 'optimized') ?: null,
+            'photo' => $this->resolveMediaConversionUrls($this->getFirstMedia('photo')),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

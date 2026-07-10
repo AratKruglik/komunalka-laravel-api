@@ -1,4 +1,5 @@
-import { Head } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { Head, usePoll } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { MeterForm } from './Components/MeterForm';
 import { useDenormalize, useDenormalizeCollection } from '@/lib/useDenormalize';
@@ -36,6 +37,18 @@ export default function Edit({
     const addresses = useDenormalizeCollection<Address>(addressesDocument);
     const utilityTypes = useDenormalizeCollection<UtilityTypeItem>(utilityTypesDocument);
     const serviceProviders = useDenormalizeCollection<ServiceProviderItem>(serviceProvidersDocument);
+
+    const isPhotoProcessing = meter.photo?.is_processing ?? false;
+    const meterPoll = usePoll(4000, { only: ['meter'] });
+
+    useEffect(() => {
+        if (isPhotoProcessing) {
+            meterPoll.start();
+        } else {
+            meterPoll.stop();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isPhotoProcessing]);
 
     return (
         <AuthenticatedLayout

@@ -15,6 +15,7 @@ import {
     Textarea,
 } from '@/Components/ui';
 import { formatAddressLabel } from '@/lib/formatAddress';
+import { resolveMediaSrc } from '@/lib/media';
 import type { Address, Meter } from '@/types/entities';
 
 interface UtilityTypeOption {
@@ -56,7 +57,14 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
         photo: null as File | null,
     });
 
-    const [photoPreview, setPhotoPreview] = useState<string | null>(meter?.photoUrl ?? null);
+    // Only the freshly-picked (not-yet-uploaded) file's blob preview is local state.
+    // The saved photo's src is derived from `meter` on every render (below), so a
+    // poll/reload response that flips `is_processing` to false is reflected immediately
+    // instead of being stuck at whatever this state was seeded to on mount.
+    const [selectedFileBlobUrl, setSelectedFileBlobUrl] = useState<string | null>(null);
+
+    const savedPhotoSrc = resolveMediaSrc(meter?.photo, 'optimized_url');
+    const photoPreview = selectedFileBlobUrl ?? savedPhotoSrc;
 
     const addressOptions = useMemo(() => {
         return addresses.map((address) => ({
@@ -87,12 +95,12 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
         }
         const file = files[0];
         form.setData('photo', file);
-        setPhotoPreview(URL.createObjectURL(file));
+        setSelectedFileBlobUrl(URL.createObjectURL(file));
     };
 
     const handlePhotoClear = () => {
         form.setData('photo', null);
-        setPhotoPreview(null);
+        setSelectedFileBlobUrl(null);
     };
 
     const handleSubmit = (event: FormEvent) => {
@@ -332,6 +340,7 @@ export function MeterForm({ addresses, utilityTypes, serviceProviders, meter }: 
                                 onClear={handlePhotoClear}
                                 inputProps={{ accept: 'image/jpeg,image/png,image/gif,image/heic,image/heif' }}
                                 previewHeight={160}
+                                isProcessing={!selectedFileBlobUrl && (meter?.photo?.is_processing ?? false)}
                             />
                             <FormMessage variant="error">{form.errors.photo}</FormMessage>
                         </div>

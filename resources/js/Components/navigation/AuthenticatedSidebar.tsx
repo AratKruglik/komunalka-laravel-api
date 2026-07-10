@@ -34,6 +34,7 @@ export interface SidebarUser {
   name: string
   email: string
   avatarUrl?: string
+  avatarIsProcessing?: boolean
 }
 
 interface AuthenticatedSidebarProps {
@@ -225,7 +226,7 @@ function MobileUserSection({
   return (
     <div className="border-t border-line bg-surface md:hidden">
       <div className="flex items-center gap-3 border-b border-line bg-raised px-3 py-3 sm:px-4 sm:py-4">
-        <UserAvatar src={user.avatarUrl} name={user.name} size="md" />
+        <UserAvatar src={user.avatarUrl} name={user.name} size="md" isProcessing={user.avatarIsProcessing} />
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-foreground sm:text-base">

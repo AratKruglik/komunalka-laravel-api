@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { tv, type VariantProps } from 'tailwind-variants'
+import { Spinner } from './Spinner'
 
 const AVATAR_COLORS = [
   'rgb(244, 63, 94)',
@@ -56,9 +57,10 @@ type UserAvatarProps = VariantProps<typeof userAvatar> & {
   src?: string
   name: string
   className?: string
+  isProcessing?: boolean
 }
 
-export function UserAvatar({ src, name, size, className }: UserAvatarProps) {
+export function UserAvatar({ src, name, size, className, isProcessing = false }: UserAvatarProps) {
   const [imgError, setImgError] = useState(false)
   const [prevSrc, setPrevSrc] = useState(src)
 
@@ -89,6 +91,11 @@ export function UserAvatar({ src, name, size, className }: UserAvatarProps) {
           {getInitials(name)}
         </span>
       )}
+      {isProcessing ? (
+        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+          <Spinner size="xs" className="text-white" />
+        </span>
+      ) : null}
     </div>
   )
 }

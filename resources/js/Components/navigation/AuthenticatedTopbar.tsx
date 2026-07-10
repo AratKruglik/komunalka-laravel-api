@@ -8,6 +8,7 @@ export interface TopbarUser {
   name: string
   email: string
   avatarUrl?: string
+  avatarIsProcessing?: boolean
 }
 
 interface AuthenticatedTopbarProps {
@@ -148,7 +149,12 @@ function UserMenu({ user, variant = 'default', className }: UserMenuProps) {
             : 'inline-flex items-center gap-3 rounded-full bg-raised px-3 py-1.5 text-left text-foreground shadow-sm transition-colors hover:shadow-md'
         } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
       >
-        <UserAvatar src={user.avatarUrl} name={user.name} className={isCompact ? 'h-9 w-9' : ''} />
+        <UserAvatar
+          src={user.avatarUrl}
+          name={user.name}
+          className={isCompact ? 'h-9 w-9' : ''}
+          isProcessing={user.avatarIsProcessing}
+        />
         {!isCompact ? (
           <>
             <span className="flex min-w-0 flex-col">

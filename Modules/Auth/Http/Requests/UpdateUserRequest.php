@@ -36,6 +36,7 @@ class UpdateUserRequest extends FormRequest
             'avatar.image' => 'Аватар повинен бути зображенням.',
             'avatar.mimes' => 'Аватар повинен бути у форматі: jpeg, png, gif, heic або heif.',
             'avatar.max' => 'Розмір аватару не повинен перевищувати 2 МБ.',
+            'avatar.uploaded' => 'Не вдалося завантажити аватар. Спробуйте зменшити розмір файлу та повторити.',
             'current_password.required_with' => 'Поточний пароль є обовʼязковим для зміни пароля.',
             'current_password.current_password' => 'Поточний пароль невірний.',
             'new_password.min' => 'Новий пароль повинен містити щонайменше 8 символів.',

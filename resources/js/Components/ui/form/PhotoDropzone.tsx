@@ -6,7 +6,9 @@ import type {
   MutableRefObject,
   ReactNode,
 } from 'react'
+import { Badge } from '../Badge'
 import { Button } from '../Button'
+import { Spinner } from '../Spinner'
 
 interface InputPropsWithRef extends InputHTMLAttributes<HTMLInputElement> {
   ref?: ((element: HTMLInputElement | null) => void) | MutableRefObject<HTMLInputElement | null>
@@ -28,6 +30,7 @@ export interface PhotoDropzoneProps {
   inputProps?: InputPropsWithRef
   previewHeight?: number
   variant?: 'default' | 'full'
+  isProcessing?: boolean
 }
 
 export function PhotoDropzone({
@@ -46,10 +49,26 @@ export function PhotoDropzone({
   inputProps,
   previewHeight = 260,
   variant = 'default',
+  isProcessing = false,
 }: PhotoDropzoneProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [isDragActive, setIsDragActive] = useState(false)
+  const [previewFailed, setPreviewFailed] = useState(false)
+  const [prevPreviewUrl, setPrevPreviewUrl] = useState(previewUrl)
+
+  if (previewUrl !== prevPreviewUrl) {
+    setPrevPreviewUrl(previewUrl)
+    setPreviewFailed(false)
+  }
+
   const hasPreview = Boolean(previewUrl)
+  const showProcessingState = isProcessing && (!hasPreview || previewFailed)
+
+  const handlePreviewError = () => {
+    if (isProcessing) {
+      setPreviewFailed(true)
+    }
+  }
 
   const { ref: externalRef, onChange: externalOnChange, ...restInputProps } = inputProps ?? {}
 
@@ -131,14 +150,37 @@ export function PhotoDropzone({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {hasPreview ? (
+      {showProcessingState ? (
+        <div className="flex w-full flex-col items-center gap-3 py-6 text-center">
+          <Spinner size="sm" />
+          <Badge variant="neutral">Обробка фото…</Badge>
+          {onClear ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={(event) => {
+                event.preventDefault()
+                handleClear()
+              }}
+            >
+              {clearLabel}
+            </Button>
+          ) : null}
+        </div>
+      ) : hasPreview ? (
         variant === 'full' ? (
           <div className="flex w-full flex-col gap-4 text-left">
             <div
               className="relative w-full overflow-hidden rounded-[24px] bg-raised shadow-inner"
               style={{ minHeight: previewHeight }}
             >
-              <img src={previewUrl ?? ''} alt={fileName ?? 'Превʼю фото'} className="h-full w-full object-cover" />
+              <img
+                src={previewUrl ?? ''}
+                alt={fileName ?? 'Превʼю фото'}
+                className="h-full w-full object-cover"
+                onError={handlePreviewError}
+              />
             </div>
             <div className="text-sm text-subtext">
               <p className="font-semibold text-foreground">{fileName}</p>
@@ -165,6 +207,7 @@ export function PhotoDropzone({
                   src={previewUrl ?? ''}
                   alt={fileName ?? 'Превʼю фото'}
                   className="h-full w-full object-contain"
+                  onError={handlePreviewError}
                 />
               </div>
             </div>
