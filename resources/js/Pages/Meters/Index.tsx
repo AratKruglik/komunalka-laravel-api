@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { Head, Link, router, usePoll } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { PageSectionHeader } from '@/Components/pages';
@@ -29,6 +29,18 @@ export default function Index({ meters: metersDocument, addresses: addressesDocu
     const addresses = useDenormalizeCollection<Address>(addressesDocument);
     const [deleteTarget, setDeleteTarget] = useState<Meter | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const hasProcessingPhoto = meters.some((meter) => meter.photo?.is_processing);
+    const metersPoll = usePoll(4000, { only: ['meters'] });
+
+    useEffect(() => {
+        if (hasProcessingPhoto) {
+            metersPoll.start();
+        } else {
+            metersPoll.stop();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasProcessingPhoto]);
 
     const addressOptions = addresses.map((address) => ({
         value: address.id,
