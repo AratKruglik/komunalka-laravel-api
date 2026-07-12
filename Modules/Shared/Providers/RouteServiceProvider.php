@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Shared\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -15,5 +16,13 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
     }
 
-    public function map(): void {}
+    public function map(): void
+    {
+        $this->mapWebRoutes();
+    }
+
+    protected function mapWebRoutes(): void
+    {
+        Route::middleware('web')->group(module_path($this->name, '/routes/web.php'));
+    }
 }

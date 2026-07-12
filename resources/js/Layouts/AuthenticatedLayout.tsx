@@ -10,6 +10,7 @@ import {
   type TopbarUser,
 } from '@/Components/navigation/AuthenticatedTopbar'
 import { Alert, AlertDescription } from '@/Components/ui'
+import { HelpChatWidget } from '@/Components/help/HelpChatWidget'
 import { resolveMediaSrc } from '@/lib/media'
 import { useAuthUser } from '@/lib/useAuthUser'
 import type { PageProps } from '@/types'
@@ -20,6 +21,7 @@ interface AuthenticatedLayoutProps {
   pageSubtitle?: string
   notificationsCount?: number
   sidebarSections?: SidebarSection[]
+  contentFillHeight?: boolean
 }
 
 export function AuthenticatedLayout({
@@ -28,6 +30,7 @@ export function AuthenticatedLayout({
   pageSubtitle,
   notificationsCount = 0,
   sidebarSections,
+  contentFillHeight = false,
 }: AuthenticatedLayoutProps) {
   const { flash } = usePage<PageProps>().props
   const authUser = useAuthUser()
@@ -98,7 +101,13 @@ export function AuthenticatedLayout({
 
   return (
     <>
-      <div className="flex min-h-screen overflow-x-hidden bg-canvas text-foreground">
+      <div
+        className={
+          contentFillHeight
+            ? 'flex h-screen overflow-hidden bg-canvas text-foreground'
+            : 'flex min-h-screen overflow-x-hidden bg-canvas text-foreground'
+        }
+      >
         <AuthenticatedSidebar sections={sidebarSections} />
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -111,8 +120,14 @@ export function AuthenticatedLayout({
             isSidebarOpen={isSidebarOpen}
           />
 
-          <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto w-full max-w-screen-2xl px-3 py-4 sm:px-6 sm:py-5 lg:py-6">
+          <main className={contentFillHeight ? 'min-h-0 flex-1 overflow-y-auto' : 'flex-1 overflow-y-auto'}>
+            <div
+              className={
+                contentFillHeight
+                  ? 'mx-auto flex h-full w-full max-w-screen-2xl flex-col px-3 py-4 sm:px-6 sm:py-5 lg:py-6'
+                  : 'mx-auto flex min-h-full w-full max-w-screen-2xl flex-col px-3 py-4 sm:px-6 sm:py-5 lg:py-6'
+              }
+            >
               {flash.success ? (
                 <Alert variant="success" className="mb-4">
                   <AlertDescription>{flash.success}</AlertDescription>
@@ -164,6 +179,8 @@ export function AuthenticatedLayout({
           </div>
         </div>
       ) : null}
+
+      <HelpChatWidget />
     </>
   )
 }
