@@ -17,6 +17,7 @@ interface ConnectedProvider {
 interface Props extends PageProps {
     tab: string;
     connectedProviders: ConnectedProvider[];
+    hasPassword: boolean;
 }
 
 const VALID_TABS: SettingsTab[] = ['profile', 'security', 'appearance', 'account'];
@@ -25,7 +26,7 @@ function resolveTab(raw: string): SettingsTab {
     return VALID_TABS.includes(raw as SettingsTab) ? (raw as SettingsTab) : 'profile';
 }
 
-export default function Index({ tab, connectedProviders }: Props) {
+export default function Index({ tab, connectedProviders, hasPassword }: Props) {
     const activeTab = resolveTab(tab);
 
     const handleTabChange = (nextTab: SettingsTab) => {
@@ -49,7 +50,7 @@ export default function Index({ tab, connectedProviders }: Props) {
                     {activeTab === 'profile' && <ProfileTab />}
                     {activeTab === 'security' && <SecurityTab connectedProviders={connectedProviders} />}
                     {activeTab === 'appearance' && <AppearanceTab />}
-                    {activeTab === 'account' && <AccountTab />}
+                    {activeTab === 'account' && <AccountTab hasPassword={hasPassword} />}
                 </div>
             </div>
         </AuthenticatedLayout>

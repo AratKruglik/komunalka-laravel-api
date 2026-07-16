@@ -211,6 +211,65 @@ describe('SettingsController', function (): void {
         $this->assertDatabaseHas('users', ['id' => $userId]);
     });
 
+    it('deletes an OAuth-only account when the confirmation matches the email', function (): void {
+        $user = User::factory()->oauthGoogle()->create();
+        $userId = $user->getKey();
+
+        $response = $this->actingAs($user)
+            ->delete(route('settings.account'), [
+                'confirmation' => $user->email,
+            ]);
+
+        $response->assertRedirect(route('login'));
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['id' => $userId]);
+    });
+
+    it('deletes an OAuth-only account when the confirmation matches the username', function (): void {
+        $user = User::factory()->oauthGithub()->create();
+        $userId = $user->getKey();
+
+        $response = $this->actingAs($user)
+            ->delete(route('settings.account'), [
+                'confirmation' => $user->username,
+            ]);
+
+        $response->assertRedirect(route('login'));
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['id' => $userId]);
+    });
+
+    it('rejects OAuth-only account deletion with a wrong confirmation and keeps the user authenticated', function (): void {
+        $user = User::factory()->oauthGoogle()->create();
+        $userId = $user->getKey();
+
+        $response = $this->actingAs($user)
+            ->delete(route('settings.account'), [
+                'confirmation' => 'not-the-right-value',
+            ]);
+
+        $response->assertSessionHasErrors('confirmation');
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', ['id' => $userId]);
+    });
+
+    it('rejects a password-based account deletion attempt made via the confirmation field', function (): void {
+        $userId = $this->user->getKey();
+
+        $response = $this->actingAs($this->user)
+            ->delete(route('settings.account'), [
+                'confirmation' => $this->user->email,
+            ]);
+
+        $response->assertSessionHasErrors('password');
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', ['id' => $userId]);
+    });
+
     it('requires authentication', function (): void {
         $this->get(route('settings'))
             ->assertRedirect(route('login'));

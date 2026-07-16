@@ -35,6 +35,7 @@ class SettingsPage
         return Inertia::render('Settings/Index', [
             'tab' => $request->query('tab', 'profile'),
             'connectedProviders' => $connectedProviders,
+            'hasPassword' => $user->getAttribute('password') !== null,
         ]);
     }
 }

@@ -12,7 +12,7 @@ import {
     FormMessage,
     Input,
 } from '@/Components/ui';
-import { Download, Lock } from 'lucide-react';
+import { Download, Lock, User as UserIcon } from 'lucide-react';
 
 const dangerZone = tv({
     base: [
@@ -21,30 +21,37 @@ const dangerZone = tv({
     ],
 });
 
-export function AccountTab() {
+interface AccountTabProps {
+    hasPassword: boolean;
+}
+
+export function AccountTab({ hasPassword }: AccountTabProps) {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const deleteForm = useForm({
         password: '',
+        confirmation: '',
     });
+
+    const confirmField = hasPassword ? 'password' : 'confirmation';
 
     const handleConfirmDelete = () => {
         deleteForm.delete(route('settings.account'), {
             onFinish: () => {
                 setIsConfirmOpen(false);
-                deleteForm.setData('password', '');
+                deleteForm.setData(confirmField, '');
             },
         });
     };
 
     const handleOpenConfirm = () => {
-        deleteForm.setData('password', '');
+        deleteForm.setData(confirmField, '');
         setIsConfirmOpen(true);
     };
 
     const handleCloseConfirm = () => {
         setIsConfirmOpen(false);
-        deleteForm.setData('password', '');
+        deleteForm.setData(confirmField, '');
         deleteForm.clearErrors();
     };
 
@@ -72,9 +79,9 @@ export function AccountTab() {
                     адреси, лічильники та показники.
                 </p>
 
-                {deleteForm.errors.password ? (
+                {deleteForm.errors[confirmField] ? (
                     <div className="mt-4">
-                        <FormMessage variant="error">{deleteForm.errors.password}</FormMessage>
+                        <FormMessage variant="error">{deleteForm.errors[confirmField]}</FormMessage>
                     </div>
                 ) : null}
 
@@ -99,14 +106,31 @@ export function AccountTab() {
                             Цю дію неможливо скасувати. Всі ваші дані, адреси, лічильники та
                             показники будуть видалені назавжди.
                         </span>
-                        <Input
-                            type="password"
-                            value={deleteForm.data.password}
-                            onChange={(e) => deleteForm.setData('password', e.target.value)}
-                            placeholder="Введіть пароль для підтвердження"
-                            leadingIcon={<Lock className="h-4 w-4 text-muted" />}
-                            autoFocus
-                        />
+                        {hasPassword ? (
+                            <Input
+                                type="password"
+                                value={deleteForm.data.password}
+                                onChange={(e) => deleteForm.setData('password', e.target.value)}
+                                placeholder="Введіть пароль для підтвердження"
+                                leadingIcon={<Lock className="h-4 w-4 text-muted" />}
+                                autoFocus
+                            />
+                        ) : (
+                            <div className="space-y-1">
+                                <Input
+                                    type="text"
+                                    value={deleteForm.data.confirmation}
+                                    onChange={(e) => deleteForm.setData('confirmation', e.target.value)}
+                                    placeholder="Введіть ваш email або ім'я користувача"
+                                    leadingIcon={<UserIcon className="h-4 w-4 text-muted" />}
+                                    autoFocus
+                                />
+                                <p className="text-xs text-muted">
+                                    Ви увійшли через сторонній сервіс, тому для підтвердження введіть
+                                    ваш email або ім&apos;я користувача.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 }
                 confirmLabel="Так, видалити акаунт"
