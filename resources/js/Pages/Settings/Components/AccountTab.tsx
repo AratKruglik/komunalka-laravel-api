@@ -23,30 +23,28 @@ const dangerZone = tv({
 
 export function AccountTab() {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [password, setPassword] = useState('');
 
     const deleteForm = useForm({
         password: '',
     });
 
     const handleConfirmDelete = () => {
-        deleteForm.setData('password', password);
         deleteForm.delete(route('settings.account'), {
             onFinish: () => {
                 setIsConfirmOpen(false);
-                setPassword('');
+                deleteForm.setData('password', '');
             },
         });
     };
 
     const handleOpenConfirm = () => {
-        setPassword('');
+        deleteForm.setData('password', '');
         setIsConfirmOpen(true);
     };
 
     const handleCloseConfirm = () => {
         setIsConfirmOpen(false);
-        setPassword('');
+        deleteForm.setData('password', '');
         deleteForm.clearErrors();
     };
 
@@ -103,8 +101,8 @@ export function AccountTab() {
                         </span>
                         <Input
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={deleteForm.data.password}
+                            onChange={(e) => deleteForm.setData('password', e.target.value)}
                             placeholder="Введіть пароль для підтвердження"
                             leadingIcon={<Lock className="h-4 w-4 text-muted" />}
                             autoFocus

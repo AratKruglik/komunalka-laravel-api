@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Modules\Auth\Models\User;
 
 describe('SettingsController', function (): void {
@@ -151,6 +152,63 @@ describe('SettingsController', function (): void {
 
         $this->assertGuest();
         $this->assertDatabaseMissing('users', ['id' => $userId]);
+    });
+
+    it('deletes user account with an active remember token and does not resurrect the user', function (): void {
+        $user = User::factory()->create([
+            'remember_token' => Str::random(60),
+        ]);
+        $userId = $user->getKey();
+
+        $response = $this->actingAs($user)
+            ->delete(route('settings.account'), [
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect(route('login'));
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['id' => $userId]);
+    });
+
+    it('prevents login after account deletion with the same credentials', function (): void {
+        $user = User::factory()->create([
+            'email' => 'deleted-user@example.com',
+            'remember_token' => Str::random(60),
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('settings.account'), [
+                'password' => 'password',
+            ]);
+
+        $this->assertGuest();
+
+        $loginResponse = $this->post(route('login'), [
+            'email' => 'deleted-user@example.com',
+            'password' => 'password',
+        ]);
+
+        $loginResponse->assertSessionHasErrors();
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'deleted-user@example.com']);
+    });
+
+    it('rejects account deletion with a wrong password and keeps the user authenticated', function (): void {
+        $user = User::factory()->create([
+            'remember_token' => Str::random(60),
+        ]);
+        $userId = $user->getKey();
+
+        $response = $this->actingAs($user)
+            ->delete(route('settings.account'), [
+                'password' => 'wrong-password',
+            ]);
+
+        $response->assertSessionHasErrors('password');
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', ['id' => $userId]);
     });
 
     it('requires authentication', function (): void {

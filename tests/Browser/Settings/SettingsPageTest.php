@@ -278,3 +278,42 @@ describe('Settings Browser Rendering', function (): void {
             ->assertNoJavaScriptErrors();
     });
 });
+
+describe('Account Tab: Delete Account (Browser)', function (): void {
+    beforeEach(function (): void {
+        $this->withVite();
+    });
+
+    it('deletes account on the first dialog submit without a stale empty password', function (): void {
+        $userId = $this->user->getKey();
+
+        $this->actingAs($this->user);
+
+        visit(route('settings', ['tab' => 'account']))
+            ->click('Видалити акаунт')
+            ->type('input[type="password"]', 'password')
+            ->click('[role="alertdialog"] button.bg-error')
+            ->assertPathIs('/login')
+            ->assertDontSee('Пароль є обов\'язковим для видалення акаунту.')
+            ->assertNoJavaScriptErrors();
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['id' => $userId]);
+    });
+
+    it('rejects the first dialog submit with a wrong password and keeps the user authenticated', function (): void {
+        $userId = $this->user->getKey();
+
+        $this->actingAs($this->user);
+
+        visit(route('settings', ['tab' => 'account']))
+            ->click('Видалити акаунт')
+            ->type('input[type="password"]', 'wrong-password')
+            ->click('[role="alertdialog"] button.bg-error')
+            ->assertSee('Невірний пароль.')
+            ->assertDontSee('Пароль є обов\'язковим для видалення акаунту.')
+            ->assertNoJavaScriptErrors();
+
+        $this->assertDatabaseHas('users', ['id' => $userId]);
+    });
+});
