@@ -2,6 +2,7 @@
     "agents": [
         "gemini"
     ],
+    "cloud": false,
     "guidelines": true,
     "herd_mcp": true,
     "mcp": true,
@@ -13,13 +14,15 @@
     ],
     "sail": false,
     "skills": [
+        "ai-sdk-development",
+        "laravel-best-practices",
+        "octane-development",
         "socialite-development",
         "pest-testing",
         "inertia-react-development",
         "tailwindcss-development",
         "laravel-actions",
         "medialibrary-development",
-        "laravel-pdf",
-        "laravel-inertia-react"
+        "laravel-pdf"
     ]
 }

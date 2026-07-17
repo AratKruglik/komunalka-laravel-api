@@ -1,6 +1,6 @@
 services:
   db:
-    image: &db-image postgres:17-alpine3.20
+    image: &db-image pgvector/pgvector:0.8.5-pg17-trixie
     restart: unless-stopped
     container_name: ka-db
     environment:
@@ -11,6 +11,7 @@ services:
       - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
+    shm_size: 1g
     networks:
       - ka-db-network
     healthcheck:
