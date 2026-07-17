@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Modules\Auth\Actions;
 
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Modules\Auth\Http\Requests\DestroyUserAccountRequest;
 use Modules\Auth\Models\User;
 
 class DestroyUserAccount
@@ -19,23 +19,16 @@ class DestroyUserAccount
         DeleteUser::run($user);
     }
 
-    public function asController(Request $request): RedirectResponse
+    public function asController(DestroyUserAccountRequest $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'string', 'current_password:web'],
-        ], [
-            'password.required' => 'Пароль є обов\'язковим для видалення акаунту.',
-            'password.current_password' => 'Невірний пароль.',
-        ]);
-
         /** @var User $user */
         $user = $request->user();
-
-        $this->handle($user);
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        $this->handle($user);
 
         return redirect()->route('login')->with('success', 'Ваш акаунт було видалено.');
     }

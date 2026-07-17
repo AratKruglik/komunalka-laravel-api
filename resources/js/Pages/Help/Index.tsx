@@ -38,7 +38,7 @@ export default function Index({ greeting, suggestedChips, topicShortcuts, docLin
   return (
     <AuthenticatedLayout
       pageTitle="Допомога"
-      pageSubtitle="Запитайте КомуШІшку про будь-який розділ Комуналки"
+      pageSubtitle="Запитайте ХаткоБота про будь-який розділ Комуналки"
       contentFillHeight
     >
       <Head title="Допомога" />
