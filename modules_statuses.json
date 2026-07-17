@@ -4,5 +4,6 @@
     "Address": true,
     "Billing": true,
     "Meter": true,
-    "Export": true
+    "Export": true,
+    "AI": true
 }

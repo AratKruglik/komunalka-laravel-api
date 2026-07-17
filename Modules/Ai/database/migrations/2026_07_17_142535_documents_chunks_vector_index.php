@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -17,8 +15,8 @@ return new class extends Migration
                 GENERATED ALWAYS AS (to_tsvector('simple', content)) STORED
             ");
 
-        DB::statement("
+        DB::statement('
                 CREATE INDEX document_chunks_content_tsv_idx ON document_chunks USING gin (content_tsv)
-            ");
+            ');
     }
 };

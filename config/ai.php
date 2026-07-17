@@ -135,6 +135,14 @@ return [
         'openrouter' => [
             'driver' => 'openrouter',
             'key' => env('OPENROUTER_API_KEY'),
+            'models' => [
+                'text' => [
+                    'default' => 'openai/gpt-4o',
+                ],
+                'embedding' => [
+                    'default' => 'openai/text-embedding-3-small',
+                ],
+            ],
         ],
 
         'voyageai' => [
