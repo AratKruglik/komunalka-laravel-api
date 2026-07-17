@@ -1,6 +1,7 @@
 import { Sparkles } from 'lucide-react'
 import { tv } from 'tailwind-variants'
 import { SourceChip } from './SourceChip'
+import { AI_GENERATED_LABEL } from '@/constants/assistant'
 import type { AssistantMessage } from '@/types'
 
 const messageRow = tv({
@@ -30,19 +31,19 @@ const messageCol = tv({
       user: 'items-end',
       assistant: 'items-start',
     },
+    size: {
+      default: 'max-w-[75%]',
+      compact: 'max-w-[85%]',
+    },
   },
 })
 
-const bubble = tv({
-  base: 'whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
+const text = tv({
+  base: 'whitespace-pre-wrap break-words text-sm leading-relaxed',
   variants: {
-    role: {
-      user: 'rounded-tr-[5px] bg-primary text-on-primary',
-      assistant: 'rounded-tl-[5px] border border-line bg-raised text-foreground',
-    },
     size: {
-      default: 'max-w-[75%]',
-      compact: 'max-w-[85%] text-[13px]',
+      default: '',
+      compact: 'text-[13px]',
     },
   },
 })
@@ -62,8 +63,22 @@ export function MessageBubble({ message, size = 'default' }: MessageBubbleProps)
           <Sparkles className={size === 'compact' ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
         </span>
       ) : null}
-      <div className={messageCol({ role: message.role })}>
-        <div className={bubble({ role: message.role, size })}>{message.text}</div>
+      <div className={messageCol({ role: message.role, size })}>
+        {isAssistant ? (
+          <div className="overflow-hidden rounded-2xl border border-line bg-raised">
+            <p className={`${text({ size })} px-4 py-2.5 text-foreground`}>{message.text}</p>
+            <div className="flex items-center gap-2 border-t border-line bg-surface px-4 py-2">
+              <span className="inline-flex h-[18px] items-center rounded bg-canvas px-1.5 text-[10px] font-bold text-subtext">
+                AI
+              </span>
+              <span className="text-xs font-medium text-subtext">{AI_GENERATED_LABEL}</span>
+            </div>
+          </div>
+        ) : (
+          <div className={`${text({ size })} rounded-2xl bg-primary px-4 py-2.5 text-on-primary`}>
+            {message.text}
+          </div>
+        )}
         {isAssistant && message.sources && message.sources.length > 0 ? (
           <div className="flex w-full flex-col gap-2">
             {message.sources.map((source) => (

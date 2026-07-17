@@ -18,9 +18,10 @@ function createMessage(role: AssistantMessage['role'], text: string, sources?: A
 }
 
 export function useAssistantChat(initialGreeting?: string) {
-  const [messages, setMessages] = useState<AssistantMessage[]>(() =>
-    initialGreeting ? [createMessage('assistant', initialGreeting)] : [],
-  )
+  const createInitialMessages = (): AssistantMessage[] =>
+    initialGreeting ? [createMessage('assistant', initialGreeting)] : []
+
+  const [messages, setMessages] = useState<AssistantMessage[]>(createInitialMessages)
   const [isThinking, setIsThinking] = useState(false)
 
   const send = (question: string): void => {
@@ -60,5 +61,10 @@ export function useAssistantChat(initialGreeting?: string) {
       })
   }
 
-  return { messages, isThinking, send }
+  const reset = (): void => {
+    setIsThinking(false)
+    setMessages(createInitialMessages())
+  }
+
+  return { messages, isThinking, send, reset }
 }

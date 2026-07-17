@@ -21,7 +21,7 @@ describe('Help Page', function (): void {
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Help/Index')
                 ->has('greeting')
-                ->where('greeting', 'Вітаю! Я КомуШІшка — ваш AI-помічник у Комуналці. Запитайте мене про внесення показань, лічильники, провайдерів чи адреси — я підкажу крок за кроком і відкрию відповідний розділ документації.')
+                ->where('greeting', 'Вітаю! Я ХаткоБот — ваш AI-помічник у Комуналці. Запитайте мене про внесення показань, лічильники, провайдерів чи адреси — я підкажу крок за кроком і відкрию відповідний розділ документації.')
                 ->has('suggestedChips', 4)
                 ->has('topicShortcuts', 4)
                 ->has('topicShortcuts.0', fn (Assert $shortcut) => $shortcut
