@@ -1,50 +1,50 @@
-# 3. Адреси
+# 3. Addresses
 
-Адреса — базова сутність системи: до неї прив'язуються провайдери та лічильники. **Без принаймні однієї адреси неможливо створити ні провайдера, ні лічильник.**
+An address is the base entity of the system: providers and meters are attached to it. **Without at least one address, you cannot create a provider or a meter.**
 
-## 3.1 Список адрес (`Мої адреси`)
+## 3.1 Address list ("My Addresses")
 
-Сторінка «Мої адреси» показує ваші адреси у вигляді сітки карток. На кожній картці:
+The "My Addresses" page shows your addresses as a grid of cards. Each card includes:
 
-- бейдж типу нерухомості з іконкою (Квартира / Приватний будинок / Офіс);
-- бейдж **«Основна»** із зіркою — для основної адреси (картка виділена кольоровою рамкою);
-- назва адреси (вулиця, будинок), нижче — місто, область, індекс, номер квартири/офіса;
-- меню дій (три крапки): **Редагувати**, **Видалити**.
+- a property type badge with an icon (Apartment / Private house / Office);
+- a **"Primary"** badge with a star — for the primary address (the card is highlighted with a colored border);
+- the address title (street, building number), with the city, region, postal code, and apartment/office number below;
+- an actions menu (three dots): **Edit**, **Delete**.
 
-Якщо адрес ще немає, показується порожній стан «У вас ще немає збережених адрес» із кнопкою **«Додати першу адресу»**.
+If there are no addresses yet, an empty state "You don't have any saved addresses yet" is shown with a **"Add your first address"** button.
 
-## 3.2 Створення адреси
+## 3.2 Creating an address
 
-Кнопка **«Додати адресу»** відкриває майстер із трьох кроків: **Тип нерухомості → Адреса → Підтвердження**.
+The **"Add address"** button opens a three-step wizard: **Property type → Address → Confirmation**.
 
-1. **Оберіть тип нерухомості** (Квартира, Приватний будинок, Офіс) — доки тип не обрано, решта полів заблокована, а кнопка збереження неактивна.
-2. **Заповніть адресу:**
+1. **Choose the property type** (Apartment, Private house, Office) — until a type is selected, the remaining fields are locked and the save button is disabled.
+2. **Fill in the address:**
 
-| Поле | Обов'язкове | Обмеження |
+| Field | Required | Constraints |
 |---|---|---|
-| Область | так | вибір із 27 регіонів України |
-| Місто | так | до 255 символів |
-| Вулиця | так | до 255 символів |
-| Номер будинку | так | до 50 символів |
-| Квартира/офіс | ні | до 50 символів |
-| Поштовий індекс | ні | до 20 символів |
-| Примітки | ні | до 1000 символів |
+| Region | yes | choice of 27 regions of Ukraine |
+| City | yes | up to 255 characters |
+| Street | yes | up to 255 characters |
+| Building number | yes | up to 50 characters |
+| Apartment/office | no | up to 50 characters |
+| Postal code | no | up to 20 characters |
+| Notes | no | up to 1000 characters |
 
-3. За бажанням увімкніть **«Встановити як основну адресу»** — основна адреса може бути лише одна: прапорець автоматично зніметься з попередньої основної. Основна адреса використовується як типова на сторінці внесення показань і позначається «(основна)» у списках вибору.
-4. Натисніть **«Зберегти»** — ви повернетеся до списку з повідомленням «Адресу створено».
+3. Optionally enable **"Set as primary address"** — there can only be one primary address: the flag will automatically be removed from the previous primary address. The primary address is used as the default on the meter reading submission page and is marked "(primary)" in selection lists.
+4. Click **"Save"** — you will return to the list with the message "Address created".
 
-## 3.3 Редагування адреси
+## 3.3 Editing an address
 
-Клік по назві картки або пункт меню «Редагувати» відкриває ту саму форму (без степера). Можна змінити будь-які поля, включно з типом нерухомості та прапорцем основної адреси.
+Clicking the card title or the "Edit" menu item opens the same form (without the stepper). You can change any fields, including the property type and the primary address flag.
 
-## 3.4 Видалення адреси
+## 3.4 Deleting an address
 
-Пункт «Видалити» відкриває діалог підтвердження **«Видалити адресу?»** з назвою адреси та попередженням «Цю дію неможливо скасувати».
+The "Delete" item opens a confirmation dialog **"Delete address?"** with the address name and the warning "This action cannot be undone".
 
-**Наслідки видалення:**
-- адреса зникає з ваших списків (flash «Адресу видалено»);
-- провайдери та лічильники цієї адреси стають недоступними в інтерфейсі (списки провайдерів і лічильників формуються за вашими активними адресами);
-- якщо видалено основну адресу, інша адреса **не стає основною автоматично** — призначте нову основну вручну через редагування;
-- відновлення через інтерфейс неможливе.
+**Consequences of deletion:**
+- the address disappears from your lists (flash message "Address deleted");
+- providers and meters for this address become unavailable in the interface (provider and meter lists are built from your active addresses);
+- if the primary address is deleted, another address does **not** automatically become primary — assign a new primary address manually via editing;
+- restoration through the interface is not possible.
 
-Перед видаленням адреси переконайтеся, що історія показань за нею вам більше не потрібна.
+Before deleting an address, make sure you no longer need the reading history for it.

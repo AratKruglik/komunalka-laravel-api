@@ -1,46 +1,46 @@
-# 2. Навігація та Дашборд
+# 2. Navigation and Dashboard
 
-## 2.1 Структура інтерфейсу
+## 2.1 Interface Structure
 
-Після входу всі сторінки мають спільну структуру:
+After logging in, all pages share a common structure:
 
-- **Бокове меню (сайдбар)** ліворуч:
-  - *Головне меню*: **Дашборд** (`/`), **Мої адреси**, **Лічильники**, **Внести показання**, **Провайдери**.
-  - *Налаштування*: **Налаштування**, **Допомога**.
-  - Активний розділ підсвічується.
-- **Верхня панель**: заголовок сторінки, перемикач теми, дзвіночок сповіщень, меню користувача (аватар, ім'я, email → «Мій профіль», «Налаштування», «Вийти»).
-- **Плаваюча кнопка чату** внизу праворуч — швидкий доступ до AI-помічника ХаткоБота з будь-якої сторінки (див. [розділ 8](08-help-assistant.md)).
-- **Флеш-повідомлення**: після дій (створення, оновлення, видалення) над контентом з'являється зелений (успіх) або червоний (помилка) банер.
-- **Хлібні крихти**: на сторінках створення/редагування адрес і провайдерів над заголовком показується навігаційний ланцюжок (напр. «Мої адреси → Нова адреса») для швидкого повернення до списку.
-- **Футер**: «© Комуналка. Всі права захищені.»
+- **Sidebar menu** on the left:
+  - *Main menu*: **Dashboard** (`/`), **My Addresses**, **Meters**, **Submit Reading**, **Providers**.
+  - *Settings*: **Settings**, **Help**.
+  - The active section is highlighted.
+- **Top bar**: page title, theme switcher, notification bell, user menu (avatar, name, email → "My Profile", "Settings", "Log Out").
+- **Floating chat button** in the bottom right — quick access to the AI assistant KhatkoBot from any page (see [section 8](08-help-assistant.md)).
+- **Flash messages**: after actions (create, update, delete), a green (success) or red (error) banner appears above the content.
+- **Breadcrumbs**: on address and provider create/edit pages, a navigation trail is shown above the heading (e.g. "My Addresses → New Address") for quick return to the list.
+- **Footer**: "© Komunalka. All rights reserved."
 
-### Мобільна версія
+### Mobile Version
 
-На екранах, вужчих за десктоп, сайдбар ховається і відкривається кнопкою-гамбургером у верхній панелі як висувна панель із затемненням (закривається клавішею Escape або кліком поза межами). Унизу мобільного меню — блок користувача з пунктами «Мій профіль», «Налаштування», «Вийти».
+On screens narrower than desktop, the sidebar is hidden and opens via a hamburger button in the top bar as a slide-out panel with a dimmed overlay (closes with the Escape key or by clicking outside it). At the bottom of the mobile menu is a user block with "My Profile", "Settings", "Log Out" items.
 
-### Тема оформлення
+### Theme
 
-Перемикач теми у верхній панелі має три режими: **Світла / Темна / Системна** (слідує за налаштуваннями пристрою). Вибір також доступний у «Налаштування → Зовнішній вигляд».
+The theme switcher in the top bar has three modes: **Light / Dark / System** (follows the device settings). The choice is also available under "Settings → Appearance".
 
-## 2.2 Дашборд (головна сторінка)
+## 2.2 Dashboard (Home Page)
 
-Дашборд — це аналітичний огляд усіх ваших адрес. Складається з блоків:
+The dashboard is an analytical overview of all your addresses. It consists of the following blocks:
 
-### Привітання
-«Вітаємо, {ім'я}! Ось огляд ваших комунальних послуг за {місяць рік}». Праворуч:
-- випадаючий список **«Адреса обліку»** (з'являється, лише коли адреси створені). Важливо: у поточній версії цей селектор **не фільтрує дані дашборда** — уся статистика (графік, показання, витрати) завжди агрегується по всіх ваших адресах;
-- кнопка **«Додати показання»** — веде на сторінку внесення показань.
+### Greeting
+"Welcome, {name}! Here's an overview of your utilities for {month year}." On the right:
+- an **"Account Address"** dropdown (appears only once addresses have been created). Important: in the current version this selector **does not filter the dashboard data** — all statistics (chart, readings, expenses) are always aggregated across all your addresses;
+- an **"Add Reading"** button — leads to the reading submission page.
 
-### Графік споживання
-Лінійний графік споживання за місяцями, окрема лінія на кожен тип послуги (електроенергія, газ, вода тощо). Перемикач періоду: **За рік / За 6 місяців / За 3 місяці** (типово — 6 місяців).
+### Consumption Chart
+A line chart of monthly consumption, with a separate line for each utility type (electricity, gas, water, etc.). Period switcher: **Year / 6 Months / 3 Months** (default: 6 months).
 
-### Останні показання
-Останні 10 показань по всіх адресах. На десктопі — таблиця (Послуга / Дата / Показання / Споживання), на мобільному — картки (з назвою лічильника). Споживання підсвічується: додатне — зеленим, від'ємне — червоним, нульове — сірим. Одиниці виміру відображаються у міжнародному форматі (kWh, m³, Gcal).
+### Recent Readings
+The last 10 readings across all addresses. On desktop — a table (Service / Date / Reading / Consumption); on mobile — cards (with the meter name). Consumption is highlighted: positive — green, negative — red, zero — gray. Units of measurement are shown in international format (kWh, m³, Gcal).
 
-### Розподіл витрат
-Кільцева діаграма розподілу витрат за типами послуг із загальною сумою в гривнях у центрі та легендою з сумами по кожній послузі. Витрати рахуються лише за показаннями, до яких прив'язано тариф (тобто коли у лічильника вказано провайдера з тарифами).
+### Expense Breakdown
+A donut chart of expense breakdown by utility type, with the total amount in hryvnias in the center and a legend showing amounts per service. Expenses are calculated only for readings linked to a tariff (i.e. when the meter has a provider with tariffs assigned).
 
-### Швидкі дії
-Три кнопки: **«Додати показання»**, **«Додати адресу»**, **«Переглянути тарифи»**.
+### Quick Actions
+Three buttons: **"Add Reading"**, **"Add Address"**, **"View Tariffs"**.
 
-> Для нового користувача без даних графіки й таблиці будуть порожніми — почніть із «Додати адресу» (див. [рекомендований порядок дій](README.md#швидкий-старт-рекомендований-порядок-дій)).
+> For a new user with no data, the charts and tables will be empty — start with "Add Address" (see [recommended sequence of steps](README.md#quick-start-recommended-order-of-actions)).

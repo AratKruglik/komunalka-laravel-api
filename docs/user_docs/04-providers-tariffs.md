@@ -1,64 +1,64 @@
-# 4. Провайдери та тарифи
+# 4. Providers and Tariffs
 
-Провайдер — це постачальник комунальної послуги для конкретної адреси (наприклад, «Київводоканал» для холодної води). Тарифи провайдера використовуються для автоматичного розрахунку вартості спожитого при внесенні показань.
+A provider is a utility service supplier for a specific address (for example, "Kyivvodokanal" for cold water). Provider tariffs are used to automatically calculate the cost of consumption when readings are submitted.
 
-**Передумова:** щоб додати провайдера, у вас має бути принаймні одна адреса.
+**Prerequisite:** to add a provider, you must have at least one address.
 
-## 4.1 Список провайдерів (`Провайдери`)
+## 4.1 Provider List (`Providers`)
 
-Сторінка «Мої провайдери» показує картки провайдерів. На кожній:
+The "My Providers" page shows provider cards. Each card includes:
 
-- назва та бейдж типу послуги;
-- опис, посилання на сайт, телефон, email (якщо заповнені);
-- блок **«ТАРИФИ»** — чіпи з назвою тарифу, ціною за одиницю (напр. `4.32 ₴/kWh`, одиниці у міжнародному форматі) та абонплатою (якщо більша за нуль);
-- кнопки: **Редагувати** (олівець), **Видалити** (кошик).
+- name and service type badge;
+- description, website link, phone, email (if filled in);
+- a **"TARIFFS"** block — chips with the tariff name, price per unit (e.g. `4.32 UAH/kWh`, units in international format), and standing charge (if greater than zero);
+- buttons: **Edit** (pencil), **Delete** (trash can).
 
-Порожній стан: «Провайдерів поки немає» + кнопка **«Додати провайдера»**.
+Empty state: "No providers yet" + **"Add Provider"** button.
 
-## 4.2 Створення провайдера
+## 4.2 Creating a Provider
 
-Кнопка **«Додати провайдера»** відкриває форму:
+The **"Add Provider"** button opens a form:
 
-| Поле | Обов'язкове | Примітки |
+| Field | Required | Notes |
 |---|---|---|
-| Адреса | так | вибір із ваших адрес; основна позначена «(основна)». **Після створення адресу змінити не можна** |
-| Тип послуги | так | Електроенергія, Газ, Холодна вода, Гаряча вода, Опалення, Каналізація |
-| Назва провайдера | так | напр. «Київводоканал» |
-| Нотатки | ні | до 1000 символів |
-| Телефон підтримки | ні | до 50 символів |
-| E-mail для звернень | ні | коректна адреса |
-| Офіційний сайт | ні | коректний URL |
+| Address | yes | selected from your addresses; the primary one is marked "(primary)". **The address cannot be changed after creation** |
+| Service type | yes | Electricity, Gas, Cold water, Hot water, Heating, Sewerage |
+| Provider name | yes | e.g. "Kyivvodokanal" |
+| Notes | no | up to 1000 characters |
+| Support phone | no | up to 50 characters |
+| Contact e-mail | no | valid address |
+| Official website | no | valid URL |
 
-### Тарифи провайдера
+### Provider Tariffs
 
-Блок «Тарифи провайдера» (підказка: «Додайте денний, нічний чи інші плани») доступний **лише під час створення**. Мінімум один тариф; кнопка **«Додати тариф»** додає наступні — наприклад, денний і нічний тарифи для електроенергії. Після вибору типу послуги біля базової ставки з'являється одиниця виміру (напр. `грн/kWh`).
+The "Provider Tariffs" block (hint: "Add daytime, nighttime, or other plans") is available **only during creation**. At least one tariff is required; the **"Add Tariff"** button adds subsequent ones — for example, daytime and nighttime tariffs for electricity. After selecting the service type, a unit of measure appears next to the base rate (e.g. `UAH/kWh`).
 
-Поля тарифу:
+Tariff fields:
 
-| Поле | Обов'язкове | Примітки |
+| Field | Required | Notes |
 |---|---|---|
-| Назва тарифу | так | типово «Базовий тариф» |
-| Базова ставка | так | грн за одиницю виміру послуги, число ≥ 0 |
-| Абонплата | ні | грн, фіксована складова |
+| Tariff name | yes | defaults to "Base tariff" |
+| Base rate | yes | UAH per unit of service measurement, number ≥ 0 |
+| Standing charge | no | UAH, fixed component |
 
-Дата початку дії тарифу автоматично встановлюється на сьогодні, валюта — гривня.
+The tariff start date is automatically set to today, and the currency is hryvnia.
 
-Після збереження — повернення до списку з повідомленням «Провайдера створено».
+After saving, you return to the list with the message "Provider created."
 
-> **Багатотарифний облік:** якщо у провайдера кілька тарифів, при внесенні показань для лічильника цього провайдера система запропонує окреме поле показань **на кожен тариф** (детальніше — у [розділі 6](06-readings.md)).
+> **Multi-tariff accounting:** if a provider has multiple tariffs, when entering readings for a meter belonging to this provider, the system will offer a separate reading field **for each tariff** (for more details, see [Section 6](06-readings.md)).
 
-## 4.3 Редагування провайдера
+## 4.3 Editing a Provider
 
-Форма редагування дозволяє змінити тип послуги, назву та контакти. Обмеження:
+The edit form allows changing the service type, name, and contact details. Restrictions:
 
-- **Адреса заблокована** — провайдера не можна перенести на іншу адресу; за потреби створіть нового провайдера.
-- **Тарифи через форму редагування не змінюються** — блок тарифів прихований. Наявні тарифи продовжують діяти.
-- Перемикача активності провайдера у формі немає.
+- **Address is locked** — a provider cannot be moved to a different address; create a new provider if needed.
+- **Tariffs cannot be changed via the edit form** — the tariffs block is hidden. Existing tariffs remain in effect.
+- There is no provider activity toggle in the form.
 
-## 4.4 Видалення провайдера
+## 4.4 Deleting a Provider
 
-Кнопка з кошиком → діалог **«Видалити провайдера?»**. Наслідки:
+The trash can button opens a **"Delete provider?"** dialog. Consequences:
 
-- усі тарифи провайдера видаляються;
-- лічильники, прив'язані до провайдера, **залишаються**, але втрачають прив'язку — нові показання по них не матимуть автоматичного розрахунку вартості;
-- раніше внесені показання та їх розрахунки зберігаються в історії.
+- all of the provider's tariffs are deleted;
+- meters linked to the provider **remain**, but lose their link — new readings for them will no longer have automatic cost calculation;
+- previously submitted readings and their calculations are preserved in the history.

@@ -1,62 +1,62 @@
-# 1. Реєстрація та вхід
+# 1. Registration and Login
 
-## 1.1 Реєстрація (`/register`)
+## 1.1 Registration (`/register`)
 
-Сторінка «Реєстрація» доступна лише неавторизованим користувачам. Є два способи створити акаунт.
+The "Registration" page is available only to unauthenticated users. There are two ways to create an account.
 
-### Через email і пароль
+### Via email and password
 
-Поля форми:
+Form fields:
 
-| Поле | Обов'язкове | Правила |
+| Field | Required | Rules |
 |---|---|---|
-| Ім'я | так | до 255 символів |
-| Прізвище | так | до 255 символів |
-| Логін (username) | так | унікальний, до 255 символів |
-| Email | так | коректна адреса, унікальна в системі |
-| Телефон | ні | вводиться після префікса `+380`, лише 9 цифр |
-| Пароль | так | мінімум 8 символів |
-| Підтвердження пароля | так | має збігатися з паролем |
+| First name | yes | up to 255 characters |
+| Last name | yes | up to 255 characters |
+| Username (login) | yes | unique, up to 255 characters |
+| Email | yes | valid address, unique in the system |
+| Phone | no | entered after the `+380` prefix, 9 digits only |
+| Password | yes | minimum 8 characters |
+| Password confirmation | yes | must match the password |
 
-Якщо логін або email уже зайняті або обов'язкові поля порожні, під відповідним полем з'явиться повідомлення про помилку, а над формою — банер «Будь ласка, виправте помилки нижче.» (повідомлення під полями наразі англійською: «The first name field is required.», «This username is already taken.» тощо).
+If the username or email is already taken or a required field is empty, an error message appears under the corresponding field, and a banner "Please correct the errors below." appears above the form (the messages under the fields are currently in English: "The first name field is required.", "This username is already taken.", etc.).
 
-Поля паролів мають кнопку-око **«Показати пароль»** для перегляду введеного.
+The password fields have an eye-icon button **"Show password"** to reveal the entered value.
 
-Після успішної реєстрації користувач **одразу входить у систему** і потрапляє на Дашборд. Підтвердження email не вимагається.
+After successful registration, the user is **logged in immediately** and lands on the Dashboard. Email confirmation is not required.
 
-### Через Google або GitHub
+### Via Google or GitHub
 
-Зверху форми реєстрації є кнопки **«Через Google»** та **«Через GitHub»**:
+At the top of the registration form there are **"Via Google"** and **"Via GitHub"** buttons:
 
-- Якщо акаунт із таким email уже існує — соцмережа прив'язується до нього, і ви входите у наявний акаунт.
-- Якщо акаунта немає — він створюється автоматично: ім'я та прізвище беруться з профілю соцмережі, логін генерується з імені (при збігу додається суфікс `_2`, `_3`...), email вважається підтвердженим.
-- У разі помилки на боці провайдера ви повернетеся на сторінку входу з повідомленням «Помилка авторизації через провайдер. Спробуйте ще раз.»
+- If an account with that email already exists — the social account is linked to it, and you are logged into the existing account.
+- If no account exists — one is created automatically: first and last name are taken from the social profile, the username is generated from the name (a suffix `_2`, `_3`... is added on collision), and the email is considered confirmed.
+- In case of an error on the provider's side, you'll be returned to the login page with the message "Authorization error via provider. Please try again."
 
-## 1.2 Вхід (`/login`)
+## 1.2 Login (`/login`)
 
-Поля: **Email**, **Пароль**, чекбокс **«Запам'ятати мене»** (тривала сесія).
+Fields: **Email**, **Password**, checkbox **"Remember me"** (extended session).
 
-Правила поведінки:
+Behavior rules:
 
-- Невірний email або пароль → «Invalid credentials.» (без уточнення, що саме невірне).
-- Якщо акаунт створено через Google/GitHub і пароль не встановлювався → система підкаже: «Please use google/github to login.» Використовуйте кнопку відповідної соцмережі.
-- Після входу ви потрапляєте на Дашборд (або на сторінку, яку намагалися відкрити до входу).
+- Incorrect email or password → "Invalid credentials." (without specifying which one is wrong).
+- If the account was created via Google/GitHub and no password was set → the system will suggest: "Please use google/github to login." Use the corresponding social login button.
+- After logging in, you land on the Dashboard (or the page you were trying to open before logging in).
 
-Вкладки «Вхід / Реєстрація» вгорі форми дозволяють перемикатися між сторінками. Нижче форми — кнопки входу через Google і GitHub.
+The "Login / Registration" tabs at the top of the form let you switch between the pages. Below the form are the Google and GitHub login buttons.
 
-## 1.3 Відновлення пароля
+## 1.3 Password Recovery
 
-> **Зверніть увагу:** на сторінці входу немає посилання «Забули пароль?» — сторінка відновлення відкривається лише за прямою адресою `/forgot-password`.
+> **Note:** the login page has no "Forgot password?" link — the recovery page is only accessible via the direct URL `/forgot-password`.
 
-Процес:
+Process:
 
-1. На сторінці `/forgot-password` введіть email і натисніть **«Надіслати посилання»**.
-2. Якщо email існує в системі — з'явиться зелений банер «Посилання для скидання пароля надіслано на вашу пошту.» Якщо ні — «Не вдалося знайти користувача з такою адресою електронної пошти.»
-3. Перейдіть за посиланням із листа — відкриється сторінка «Скидання пароля» з уже заповненим email (незмінюваним).
-4. Введіть новий пароль (мінімум 8 символів) і його підтвердження, натисніть **«Скинути пароль»**.
-5. Після успіху вас перенаправить на сторінку входу. **Зверніть увагу:** сторінка входу не показує підтвердження — просто увійдіть із новим паролем.
-6. Якщо посилання прострочене або недійсне — «Не вдалося скинути пароль. Посилання недійсне або застаріле.» Почніть процес заново.
+1. On the `/forgot-password` page, enter your email and click **"Send link"**.
+2. If the email exists in the system — a green banner appears: "A password reset link has been sent to your email." If not — "Could not find a user with that email address."
+3. Follow the link from the email — the "Password Reset" page opens with the email already filled in (non-editable).
+4. Enter a new password (minimum 8 characters) and confirm it, then click **"Reset password"**.
+5. On success, you'll be redirected to the login page. **Note:** the login page does not show a confirmation — simply log in with your new password.
+6. If the link is expired or invalid — "Could not reset password. The link is invalid or expired." Start the process again.
 
-## 1.4 Вихід із системи
+## 1.4 Logging Out
 
-Кнопка **«Вийти»** знаходиться у випадаючому меню користувача (аватар у правому верхньому куті) та в нижній частині мобільного меню. Після виходу ви повертаєтеся на сторінку входу.
+The **"Log out"** button is located in the user dropdown menu (avatar in the top-right corner) and in the bottom part of the mobile menu. After logging out, you return to the login page.

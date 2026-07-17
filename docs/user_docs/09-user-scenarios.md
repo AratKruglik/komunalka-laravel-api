@@ -1,58 +1,58 @@
-# 9. Сценарії використання
+# 9. Usage Scenarios
 
-Покрокові сценарії типових задач — від першого входу до щомісячної рутини.
+Step-by-step scenarios for typical tasks — from first login to the monthly routine.
 
-## Сценарій 1: Перше налаштування (новий користувач)
+## Scenario 1: First-time setup (new user)
 
-1. **Реєстрація**: `/register` → заповніть форму або натисніть «Через Google» / «Через GitHub». Ви одразу потрапите на Дашборд (він поки порожній).
-2. **Додайте адресу**: сайдбар → «Мої адреси» → «Додати першу адресу» → оберіть тип нерухомості → заповніть область, місто, вулицю, будинок → «Зберегти». Першу адресу варто позначити як основну.
-3. **Додайте провайдерів**: сайдбар → «Провайдери» → «Додати провайдера». Для кожної послуги (світло, газ, вода...) створіть окремого провайдера: оберіть адресу, тип послуги, введіть назву і тариф (ставку в грн за одиницю). Для електроенергії з нічним тарифом додайте два тарифи («День», «Ніч»).
-4. **Додайте лічильники**: сайдбар → «Лічильники» → створіть лічильник для кожної послуги: адреса → тип послуги → провайдер → серійний номер, назва → **початкові показання** (поточні цифри на лічильнику) → за бажанням фото.
-5. Готово — можна вносити показання.
+1. **Registration**: `/register` → fill out the form or click "Via Google" / "Via GitHub". You'll land directly on the Dashboard (it's still empty at this point).
+2. **Add an address**: sidebar → "My Addresses" → "Add first address" → choose the property type → fill in the region, city, street, house number → "Save". It's a good idea to mark the first address as primary.
+3. **Add providers**: sidebar → "Providers" → "Add provider". For each service (electricity, gas, water...) create a separate provider: choose the address, service type, enter a name and rate (price per unit in UAH). For electricity with a night tariff, add two rates ("Day", "Night").
+4. **Add meters**: sidebar → "Meters" → create a meter for each service: address → service type → provider → serial number, name → **initial reading** (the current numbers on the meter) → optionally a photo.
+5. Done — you can now start entering readings.
 
-> Порядок важливий: адреса → провайдер → лічильник. Якщо створити лічильник до провайдера, прив'язку до провайдера можна додати пізніше через редагування лічильника.
+> Order matters: address → provider → meter. If you create a meter before a provider, you can link it to a provider later by editing the meter.
 
-## Сценарій 2: Щомісячне внесення показань
+## Scenario 2: Monthly reading entry
 
-1. Дашборд → кнопка **«Додати показання»** (або сайдбар → «Внести показання»).
-2. Оберіть адресу.
-3. У картці кожного лічильника введіть поточні показання (для багатотарифних — по кожному тарифу), за потреби скоригуйте дату і прикріпіть фото лічильника.
-4. Перевірте розраховане споживання та вартість у підсумковій таблиці.
-5. Збережіть — «Показання успішно збережено!» Ви побачите нові записи в історії.
-6. Поверніться на Дашборд — графік споживання й розподіл витрат оновляться.
+1. Dashboard → **"Add reading"** button (or sidebar → "Enter readings").
+2. Choose the address.
+3. In each meter's card, enter the current reading (for multi-rate meters — per rate), adjust the date if needed, and attach a photo of the meter.
+4. Check the calculated consumption and cost in the summary table.
+5. Save — "Reading saved successfully!" You'll see the new entries in the history.
+6. Return to the Dashboard — the consumption chart and expense breakdown will update.
 
-## Сценарій 3: Зміна тарифу постачальника
+## Scenario 3: Changing a provider's rate
 
-Тарифи редагувати не можна, але лічильник можна перепризначити:
+Rates cannot be edited, but a meter can be reassigned:
 
-1. Створіть нового провайдера з актуальними тарифами (стара історія розрахунків збережеться).
-2. Відкрийте кожен лічильник старого провайдера → «Редагувати» → змініть провайдера на нового.
-3. За бажанням видаліть старого провайдера — лічильники не постраждають, але його тарифи зникнуть.
+1. Create a new provider with the current rates (the old calculation history is preserved).
+2. Open each meter of the old provider → "Edit" → change the provider to the new one.
+3. Optionally delete the old provider — the meters won't be affected, but its rates will disappear.
 
-Нові показання рахуватимуться за новими тарифами; старі записи залишаться з розрахунками за старими.
+New readings will be calculated using the new rates; old entries will keep the calculations based on the old ones.
 
-## Сценарій 4: Заміна лічильника
+## Scenario 4: Replacing a meter
 
-1. Старий лічильник: «Лічильники» → «Редагувати» → зніміть прапорець активності (не видаляйте, щоб зберегти історію показань).
-2. Створіть новий лічильник із серійним номером нового приладу та **початковими показаннями**, з якими його встановлено.
-3. Далі вносьте показання за новим лічильником.
+1. Old meter: "Meters" → "Edit" → uncheck the active flag (don't delete it, to preserve the reading history).
+2. Create a new meter with the serial number of the new device and the **initial readings** it was installed with.
+3. Continue entering readings against the new meter.
 
-## Сценарій 5: Виправлення помилкового показання
+## Scenario 5: Correcting an erroneous reading
 
-1. Перейдіть до історії показань (внесіть показання → сторінка історії, або після збереження).
-2. Знайдіть хибний запис, натисніть кнопку видалення, підтвердіть.
-3. Внесіть правильне показання заново через «Внести показання».
+1. Go to the reading history (enter readings → history page, or right after saving).
+2. Find the incorrect entry, click the delete button, confirm.
+3. Enter the correct reading again via "Enter readings".
 
-> Якщо після хибного запису вже внесені нові показання, видаліть усі записи після помилки і внесіть їх повторно в хронологічному порядку — «попереднє значення» завжди береться з останнього запису.
+> If new readings have already been entered after the erroneous one, delete all entries after the mistake and re-enter them in chronological order — the "previous value" is always taken from the last entry.
 
-## Сценарій 6: Переїзд / нова квартира
+## Scenario 6: Moving / new apartment
 
-1. Додайте нову адресу («Мої адреси» → «Додати адресу»), за потреби зробіть її основною.
-2. Створіть для неї провайдерів і лічильники.
-3. Стару адресу можна лишити (для історії) або видалити — тоді її провайдери й лічильники зникнуть із ваших списків назавжди.
+1. Add a new address ("My Addresses" → "Add address"), and make it primary if needed.
+2. Create providers and meters for it.
+3. You can keep the old address (for history) or delete it — in which case its providers and meters will disappear from your lists permanently.
 
-## Сценарій 7: Вхід через соцмережу та керування доступами
+## Scenario 7: Social login and access management
 
-1. Якщо ви реєструвалися з email і паролем, у «Налаштування → Безпека → Під'єднані акаунти» натисніть «Під'єднати» біля Google або GitHub — після підтвердження зможете входити в один клік.
-2. Щоб від'єднати соцмережу, натисніть «Від'єднати» і підтвердіть паролем.
-3. Якщо ви реєструвалися через соцмережу і хочете входити за паролем — спершу вам знадобиться встановлений пароль (див. [розділ 7.2](07-settings.md#72-безпека)).
+1. If you registered with an email and password, go to "Settings → Security → Connected accounts" and click "Connect" next to Google or GitHub — after confirming, you'll be able to log in with one click.
+2. To disconnect a social account, click "Disconnect" and confirm with your password.
+3. If you registered via a social account and want to log in with a password — you'll first need to set a password (see [Section 7.2](07-settings.md#72-security)).

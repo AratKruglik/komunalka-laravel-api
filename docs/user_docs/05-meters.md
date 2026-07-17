@@ -1,50 +1,50 @@
-# 5. Лічильники
+# 5. Meters
 
-Лічильник прив'язується до адреси та типу послуги і накопичує історію показань.
+A meter is linked to an address and a service type, and accumulates a history of readings.
 
-**Передумова:** потрібна принаймні одна адреса. Провайдер — необов'язковий, але без нього показання не матимуть розрахунку вартості.
+**Prerequisite:** at least one address is required. A provider is optional, but without one, readings will not have a cost calculation.
 
-## 5.1 Список лічильників (`Лічильники`)
+## 5.1 Meter list (`Meters`)
 
-Сторінка показує картки лічильників з фільтром за адресою. На картці:
+The page shows meter cards with a filter by address. Each card displays:
 
-- назва та статус (**Активний / Неактивний**);
-- серійний номер, розташування, тип послуги, провайдер;
-- мініатюра фото лічильника (якщо завантажене);
-- меню дій: **Редагувати**, **Видалити** (з діалогом підтвердження).
+- name and status (**Active / Inactive**);
+- serial number, location, service type, provider;
+- meter photo thumbnail (if uploaded);
+- actions menu: **Edit**, **Delete** (with a confirmation dialog).
 
-## 5.2 Додавання лічильника
+## 5.2 Adding a meter
 
-Кнопка створення відкриває форму:
+The create button opens a form:
 
-| Поле | Обов'язкове | Примітки |
+| Field | Required | Notes |
 |---|---|---|
-| Адреса | так | після створення **змінити не можна** |
-| Тип послуги | так | визначає одиницю виміру (кВт·год, м³, Гкал); при редагуванні заблокований |
-| Провайдер | ні | поле неактивне з підказкою «Спочатку оберіть адресу»; після вибору адреси список показує **всіх** її провайдерів (незалежно від типу послуги — обирайте провайдера відповідної послуги самостійно) |
-| Серійний номер | так | до 255 символів |
-| Назва | так | до 255 символів, напр. «Лічильник води у ванній» |
-| Початкові показання | так | число ≥ 0; від нього рахуватиметься перше споживання |
-| Модель, розташування, опис, примітки | ні | довільна довідкова інформація |
-| Дата встановлення | ні | дата |
-| Фото | ні | JPEG, PNG, GIF або HEIC/HEIF до 10 МБ |
+| Address | yes | **cannot be changed** after creation |
+| Service type | yes | determines the unit of measurement (kWh, m³, Gcal); locked during editing |
+| Provider | no | the field is disabled with a hint "Select an address first"; after selecting an address, the list shows **all** of its providers (regardless of service type — choose the provider for the corresponding service yourself) |
+| Serial number | yes | up to 255 characters |
+| Name | yes | up to 255 characters, e.g. "Bathroom water meter" |
+| Initial reading | yes | number ≥ 0; the first consumption will be calculated from it |
+| Model, location, description, notes | no | free-form reference information |
+| Installation date | no | date |
+| Photo | no | JPEG, PNG, GIF, or HEIC/HEIF up to 10 MB |
 
-Порядок заповнення: спершу оберіть **адресу** — від неї залежить список доступних провайдерів; потім **тип послуги** — біля поля початкових показань з'явиться відповідна одиниця виміру (kWh, m³, Gcal). Після збереження — повернення до списку з повідомленням «Лічильник створено».
+Fill-in order: first select the **address** — the list of available providers depends on it; then the **service type** — the corresponding unit of measurement (kWh, m³, Gcal) will appear next to the initial reading field. After saving — return to the list with the message "Meter created."
 
-## 5.3 Фото лічильника
+## 5.3 Meter photo
 
-- У лічильника може бути **одне** фото (нове замінює попереднє).
-- Підтримуються формати з iPhone (HEIC/HEIF) — сервер автоматично конвертує їх у JPEG.
-- Після завантаження фото деякий час обробляється (створюються оптимізовані версії) — на картці показується індикатор «Обробка фото…», сторінка сама оновиться, коли фото буде готове (перевірка кожні 4 секунди).
+- A meter can have **one** photo (a new one replaces the previous one).
+- iPhone formats (HEIC/HEIF) are supported — the server automatically converts them to JPEG.
+- After uploading, the photo is processed for a while (optimized versions are created) — the card shows a "Processing photo…" indicator, and the page refreshes itself once the photo is ready (checked every 4 seconds).
 
-> Фото є довідковим: система **не розпізнає цифри показань з фото автоматично**.
+> The photo is for reference only: the system **does not automatically recognize reading values from the photo**.
 
-## 5.4 Редагування лічильника
+## 5.4 Editing a meter
 
-Можна змінити назву, серійний номер, провайдера, розташування, опис, початкові показання, статус активності та фото. **Адреса й тип послуги після створення не змінюються** — за потреби створіть новий лічильник.
+You can change the name, serial number, provider, location, description, initial reading, active status, and photo. **The address and service type cannot be changed after creation** — create a new meter if needed.
 
-Статус «Неактивний» варто ставити лічильникам, які демонтовано або замінено — вони перестануть враховуватися як активні.
+The "Inactive" status should be set for meters that have been removed or replaced — they will no longer be counted as active.
 
-## 5.5 Видалення лічильника
+## 5.5 Deleting a meter
 
-Пункт «Видалити» → діалог підтвердження. **Разом із лічильником видаляється вся історія його показань.** Якщо історію треба зберегти — замість видалення зробіть лічильник неактивним.
+The "Delete" option → confirmation dialog. **Deleting a meter also deletes its entire reading history.** If you need to keep the history, mark the meter as inactive instead of deleting it.

@@ -1,49 +1,49 @@
-# 10. Відомі особливості поточної версії
+# 10. Known Limitations of the Current Version
 
-Перелік обмежень і дефектів, підтверджених наскрізним браузерним тестуванням (реєстрація → адреси → провайдери → лічильники → показання → налаштування → видалення акаунта).
+A list of limitations and defects confirmed through end-to-end browser testing (registration → addresses → providers → meters → readings → settings → account deletion).
 
-## Виправлені дефекти
+## Fixed Defects
 
-Три дефекти видалення акаунта, знайдені під час браузерного тестування, **виправлено та покрито регресійними тестами** (16.07.2026):
+Three account-deletion defects found during browser testing have been **fixed and covered by regression tests** (16.07.2026):
 
-- ~~Акаунт із «Запам'ятати мене» не видалявся~~ — logout тепер виконується **до** видалення користувача, тому циклювання remember-токена більше не воскрешає запис. Покрито feature-тестами у `tests/Feature/Web/Auth/SettingsControllerTest.php`.
-- ~~Перший сабміт діалогу видалення завжди падав~~ — поле пароля прив'язане до стану форми, тож перший клік надсилає введений пароль. Покрито Pest 4 browser-тестами у `tests/Browser/Settings/SettingsPageTest.php`.
-- ~~OAuth-користувачі не могли видалити акаунт~~ — якщо пароль ніколи не встановлювався, підтвердження тепер виконується введенням власного email або імені користувача (див. [розділ 7.4](07-settings.md)). Право на забуття (GDPR, ст. 17) відновлено.
+- ~~An account with "Remember me" enabled could not be deleted~~ — logout is now performed **before** the user is deleted, so the remember-token cycling no longer resurrects the record. Covered by feature tests in `tests/Feature/Web/Auth/SettingsControllerTest.php`.
+- ~~The first submission of the account deletion dialog always failed~~ — the password field is now bound to the form state, so the first click submits the entered password. Covered by Pest 4 browser tests in `tests/Browser/Settings/SettingsPageTest.php`.
+- ~~OAuth users could not delete their account~~ — if a password was never set, confirmation is now done by entering the user's own email or username (see [section 7.4](07-settings.md)). The right to be forgotten (GDPR, Art. 17) has been restored.
 
-## Функціональні обмеження
+## Functional Limitations
 
-| Особливість | Деталі | Обхідний шлях |
+| Feature | Details | Workaround |
 |---|---|---|
-| Email змінити не можна | Поле заблоковане в налаштуваннях профілю | Немає; за потреби — новий акаунт |
-| Тарифи не редагуються | Блок тарифів доступний лише при створенні провайдера | Створити нового провайдера з новими тарифами й перепризначити лічильники ([сценарій 3](09-user-scenarios.md#сценарій-3-зміна-тарифу-постачальника)) |
-| Адресу провайдера/лічильника не змінити | Поля заблоковані при редагуванні; тип послуги лічильника також | Створити нову сутність на потрібній адресі |
-| Провайдер лічильника не фільтрується за типом послуги | Селект пропонує всіх провайдерів адреси (для електролічильника — і водоканал) | Обирати провайдера відповідної послуги вручну |
-| Показання не редагуються | Є лише створення та видалення | Видалити хибний запис і внести правильний |
-| Дублікати показань не блокуються | Можна внести кілька показань на ту саму дату | Слідкуйте за історією перед внесенням |
-| Історія не показує назву тарифу | Записи День/Ніч багатотарифного лічильника виглядають однаково | Розрізняти за значеннями показань |
-| Селектор «Адреса обліку» на Дашборді не фільтрує | Статистика завжди по всіх адресах | — |
-| Після видалення основної адреси нової основної немає | Прапорець нікуди не переноситься | Призначити основну вручну через редагування |
-| Немає розпізнавання показань із фото | Фото — лише довідкове підтвердження | Значення вводяться вручну |
-| Історія чату не зберігається | Розмова з асистентом зникає після перезавантаження сторінки | — |
+| Email cannot be changed | The field is locked in profile settings | None; create a new account if needed |
+| Tariffs cannot be edited | The tariff block is only available when creating a provider | Create a new provider with new tariffs and reassign meters ([scenario 3](09-user-scenarios.md#scenario-3-changing-a-providers-rate)) |
+| Provider/meter address cannot be changed | Fields are locked when editing; the meter's service type is locked too | Create a new entity at the desired address |
+| Meter provider is not filtered by service type | The select offers all providers for the address (e.g., for an electricity meter, the water utility is also shown) | Manually choose the provider for the correct service |
+| Readings cannot be edited | Only creation and deletion are available | Delete the incorrect entry and add the correct one |
+| Duplicate readings are not blocked | Multiple readings can be entered for the same date | Check the history before entering a new reading |
+| History does not show the tariff name | Day/Night entries for a multi-tariff meter look identical | Distinguish them by the reading values |
+| The "Billing address" selector on the Dashboard does not filter | Statistics are always shown across all addresses | — |
+| No new primary address is set after deleting the primary one | The primary flag is not transferred to another address | Assign a new primary address manually via editing |
+| No reading recognition from photos | Photos serve only as reference confirmation | Values must be entered manually |
+| Chat history is not saved | The conversation with the assistant disappears after a page reload | — |
 
-## Елементи інтерфейсу, що поки не працюють
+## UI Elements That Don't Work Yet
 
-- **«Експортувати дані (CSV)»** у «Налаштування → Акаунт» — кнопка без обробника (перевірено: клік не робить нічого); експорт показань (CSV/PDF) підготовлений у коді, але маршрути не зареєстровані.
-- **«Переглянути тарифи»** у «Швидких діях» Дашборда — веде на `/tariffs`, який повертає стандартну сторінку «404 Not Found» без лейаута застосунку (тарифи переглядаються на картках у розділі «Провайдери»).
-- **Дзвіночок сповіщень** у верхній панелі — декоративний (перевірено: клік нічого не відкриває).
-- **Кнопка-скріпка** у чаті асистента — вкладення не підтримуються.
-- Посилання футера («Умови використання», «Політика конфіденційності», «Контакти») — заглушки `#`.
-- **«Забули пароль?»** — посилання на сторінці входу відсутнє; сторінка відновлення доступна лише за прямою адресою `/forgot-password`.
+- **"Export data (CSV)"** in "Settings → Account" — the button has no handler (verified: clicking does nothing); reading export (CSV/PDF) is prepared in the code, but the routes are not registered.
+- **"View tariffs"** in the Dashboard's "Quick Actions" — leads to `/tariffs`, which returns a plain "404 Not Found" page without the application layout (tariffs can be viewed on the cards in the "Providers" section).
+- **Notification bell** in the top bar — decorative (verified: clicking opens nothing).
+- **Paperclip button** in the assistant chat — attachments are not supported.
+- Footer links ("Terms of Use", "Privacy Policy", "Contacts") — placeholder `#` links.
+- **"Forgot password?"** — the link is missing on the login page; the recovery page is only accessible via the direct URL `/forgot-password`.
 
-## Дрібниці інтерфейсу
+## Minor UI Details
 
-- **Сторінка входу не показує flash-повідомлення**: після скидання пароля («Пароль успішно скинуто…») та після видалення акаунта («Ваш акаунт було видалено.») бекенд надсилає повідомлення, але Login-сторінка їх не рендерить — користувач бачить просто форму входу.
-- **Змішані мови повідомлень**: валідація реєстрації/входу — англійською (дефолти Laravel: «The first name field is required.», «Invalid credentials.»), решта — українською.
-- **Одиниці виміру неконсистентні**: на картках провайдерів і Дашборді — міжнародні (kWh, m³), на сторінці внесення показань — локалізовані (кВт·год, м³).
-- **Подвійна назва асистента**: заголовок допомоги/віджет — «КомуШІшка», привітання — «ХаткоБот» (незавершене перейменування).
-- **Футер гостьових сторінок** показує зашитий «© 2023», авторизованих — поточний рік.
+- **The login page does not show flash messages**: after a password reset ("Password successfully reset…") and after account deletion ("Your account has been deleted."), the backend sends a message, but the Login page does not render it — the user just sees the login form.
+- **Mixed message languages**: registration/login validation is in English (Laravel defaults: "The first name field is required.", "Invalid credentials."), while the rest of the interface is in Ukrainian.
+- **Inconsistent units of measurement**: provider cards and the Dashboard use international units (kWh, m³), while the reading-entry page uses localized units (кВт·год, м³).
+- **Dual assistant name**: the help header/widget says "КомуШІшка", while the greeting says "KhatkoBot" (an incomplete renaming).
+- **Guest page footer** shows a hardcoded "© 2023", while authenticated pages show the current year.
 
-## Інфраструктурні залежності (для адміністраторів)
+## Infrastructure Dependencies (for administrators)
 
-- Обробка фото (мініатюри) ставиться в чергу **redis** (`MEDIA_QUEUE_CONNECTION`, дефолт `redis`), тоді як штатний воркер слухає чергу за замовчуванням (`database`) — без окремого воркера redis-черги фото назавжди лишаються в стані «Обробка фото…».
-- Контейнер застосунку має бути підключений до `ka-redis-network` (декларується в compose.yml) — інакше завантаження фото падає з помилкою 500 (`getaddrinfo for redis failed`).
+- Photo processing (thumbnails) is queued on **redis** (`MEDIA_QUEUE_CONNECTION`, default `redis`), while the standard worker listens on the default queue (`database`) — without a separate worker for the redis photo queue, photos remain stuck in the "Processing photo…" state forever.
+- The application container must be connected to `ka-redis-network` (declared in compose.yml) — otherwise photo uploads fail with a 500 error (`getaddrinfo for redis failed`).

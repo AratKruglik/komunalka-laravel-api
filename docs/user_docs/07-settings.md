@@ -1,50 +1,50 @@
-# 7. Налаштування акаунта
+# 7. Account Settings
 
-Сторінка «Налаштування» (`/settings`) має чотири вкладки: **Профіль**, **Безпека**, **Зовнішній вигляд**, **Акаунт**.
+The "Settings" page (`/settings`) has four tabs: **Profile**, **Security**, **Appearance**, **Account**.
 
-## 7.1 Профіль
+## 7.1 Profile
 
-Редаговані дані:
+Editable data:
 
-| Поле | Примітки |
+| Field | Notes |
 |---|---|
-| Аватар | JPG, PNG, GIF або HEIC до 2 МБ; після завантаження коротко обробляється (індикатор зникає автоматично) |
-| Ім'я | до 255 символів |
-| Прізвище | до 255 символів |
-| Телефон | до 50 символів |
+| Avatar | JPG, PNG, GIF, or HEIC up to 2 MB; briefly processed after upload (the indicator disappears automatically) |
+| First name | up to 255 characters |
+| Last name | up to 255 characters |
+| Phone | up to 50 characters |
 
-**Email змінити не можна** — поле показане, але заблоковане («Електронну пошту неможливо змінити»).
+**Email cannot be changed** — the field is shown but locked ("Email cannot be changed").
 
-Кнопка **«Зберегти зміни»** → повідомлення «Профіль успішно оновлено.»
+**"Save changes"** button → message "Profile updated successfully."
 
-## 7.2 Безпека
+## 7.2 Security
 
-### Зміна пароля
+### Change Password
 
-Поля: поточний пароль, новий пароль, підтвердження нового пароля. Під новим паролем — **індикатор надійності** з критеріями: мінімум 8 символів, мінімум 1 велика літера, мінімум 1 цифра. При невірному поточному паролі — «Поточний пароль невірний.» Після успіху — «Пароль успішно змінено.», форма очищається.
+Fields: current password, new password, confirm new password. Below the new password there is a **strength indicator** with criteria: minimum 8 characters, at least 1 uppercase letter, at least 1 digit. If the current password is incorrect — "Current password is incorrect." On success — "Password changed successfully.", the form is cleared.
 
-> Якщо акаунт створено через Google/GitHub і пароль не встановлено, спершу встановіть пароль — без нього неможливо від'єднати соцмережу чи видалити акаунт.
+> If the account was created via Google/GitHub and no password has been set, set a password first — without one it is impossible to disconnect a social account or delete the account.
 
-### Під'єднані акаунти
+### Connected Accounts
 
-Список провайдерів **Google** і **GitHub** із бейджами «Під'єднано» / «Від'єднано»:
+A list of the **Google** and **GitHub** providers with "Connected" / "Disconnected" badges:
 
-- **Під'єднати** — перекидає на сторінку авторизації відповідного сервісу; після підтвердження соцмережа прив'язується до акаунта, і нею можна входити.
-- **Від'єднати** — відкриває діалог «Від'єднати {провайдера}?» із полем **пароля** для підтвердження. Після від'єднання вхід можливий лише за email і паролем. Якщо пароль не встановлено, система не дозволить від'єднання.
+- **Connect** — redirects to the respective service's authorization page; after confirmation the social account is linked to the account and can be used to sign in.
+- **Disconnect** — opens a "Disconnect {provider}?" dialog with a **password** field for confirmation. After disconnecting, sign-in is possible only via email and password. If no password has been set, the system will not allow disconnecting.
 
-## 7.3 Зовнішній вигляд
+## 7.3 Appearance
 
-- **Тема**: Світла / Темна / Системна. Вибір зберігається в cookie браузера й застосовується миттєво.
-- **Мова**: наразі доступна лише українська.
+- **Theme**: Light / Dark / System. The choice is stored in a browser cookie and applied instantly.
+- **Language**: currently only Ukrainian is available.
 
-## 7.4 Акаунт
+## 7.4 Account
 
-- **Експорт даних** — кнопка «Експортувати дані (CSV)» присутня, але в поточній версії ще не працює (див. [відомі особливості](10-known-limitations.md)).
-- **Небезпечна зона → Видалити акаунт**: діалог «Видалити акаунт?» із підтвердженням. Видалення **безповоротно знищує всі дані** — адреси, лічильники, показання. Після видалення вас буде розлогінено на сторінку входу (підтвердження на ній не показується).
+- **Export data** — the "Export data (CSV)" button is present, but is not yet functional in the current version (see [known limitations](10-known-limitations.md)).
+- **Danger zone → Delete account**: a "Delete account?" dialog with confirmation. Deletion **irreversibly destroys all data** — addresses, meters, readings. After deletion you will be logged out to the login page (no confirmation is shown there).
 
-Спосіб підтвердження залежить від того, як ви входите:
+The confirmation method depends on how you sign in:
 
-| Ваш акаунт | Що вводите для підтвердження |
+| Your account | What you enter for confirmation |
 |---|---|
-| З паролем | **Пароль** — той самий, яким входите |
-| Через Google/GitHub, пароль не встановлено | **Ваш email або ім'я користувача** — точно, як у профілі |
+| With a password | **Password** — the same one you use to sign in |
+| Via Google/GitHub, no password set | **Your email or username** — exactly as in your profile |
