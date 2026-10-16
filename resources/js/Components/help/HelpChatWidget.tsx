@@ -18,7 +18,9 @@ import { SuggestedChips } from './SuggestedChips'
 export function HelpChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [draft, setDraft] = useState('')
-  const { messages, isThinking, send, reset } = useAssistantChat(WIDGET_GREETING)
+  const [photo, setPhoto] = useState<File | null>(null)
+  const { messages, isThinking, thinkingLabel, activeApprovalId, approvalErrors, send, decide, reset } =
+    useAssistantChat(WIDGET_GREETING)
   const fabRef = useRef<HTMLButtonElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -32,12 +34,18 @@ export function HelpChatWidget() {
   const handleReset = () => {
     reset()
     setDraft('')
+    setPhoto(null)
     textareaRef.current?.focus()
   }
 
-  const handleSend = (question: string) => {
-    send(question)
+  const handleSend = (question: string, attachedPhoto: File | null = null) => {
+    if (!send({ question, photo: attachedPhoto })) {
+      return
+    }
     setDraft('')
+    if (attachedPhoto) {
+      setPhoto(null)
+    }
   }
 
   useEffect(() => {
@@ -102,13 +110,23 @@ export function HelpChatWidget() {
 
           <div className="flex flex-1 flex-col gap-3 overflow-hidden px-4 py-3">
             {!hasConversationStarted ? <ChatEmptyState size="compact" /> : null}
-            <ChatMessageList messages={messages} isThinking={isThinking} size="compact" />
-            <SuggestedChips items={WIDGET_QUICK_CHIPS} onSelect={handleSend} disabled={isThinking} />
+            <ChatMessageList
+              messages={messages}
+              isThinking={isThinking}
+              thinkingLabel={thinkingLabel}
+              activeApprovalId={activeApprovalId}
+              approvalErrors={approvalErrors}
+              onDecide={decide}
+              size="compact"
+            />
+            <SuggestedChips items={WIDGET_QUICK_CHIPS} onSelect={(question) => handleSend(question)} disabled={isThinking} />
             <ChatInput
               ref={textareaRef}
               value={draft}
               onChange={setDraft}
-              onSend={() => handleSend(draft)}
+              onSend={() => handleSend(draft, photo)}
+              photo={photo}
+              onPhotoChange={setPhoto}
               disabled={isThinking}
               placeholder={WIDGET_INPUT_PLACEHOLDER}
             />

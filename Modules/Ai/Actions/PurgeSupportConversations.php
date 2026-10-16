@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Modules\Ai\Actions;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Modules\Ai\Models\AssistantMeterPhoto;
 use Modules\Auth\Models\User;
 
 class PurgeSupportConversations
@@ -22,5 +24,8 @@ class PurgeSupportConversations
             ->delete();
 
         $ownedConversations->delete();
+
+        Storage::disk(AssistantMeterPhoto::DISK)->deleteDirectory('assistant-photos/'.$user->getKey());
+        AssistantMeterPhoto::query()->where('user_id', $user->getKey())->delete();
     }
 }

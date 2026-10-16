@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
-use Laravel\Ai\Contracts\ConversationStore;
 use Laravel\Ai\Responses\Data\ToolCall;
 use Mockery\MockInterface;
 use Modules\Ai\Actions\AnswerHelpQuestion;
@@ -11,11 +10,10 @@ use Modules\Ai\Agents\HelpAssistant;
 use Modules\Ai\Models\DocumentChunk;
 use Modules\Ai\Services\Rag\DocumentRetriever;
 use Modules\Auth\Models\User;
-use Modules\Shared\Support\AssistantResponder;
 
 function supportAnswerAction(): AnswerHelpQuestion
 {
-    return new AnswerHelpQuestion(app(ConversationStore::class), new AssistantResponder);
+    return app(AnswerHelpQuestion::class);
 }
 
 it('returns only links from the successful SDK knowledge tool result', function (): void {

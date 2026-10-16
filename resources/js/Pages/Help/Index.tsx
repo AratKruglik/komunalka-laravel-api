@@ -27,12 +27,19 @@ const TOPIC_ICONS: Record<string, typeof Gauge> = {
 
 export default function Index({ greeting, suggestedChips, topicShortcuts, docLinks }: Props) {
   const [draft, setDraft] = useState('')
-  const { messages, isThinking, send } = useAssistantChat(greeting)
+  const [photo, setPhoto] = useState<File | null>(null)
+  const { messages, isThinking, thinkingLabel, activeApprovalId, approvalErrors, send, decide } =
+    useAssistantChat(greeting)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const handleSend = (question: string) => {
-    send(question)
+  const handleSend = (question: string, attachedPhoto: File | null = null) => {
+    if (!send({ question, photo: attachedPhoto })) {
+      return
+    }
     setDraft('')
+    if (attachedPhoto) {
+      setPhoto(null)
+    }
   }
 
   return (
@@ -59,13 +66,23 @@ export default function Index({ greeting, suggestedChips, topicShortcuts, docLin
           </CardHeader>
 
           <CardContent className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
-            <ChatMessageList messages={messages} isThinking={isThinking} size="default" />
-            <SuggestedChips items={suggestedChips} onSelect={handleSend} disabled={isThinking} />
+            <ChatMessageList
+              messages={messages}
+              isThinking={isThinking}
+              thinkingLabel={thinkingLabel}
+              activeApprovalId={activeApprovalId}
+              approvalErrors={approvalErrors}
+              onDecide={decide}
+              size="default"
+            />
+            <SuggestedChips items={suggestedChips} onSelect={(question) => handleSend(question)} disabled={isThinking} />
             <ChatInput
               ref={textareaRef}
               value={draft}
               onChange={setDraft}
-              onSend={() => handleSend(draft)}
+              onSend={() => handleSend(draft, photo)}
+              photo={photo}
+              onPhotoChange={setPhoto}
               disabled={isThinking}
               placeholder={PAGE_INPUT_PLACEHOLDER}
             />

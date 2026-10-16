@@ -7,14 +7,17 @@ use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Tools\Request;
 use Mockery\MockInterface;
 use Modules\Ai\Agents\HelpAssistant;
+use Modules\Ai\Enums\HelpTurn;
 use Modules\Ai\Models\DocumentChunk;
 use Modules\Ai\Services\Rag\DocumentRetriever;
 use Modules\Ai\Tools\SearchSupportKnowledge;
+use Modules\Auth\Models\User;
 
 it('registers a first-class SDK agent with the knowledge search tool', function (): void {
     /** @var SearchSupportKnowledge&MockInterface $tool */
     $tool = Mockery::mock(SearchSupportKnowledge::class);
-    $agent = new HelpAssistant($tool);
+    app()->instance(SearchSupportKnowledge::class, $tool);
+    $agent = new HelpAssistant(User::factory()->make(), HelpTurn::Question);
 
     expect($agent)->toBeInstanceOf(Agent::class)
         ->toBeInstanceOf(HasTools::class)

@@ -11,7 +11,7 @@ final readonly class BatchReadingData
 {
     /**
      * @param  array<int, CreateMeterReadingData>  $readings
-     * @param  array<int, array<int, UploadedFile>>  $photos  Keyed by meter_id
+     * @param  array<int, array<int, UploadedFile|string>>  $photos  Keyed by meter_id
      */
     public function __construct(
         public array $readings,
