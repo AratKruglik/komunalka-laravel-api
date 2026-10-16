@@ -13,6 +13,7 @@ export interface AssistantMessage {
 export interface AskAssistantResponse {
   text: string
   sources: AssistantSource[]
+  conversation_id: string | null
 }
 
 export interface TopicShortcut {

@@ -5,7 +5,6 @@ namespace Modules\Ai\Services\Rag;
 use BenBjurstrom\MarkdownObject\Build\MarkdownObjectBuilder;
 use BenBjurstrom\MarkdownObject\Tokenizer\TikTokenizer;
 use Illuminate\Support\Collection;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Parser\MarkdownParser;
 
@@ -14,7 +13,6 @@ class MarkdownChunker
     private TikTokenizer $tokenizer;
 
     public function __construct(
-        private CommonMarkConverter $converter,
         private MarkdownParser $markdownParser,
         private MarkdownObjectBuilder $builder
     ) {

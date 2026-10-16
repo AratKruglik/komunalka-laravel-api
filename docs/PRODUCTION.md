@@ -27,6 +27,9 @@ docker compose -f compose.prod.yml up -d
 
 # Run migrations
 docker compose -f compose.prod.yml exec app php artisan migrate --force
+
+# Index support documentation (requires OPENROUTER_API_KEY)
+docker compose -f compose.prod.yml exec app php artisan ai:rag:ingest docs/user_docs --prune
 ```
 
 ## Zero-downtime redeploy

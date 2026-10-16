@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Cache;
+use Laravel\Ai\Contracts\ConversationStore;
 use Modules\Auth\Models\User;
 
 describe('POST /help/ask', function (): void {
+    beforeEach(function (): void {
+        config(['ai.providers.openrouter.key' => null]);
+    });
     it('redirects guests to login', function (): void {
         $this->post(route('help.ask'), ['question' => 'Як внести показання?'])
             ->assertRedirect(route('login'));
@@ -69,5 +74,55 @@ describe('POST /help/ask', function (): void {
         $this->actingAs($user)
             ->postJson(route('help.ask'), ['question' => str_repeat('а', 1000)])
             ->assertOk();
+    });
+
+    it('rejects a malformed conversation identifier', function (): void {
+        $this->actingAs(User::factory()->create())
+            ->postJson(route('help.ask'), ['question' => 'Привіт', 'conversation_id' => 'bad-id'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('conversation_id');
+    });
+
+    it('does not allow a user to continue another users conversation', function (): void {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $conversationId = app(ConversationStore::class)->storeConversation(
+            $owner->getMorphClass(),
+            $owner->getKey(),
+            'Особиста розмова',
+        );
+
+        $this->actingAs($otherUser)
+            ->postJson(route('help.ask'), ['question' => 'Що ми обговорювали?', 'conversation_id' => $conversationId])
+            ->assertForbidden();
+    });
+
+    it('allows the owner to continue a conversation during provider fallback', function (): void {
+        $user = User::factory()->create();
+        $conversationId = app(ConversationStore::class)->storeConversation(
+            $user->getMorphClass(),
+            $user->getKey(),
+            'Моя розмова',
+        );
+
+        $this->actingAs($user)
+            ->postJson(route('help.ask'), ['question' => 'Як внести показання?', 'conversation_id' => $conversationId])
+            ->assertOk()
+            ->assertJsonPath('conversation_id', $conversationId);
+    });
+
+    it('rejects a concurrent AI request for the same user', function (): void {
+        config(['ai.providers.openrouter.key' => 'test-key']);
+        $user = User::factory()->create();
+        $lock = Cache::lock('support-ai:'.$user->getKey(), 65);
+        expect($lock->get())->toBeTrue();
+
+        try {
+            $this->actingAs($user)
+                ->postJson(route('help.ask'), ['question' => 'Як внести показання?'])
+                ->assertStatus(429);
+        } finally {
+            $lock->release();
+        }
     });
 });

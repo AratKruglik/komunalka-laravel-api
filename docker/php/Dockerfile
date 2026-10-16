@@ -54,8 +54,7 @@ COPY . .
 
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
-RUN php artisan config:cache && \
-    php artisan route:cache && \
+RUN php artisan route:cache && \
     php artisan view:cache && \
     php artisan event:cache
 

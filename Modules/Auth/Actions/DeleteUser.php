@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Auth\Models\User;
 use Modules\Auth\Repositories\Contracts\UserRepositoryInterface;
@@ -16,6 +17,6 @@ class DeleteUser
 
     public function handle(User $user): void
     {
-        $this->userRepository->delete($user);
+        DB::transaction(fn () => $this->userRepository->delete($user));
     }
 }

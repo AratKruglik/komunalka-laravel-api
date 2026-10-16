@@ -9,7 +9,9 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Parser\MarkdownParser;
+use Modules\Ai\Actions\PurgeSupportConversations;
 use Modules\Ai\Console\IngestDocuments;
+use Modules\Auth\Models\User;
 
 class AiServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,10 @@ class AiServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->loadMigrationsFrom(base_path('Modules/Ai/database/migrations'));
+
+        User::deleted(fn (User $user) => app(PurgeSupportConversations::class)->handle($user));
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 IngestDocuments::class,

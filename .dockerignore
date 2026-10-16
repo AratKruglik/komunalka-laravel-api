@@ -61,6 +61,11 @@ storage/framework/testing/
 # Module stubs (scaffolding, not needed at runtime)
 stubs/
 
-# Documentation
-docs/
+# Documentation used by the support agent
+docs/*
+!docs/user_docs/
+!docs/user_docs/**
 README.md
+
+# Runtime configuration must be built from container environment
+bootstrap/cache/config.php

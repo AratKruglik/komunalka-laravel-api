@@ -33,9 +33,14 @@ return [
 
     'caching' => [
         'embeddings' => [
-            'cache' => false,
+            'cache' => true,
             'store' => env('CACHE_STORE', 'database'),
+            'individually' => true,
         ],
+    ],
+
+    'conversations' => [
+        'generate_title' => false,
     ],
 
     /*
@@ -139,8 +144,8 @@ return [
                 'text' => [
                     'default' => 'openai/gpt-4o',
                 ],
-                'embedding' => [
-                    'default' => 'openai/text-embedding-3-small',
+                'embeddings' => [
+                    'default' => env('AI_SUPPORT_EMBEDDING_MODEL', 'openai/text-embedding-3-small'),
                 ],
             ],
         ],

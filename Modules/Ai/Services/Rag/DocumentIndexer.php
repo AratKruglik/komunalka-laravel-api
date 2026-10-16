@@ -3,6 +3,7 @@
 namespace Modules\Ai\Services\Rag;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Laravel\Ai\Embeddings;
 use Modules\Ai\Models\DocumentChunk;
 
@@ -12,47 +13,48 @@ class DocumentIndexer
 
     public function indexMarkdown(string $sourcePath, string $markdownContent): void
     {
+        $embeddingModel = (string) config('ai.providers.openrouter.models.embeddings.default');
         $records = $this->chunker->chunk($sourcePath, $markdownContent)
             ->map(fn ($chunk, $i) => [
                 'source_path' => $sourcePath,
                 'chunk_index' => $i,
                 'heading' => Arr::get($chunk, 'heading'),
                 'content' => Arr::get($chunk, 'content'),
-                'embed_text' => trim(
-                    Arr::get($chunk, 'heading') ? Arr::get($chunk, 'heading')."\n\n" : ''
-                ).Arr::get($chunk, 'content'),
+                'embed_text' => trim((Arr::get($chunk, 'heading') ? Arr::get($chunk, 'heading')."\n\n" : '').Arr::get($chunk, 'content')),
             ])->map(fn ($record) => [
                 ...$record,
                 'content_hash' => hash('sha256', Arr::get($record, 'embed_text')),
             ]);
 
-        DocumentChunk::whereSourcePath($sourcePath)
-            ->whereNotIn('content_hash', $records->pluck('content_hash'))
-            ->delete();
+        $known = DocumentChunk::whereSourcePath($sourcePath)->get(['content_hash', 'embedding', 'metadata'])
+            ->filter(fn (DocumentChunk $chunk) => ($chunk->metadata['embedding_model'] ?? 'openai/text-embedding-3-small') === $embeddingModel)
+            ->mapWithKeys(fn (DocumentChunk $chunk) => [$chunk->content_hash => $chunk->embedding]);
+        $recordsTodo = $records->reject(fn ($record) => $known->has($record['content_hash']))->values();
 
-        $indexedDocumentChunks = DocumentChunk::whereSourcePath($sourcePath)->pluck('content_hash')->flip();
-        $recordsTodo = $records->reject(
-            fn ($record) => $indexedDocumentChunks->has(Arr::get($record, 'content_hash'))
-        )->values();
-
-        $recordsTodo->chunk(100)->each(function ($chunk) {
+        $recordsTodo->chunk(100)->each(function ($chunk) use ($known, $embeddingModel): void {
             $vectors = Embeddings::for($chunk->pluck('embed_text')->all())
                 ->cache()
-                ->generate()
+                ->generate('openrouter', $embeddingModel)
                 ->embeddings;
+            $chunk->values()->each(fn (array $record, int $i) => $known->put($record['content_hash'], $vectors[$i]));
+        });
 
-            DocumentChunk::upsert(
-                $chunk->values()->map(fn (array $record, int $i) => [
-                    'source_path' => Arr::get($record, 'source_path'),
-                    'chunk_index' => Arr::get($record, 'chunk_index'),
-                    'heading' => Arr::get($record, 'heading'),
-                    'content' => Arr::get($record, 'content'),
-                    'content_hash' => Arr::get($record, 'content_hash'),
-                    'embedding' => json_encode(Arr::get($vectors, $i)),
-                ])->all(),
-                uniqueBy: ['source_path', 'chunk_index'],
-                update: ['source_type', 'heading', 'content', 'content_hash', 'embedding'],
-            );
+        DB::transaction(function () use ($sourcePath, $records, $known, $embeddingModel): void {
+            DocumentChunk::whereSourcePath($sourcePath)->delete();
+            foreach ($records->chunk(100) as $batch) {
+                DocumentChunk::insert($batch->map(fn (array $record) => [
+                    'source_path' => $record['source_path'],
+                    'source_type' => 'markdown',
+                    'chunk_index' => $record['chunk_index'],
+                    'heading' => $record['heading'],
+                    'content' => $record['content'],
+                    'content_hash' => $record['content_hash'],
+                    'metadata' => json_encode(['embedding_model' => $embeddingModel], JSON_THROW_ON_ERROR),
+                    'embedding' => json_encode($known[$record['content_hash']]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])->all());
+            }
         });
     }
 }

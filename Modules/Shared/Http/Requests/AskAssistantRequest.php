@@ -18,6 +18,7 @@ class AskAssistantRequest extends FormRequest
     {
         return [
             'question' => ['required', 'string', 'min:1', 'max:1000'],
+            'conversation_id' => ['nullable', 'uuid'],
         ];
     }
 }
