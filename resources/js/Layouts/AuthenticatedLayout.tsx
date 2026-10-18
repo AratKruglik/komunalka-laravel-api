@@ -10,7 +10,6 @@ import {
   type TopbarUser,
 } from '@/Components/navigation/AuthenticatedTopbar'
 import { Alert, AlertDescription } from '@/Components/ui'
-import { HelpChatWidget } from '@/Components/help/HelpChatWidget'
 import { resolveMediaSrc } from '@/lib/media'
 import { useAuthUser } from '@/lib/useAuthUser'
 import type { PageProps } from '@/types'
@@ -179,8 +178,6 @@ export function AuthenticatedLayout({
           </div>
         </div>
       ) : null}
-
-      <HelpChatWidget />
     </>
   )
 }

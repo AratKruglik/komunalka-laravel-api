@@ -701,15 +701,3 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: Modules/Shared/Http/Resources/UtilityTypeResource.php
-
-		-
-			message: '#^Method App\\Repositories\\EloquentRepository\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, TModel of Illuminate\\Database\\Eloquent\\Model\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Repositories/EloquentRepository.php
-
-		-
-			message: '#^Method App\\Repositories\\EloquentRepository\:\:newQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Repositories/EloquentRepository.php

@@ -9,9 +9,12 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
+        "aws/aws-sdk-php": "^3.0",
+        "benbjurstrom/markdown-object": "*",
         "inertiajs/inertia-laravel": "^3.0.0-beta",
-        "laravel/framework": "^13.0",
+        "laravel/ai": "^1.2",
+        "laravel/framework": "^13.35",
         "laravel/octane": "^2.13",
         "laravel/reverb": "^1.7",
         "laravel/socialite": "^5.24",
@@ -26,7 +29,7 @@
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.9",
-        "laravel/boost": "^2.3",
+        "laravel/boost": "^2.10",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",

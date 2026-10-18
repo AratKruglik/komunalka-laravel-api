@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17-alpine3.20
+    image: pgvector/pgvector:0.8.5-pg17-trixie
     restart: always
     container_name: ka-db-prod
     environment:
@@ -26,6 +26,8 @@ services:
     build:
       context: ./
       dockerfile: docker/php/Dockerfile
+    env_file:
+      - .env
     restart: always
     container_name: ka-app-prod
     environment:

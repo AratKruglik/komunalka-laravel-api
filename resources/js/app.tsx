@@ -1,8 +1,12 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@/Components/theme/ThemeProvider';
+import { PersistentLayout } from '@/Layouts/PersistentLayout';
+
+const GUEST_PAGE_PREFIX = 'Auth/';
 
 createInertiaApp({
+    layout: (name) => (name.startsWith(GUEST_PAGE_PREFIX) ? undefined : PersistentLayout),
     resolve: async (name) => {
         const pages = import.meta.glob('./Pages/**/*.tsx');
         const importPage = pages[`./Pages/${name}.tsx`];

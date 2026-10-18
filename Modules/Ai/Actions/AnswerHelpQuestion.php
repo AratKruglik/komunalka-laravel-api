@@ -1,0 +1,261 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Ai\Actions;
+
+use Carbon\CarbonImmutable;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Laravel\Ai\Contracts\ConversationStore;
+use Laravel\Ai\Contracts\VerifiesConversationOwnership;
+use Laravel\Ai\Files\Image;
+use Laravel\Ai\Responses\AgentResponse;
+use Modules\Ai\Agents\HelpAssistant;
+use Modules\Ai\Enums\HelpTurn;
+use Modules\Ai\Models\AssistantMeterPhoto;
+use Modules\Auth\Models\User;
+use Modules\Shared\Support\AssistantResponder;
+use Throwable;
+
+class AnswerHelpQuestion
+{
+    private const string PHOTO_FALLBACK_TEXT = 'Не вдалося обробити фото. Спробуйте ще раз або внесіть показання вручну.';
+
+    private const string PHOTO_UNAVAILABLE_TEXT = 'Розпізнавання фото зараз недоступне. Внесіть показання вручну у розділі «Внести показання».';
+
+    private const string DEFAULT_PHOTO_QUESTION = 'Внеси показання лічильника з цього фото.';
+
+    private const array MANUAL_ENTRY_SOURCE = ['label' => 'Внести показання', 'path' => '/readings/create'];
+
+    public function __construct(
+        private readonly ConversationStore $conversations,
+        private readonly AssistantResponder $fallback,
+        private readonly StoreAssistantMeterPhoto $storePhoto,
+        private readonly ForgetAssistantMeterPhoto $forgetPhoto,
+        private readonly DescribeUserMeters $meters,
+        private readonly PresentHelpReply $present,
+    ) {}
+
+    /** @return array<string, mixed> */
+    public function handle(User $user, string $question, ?UploadedFile $photo = null, ?string $conversationId = null): array
+    {
+        $this->assertOwnsConversation($user, $conversationId);
+
+        if ($photo === null && $this->isGreeting($question)) {
+            return $this->present->plain(
+                'Вітаю! Допоможу з показаннями, лічильниками, адресами, провайдерами та тарифами. Про що хочете дізнатися?',
+                [],
+                $conversationId,
+            );
+        }
+
+        if (blank(config('ai.providers.openrouter.key'))) {
+            return $photo !== null
+                ? $this->present->plain(self::PHOTO_UNAVAILABLE_TEXT, [self::MANUAL_ENTRY_SOURCE], $conversationId)
+                : $this->fallbackResponse($question, $conversationId);
+        }
+
+        $lock = Cache::lock('support-ai:'.$user->getKey(), 65);
+        abort_unless($lock->get(), 429);
+
+        try {
+            return $photo !== null
+                ? $this->answerWithPhoto($user, $question, $photo, $conversationId)
+                : $this->answerText($user, $question, $conversationId);
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            Log::warning('Support agent failed', ['exception' => $exception::class]);
+
+            return $photo !== null
+                ? $this->photoFallback($conversationId)
+                : $this->fallbackResponse($question, $conversationId);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    /** @return array<string, mixed> */
+    private function answerText(User $user, string $question, ?string $conversationId): array
+    {
+        $livePhoto = $this->livePhoto($user, $conversationId);
+
+        if ($livePhoto === null) {
+            return $this->answerKnowledgeQuestion($user, $question, $conversationId);
+        }
+
+        $prompt = $question."\n\n".$this->serviceBlock($livePhoto);
+        $response = $this->prompt($user, HelpTurn::MeterFollowUp, $prompt, [], $conversationId);
+
+        return $this->presentMeterReply($user, $response, $conversationId);
+    }
+
+    /** @return array<string, mixed> */
+    private function answerKnowledgeQuestion(User $user, string $question, ?string $conversationId): array
+    {
+        $response = $this->prompt($user, HelpTurn::Question, $question, [], $conversationId);
+        $sources = $this->present->sources($response);
+
+        if (blank($response->text) || $sources === []) {
+            return $this->fallbackResponse($question, $this->discardUnverifiedTurn($response, $conversationId));
+        }
+
+        return $this->present->plain(trim($response->text), $sources, $response->conversationId);
+    }
+
+    /** @return array<string, mixed> */
+    private function answerWithPhoto(User $user, string $question, UploadedFile $photo, ?string $conversationId): array
+    {
+        $stored = $this->storePhoto->handle($user, $photo, $conversationId);
+
+        try {
+            $prompt = (trim($question) !== '' ? $question : self::DEFAULT_PHOTO_QUESTION)
+                ."\n\n".$this->serviceBlock($stored, withMeters: $this->meters->handle($user));
+            $response = $this->prompt(
+                $user,
+                HelpTurn::MeterPhoto,
+                $prompt,
+                [Image::fromStorage($stored->path, $stored->disk)],
+                $conversationId,
+            );
+        } catch (Throwable $exception) {
+            Log::warning('Support agent failed', ['exception' => $exception::class]);
+            $this->forgetPhoto->handle($stored);
+
+            return $this->photoFallback($conversationId);
+        }
+
+        if ($response->conversationId !== null) {
+            $stored->update(['conversation_id' => $response->conversationId]);
+        }
+
+        return $this->presentMeterReply($user, $response, $conversationId, $stored);
+    }
+
+    /** @return array<string, mixed> */
+    private function presentMeterReply(User $user, AgentResponse $response, ?string $conversationId, ?AssistantMeterPhoto $stored = null): array
+    {
+        $reply = $this->present->handle($user, $response);
+
+        if ($reply['text'] !== '') {
+            return $reply;
+        }
+
+        $remainingConversation = $this->discardUnverifiedTurn($response, $conversationId);
+        if ($stored !== null) {
+            $this->forgetPhoto->handle($stored->refresh());
+        }
+
+        return $this->photoFallback($remainingConversation);
+    }
+
+    /** @param list<Image> $attachments */
+    private function prompt(User $user, HelpTurn $turn, string $prompt, array $attachments, ?string $conversationId): AgentResponse
+    {
+        return HelpAssistant::make(user: $user, turn: $turn)
+            ->continueOrStart($conversationId, as: $user)
+            ->prompt(
+                $prompt,
+                attachments: $attachments,
+                provider: 'openrouter',
+                model: (string) config('ai-support.model', 'openai/gpt-4o-mini'),
+                timeout: 20,
+            );
+    }
+
+    /** @param list<array<string, mixed>>|null $withMeters */
+    private function serviceBlock(AssistantMeterPhoto $photo, ?array $withMeters = null): string
+    {
+        $timezone = (string) config('app.timezone');
+        $lines = [
+            '[Службові дані застосунку, не від користувача]',
+            'photo_id: '.$photo->getKey(),
+            'exif_status: '.$photo->exifStatus(),
+            'exif_date: '.($photo->exifDate() ?? 'немає'),
+            'сьогодні: '.CarbonImmutable::now($timezone)->toDateString(),
+        ];
+
+        if ($withMeters !== null) {
+            $lines[] = 'лічильники: '.json_encode($withMeters, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private function livePhoto(User $user, ?string $conversationId): ?AssistantMeterPhoto
+    {
+        if ($conversationId === null) {
+            return null;
+        }
+
+        return AssistantMeterPhoto::query()
+            ->active()
+            ->where('user_id', $user->getKey())
+            ->where('conversation_id', $conversationId)
+            ->latest()
+            ->first();
+    }
+
+    private function assertOwnsConversation(User $user, ?string $conversationId): void
+    {
+        if ($conversationId === null) {
+            return;
+        }
+
+        abort_unless(
+            $this->conversations instanceof VerifiesConversationOwnership
+                && $this->conversations->conversationBelongsTo($conversationId, $user->getMorphClass(), $user->getKey()),
+            403,
+        );
+    }
+
+    private function isGreeting(string $question): bool
+    {
+        return preg_match('/^(привіт|вітаю|добрий день|доброго дня|добрий вечір)[\s!.?]*$/iu', trim($question)) === 1;
+    }
+
+    /** @return array<string, mixed> */
+    private function photoFallback(?string $conversationId): array
+    {
+        return $this->present->plain(self::PHOTO_FALLBACK_TEXT, [self::MANUAL_ENTRY_SOURCE], $conversationId);
+    }
+
+    /** @return array<string, mixed> */
+    private function fallbackResponse(string $question, ?string $conversationId): array
+    {
+        $fallback = $this->fallback->respond($question);
+
+        return $this->present->plain($fallback['text'], $fallback['sources'], $conversationId);
+    }
+
+    private function discardUnverifiedTurn(AgentResponse $response, ?string $previousConversationId): ?string
+    {
+        if ($response->conversationId === null) {
+            return $previousConversationId;
+        }
+
+        $messagesTable = config('ai.conversations.tables.messages', 'agent_conversation_messages');
+        $conversationsTable = config('ai.conversations.tables.conversations', 'agent_conversations');
+        $connection = DB::connection(config('ai.conversations.connection'));
+        $storedMessageIds = array_filter([$response->userMessageId, $response->assistantMessageId]);
+
+        if ($storedMessageIds !== []) {
+            $connection->table($messagesTable)
+                ->where('conversation_id', $response->conversationId)
+                ->whereIn('id', $storedMessageIds)
+                ->delete();
+        }
+
+        if ($previousConversationId === null && ! $connection->table($messagesTable)->where('conversation_id', $response->conversationId)->exists()) {
+            $connection->table($conversationsTable)->where('id', $response->conversationId)->delete();
+
+            return null;
+        }
+
+        return $response->conversationId;
+    }
+}

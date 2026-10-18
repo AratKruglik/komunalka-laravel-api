@@ -32,5 +32,21 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth', function (Request $request): Limit {
             return Limit::perMinute(10)->by($request->ip());
         });
+
+        RateLimiter::for('support-ai', function (Request $request): array {
+            $identity = $request->user()?->getAuthIdentifier() ?: $request->ip();
+
+            $limits = [
+                Limit::perMinute(6)->by('support-minute:'.$identity),
+                Limit::perDay(100)->by('support-day:'.$identity),
+            ];
+
+            if ($request->hasFile('photo')) {
+                $limits[] = Limit::perMinute(3)->by('support-vision-minute:'.$identity);
+                $limits[] = Limit::perDay(20)->by('support-vision-day:'.$identity);
+            }
+
+            return $limits;
+        });
     }
 }
