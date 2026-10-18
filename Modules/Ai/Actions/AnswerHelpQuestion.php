@@ -5,13 +5,19 @@ declare(strict_types=1);
 namespace Modules\Ai\Actions;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Ai\Contracts\ConversationStore;
 use Laravel\Ai\Contracts\VerifiesConversationOwnership;
+use Laravel\Ai\Exceptions\AiException;
+use Laravel\Ai\Exceptions\ProviderOverloadedException;
+use Laravel\Ai\Exceptions\RateLimitedException;
 use Laravel\Ai\Files\Image;
 use Laravel\Ai\Responses\AgentResponse;
 use Modules\Ai\Agents\HelpAssistant;
@@ -24,6 +30,8 @@ use Throwable;
 class AnswerHelpQuestion
 {
     private const string PHOTO_FALLBACK_TEXT = 'Не вдалося обробити фото. Спробуйте ще раз або внесіть показання вручну.';
+
+    private const string PHOTO_BUSY_TEXT = 'ХаткоБот зараз перевантажений і не може розпізнати фото. Спробуйте ще раз за хвилину або внесіть показання вручну.';
 
     private const string PHOTO_UNAVAILABLE_TEXT = 'Розпізнавання фото зараз недоступне. Внесіть показання вручну у розділі «Внести показання».';
 
@@ -69,10 +77,10 @@ class AnswerHelpQuestion
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
-            Log::warning('Support agent failed', ['exception' => $exception::class]);
+            $this->reportFailure($exception);
 
             return $photo !== null
-                ? $this->photoFallback($conversationId)
+                ? $this->photoFailure($exception, $conversationId)
                 : $this->fallbackResponse($question, $conversationId);
         } finally {
             $lock->release();
@@ -123,10 +131,13 @@ class AnswerHelpQuestion
                 $conversationId,
             );
         } catch (Throwable $exception) {
-            Log::warning('Support agent failed', ['exception' => $exception::class]);
-            $this->forgetPhoto->handle($stored);
+            try {
+                $this->forgetPhoto->handle($stored);
+            } finally {
+                $this->reportFailure($exception);
+            }
 
-            return $this->photoFallback($conversationId);
+            return $this->photoFailure($exception, $conversationId);
         }
 
         if ($response->conversationId !== null) {
@@ -216,6 +227,56 @@ class AnswerHelpQuestion
     private function isGreeting(string $question): bool
     {
         return preg_match('/^(привіт|вітаю|добрий день|доброго дня|добрий вечір)[\s!.?]*$/iu', trim($question)) === 1;
+    }
+
+    private function reportFailure(Throwable $exception): void
+    {
+        $response = $this->providerResponse($exception);
+
+        $reason = $this->failureReason($exception, $response);
+
+        Log::warning('Support agent failed', [
+            'exception' => $exception::class,
+            'status' => $response?->status(),
+            'reason' => $reason === null ? null : Str::limit($reason, 300),
+            'model' => config('ai-support.model'),
+        ]);
+    }
+
+    private function failureReason(Throwable $exception, ?Response $response): ?string
+    {
+        foreach (['error.metadata.raw', 'error.message'] as $key) {
+            $value = $response?->json($key);
+
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
+        }
+
+        return $exception instanceof AiException || $response !== null
+            ? $exception->getMessage()
+            : null;
+    }
+
+    private function providerResponse(Throwable $exception): ?Response
+    {
+        for ($current = $exception; $current !== null; $current = $current->getPrevious()) {
+            if ($current instanceof RequestException) {
+                return $current->response;
+            }
+        }
+
+        return null;
+    }
+
+    /** @return array<string, mixed> */
+    private function photoFailure(Throwable $exception, ?string $conversationId): array
+    {
+        if ($exception instanceof RateLimitedException || $exception instanceof ProviderOverloadedException) {
+            return $this->present->plain(self::PHOTO_BUSY_TEXT, [self::MANUAL_ENTRY_SOURCE], $conversationId);
+        }
+
+        return $this->photoFallback($conversationId);
     }
 
     /** @return array<string, mixed> */
