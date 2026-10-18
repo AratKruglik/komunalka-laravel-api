@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@inertiajs/react'
+import { tv } from 'tailwind-variants'
 import { MessageCircle, RotateCcw, Sparkles, X } from 'lucide-react'
 import { Button, Card } from '@/Components/ui'
 import { useAssistantChat } from '@/hooks/useAssistantChat'
@@ -15,6 +16,15 @@ import { ChatInput } from './ChatInput'
 import { ChatMessageList } from './ChatMessageList'
 import { SuggestedChips } from './SuggestedChips'
 
+const conversationArea = tv({
+  variants: {
+    sessionStart: {
+      true: 'min-h-0 flex-1 space-y-3 overflow-y-auto',
+      false: 'flex min-h-0 flex-1 flex-col',
+    },
+  },
+})
+
 export function HelpChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [draft, setDraft] = useState('')
@@ -23,15 +33,18 @@ export function HelpChatWidget() {
     useAssistantChat(WIDGET_GREETING)
   const fabRef = useRef<HTMLButtonElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const restoreFocusAfterReply = useRef(false)
 
   const hasConversationStarted = messages.some((message) => message.role === 'user')
 
   const closePopup = () => {
+    restoreFocusAfterReply.current = false
     setIsOpen(false)
     fabRef.current?.focus()
   }
 
   const handleReset = () => {
+    restoreFocusAfterReply.current = false
     reset()
     setDraft('')
     setPhoto(null)
@@ -40,13 +53,31 @@ export function HelpChatWidget() {
 
   const handleSend = (question: string, attachedPhoto: File | null = null) => {
     if (!send({ question, photo: attachedPhoto })) {
-      return
+      return false
     }
     setDraft('')
     if (attachedPhoto) {
       setPhoto(null)
     }
+    return true
   }
+
+  const handleChipSelect = (question: string) => {
+    if (handleSend(question)) {
+      restoreFocusAfterReply.current = true
+    }
+  }
+
+  useEffect(() => {
+    if (isThinking || !restoreFocusAfterReply.current) {
+      return
+    }
+    restoreFocusAfterReply.current = false
+    const active = document.activeElement
+    if (active === null || active === document.body || active === fabRef.current) {
+      textareaRef.current?.focus()
+    }
+  }, [isThinking])
 
   useEffect(() => {
     if (!isOpen) {
@@ -84,7 +115,7 @@ export function HelpChatWidget() {
       </Button>
 
       {isOpen ? (
-        <Card className="fixed bottom-24 right-6 z-50 flex h-[540px] w-[calc(100vw-2rem)] flex-col sm:w-96">
+        <Card className="fixed bottom-24 right-6 z-50 flex h-[540px] w-[calc(100vw-2rem)] flex-col sm:w-[440px]">
           <div className="flex items-center gap-3 bg-primary py-4 pl-[18px] pr-3 text-on-primary">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/10">
               <Sparkles className="h-[21px] w-[21px]" />
@@ -109,27 +140,35 @@ export function HelpChatWidget() {
           </div>
 
           <div className="flex flex-1 flex-col gap-3 overflow-hidden px-4 py-3">
-            {!hasConversationStarted ? <ChatEmptyState size="compact" /> : null}
-            <ChatMessageList
-              messages={messages}
-              isThinking={isThinking}
-              thinkingLabel={thinkingLabel}
-              activeApprovalId={activeApprovalId}
-              approvalErrors={approvalErrors}
-              onDecide={decide}
-              size="compact"
-            />
-            <SuggestedChips items={WIDGET_QUICK_CHIPS} onSelect={(question) => handleSend(question)} disabled={isThinking} />
-            <ChatInput
-              ref={textareaRef}
-              value={draft}
-              onChange={setDraft}
-              onSend={() => handleSend(draft, photo)}
-              photo={photo}
-              onPhotoChange={setPhoto}
-              disabled={isThinking}
-              placeholder={WIDGET_INPUT_PLACEHOLDER}
-            />
+            <div className={conversationArea({ sessionStart: !hasConversationStarted })}>
+              {!hasConversationStarted ? <ChatEmptyState size="compact" /> : null}
+              <ChatMessageList
+                messages={messages}
+                isThinking={isThinking}
+                thinkingLabel={thinkingLabel}
+                activeApprovalId={activeApprovalId}
+                approvalErrors={approvalErrors}
+                onDecide={decide}
+                size="compact"
+              />
+            </div>
+            {!hasConversationStarted ? (
+              <div className="shrink-0">
+                <SuggestedChips items={WIDGET_QUICK_CHIPS} onSelect={handleChipSelect} disabled={isThinking} />
+              </div>
+            ) : null}
+            <div className="shrink-0">
+              <ChatInput
+                ref={textareaRef}
+                value={draft}
+                onChange={setDraft}
+                onSend={() => handleSend(draft, photo)}
+                photo={photo}
+                onPhotoChange={setPhoto}
+                disabled={isThinking}
+                placeholder={WIDGET_INPUT_PLACEHOLDER}
+              />
+            </div>
           </div>
 
           <div className="border-t border-line bg-canvas px-4 py-2.5">

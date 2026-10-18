@@ -9,7 +9,7 @@
 The round chat button in the bottom-right corner is available **on all pages** after login. Clicking it opens a chat window with:
 
 - a greeting from KhatkoBot;
-- quick question chips (e.g., "How do I submit a reading?", "Managing meters", "Choosing a provider", "How are tariffs calculated?");
+- quick question chips (e.g., "How do I submit a reading?", "Managing meters", "Choosing a provider", "How are tariffs calculated?") — shown only at the start of a conversation; they disappear after the first message and return after "Start new conversation";
 - an input field: **Enter** to send, **Shift+Enter** for a new line;
 - a "Start new conversation" button (resets history) and a "Open full help page →" link.
 

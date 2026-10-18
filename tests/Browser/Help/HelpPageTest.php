@@ -132,4 +132,114 @@ describe('Help Chat Widget', function (): void {
             ->assertDontSee('ХаткоБот')
             ->assertNoJavaScriptErrors();
     });
+
+    it('shows all quick chips at the start of a new session', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('dashboard'))
+            ->click('[aria-label="Відкрити чат допомоги"]')
+            ->assertSee('Як внести показання?')
+            ->assertSee('Керування лічильниками')
+            ->assertSee('Обрати провайдера')
+            ->assertSee('Як рахуються тарифи?')
+            ->assertNoJavaScriptErrors();
+    });
+
+    it('hides the quick chips after a chip is sent', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('dashboard'))
+            ->click('[aria-label="Відкрити чат допомоги"]')
+            ->click('Як внести показання?')
+            ->assertSee('Щоб внести показання лічильника, перейдіть у розділ')
+            ->assertDontSee('Керування лічильниками')
+            ->assertDontSee('Обрати провайдера')
+            ->assertDontSee('Як рахуються тарифи?')
+            ->assertNoJavaScriptErrors();
+    });
+
+    it('hides the quick chips after a typed question', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('dashboard'))
+            ->click('[aria-label="Відкрити чат допомоги"]')
+            ->fill('[placeholder="Напишіть питання…"]', 'Тестове запитання без ключових слів')
+            ->click('[aria-label="Надіслати повідомлення"]')
+            ->assertSee('Я поки не знаю точної відповіді на це запитання.')
+            ->assertDontSee('Як внести показання?')
+            ->assertDontSee('Керування лічильниками')
+            ->assertDontSee('Обрати провайдера')
+            ->assertDontSee('Як рахуються тарифи?')
+            ->assertNoJavaScriptErrors();
+    });
+
+    it('restores the quick chips after starting a new conversation', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('dashboard'))
+            ->click('[aria-label="Відкрити чат допомоги"]')
+            ->fill('[placeholder="Напишіть питання…"]', 'Тестове запитання без ключових слів')
+            ->click('[aria-label="Надіслати повідомлення"]')
+            ->assertSee('Я поки не знаю точної відповіді на це запитання.')
+            ->click('[aria-label="Почати нову розмову"]')
+            ->assertSee('Привіт! Я ХаткоБот — ваш помічник.')
+            ->assertSee('Як внести показання?')
+            ->assertSee('Керування лічильниками')
+            ->assertSee('Обрати провайдера')
+            ->assertSee('Як рахуються тарифи?')
+            ->assertDontSee('Тестове запитання без ключових слів')
+            ->assertNoJavaScriptErrors();
+    });
+
+    it('fits the widget inside a 640px viewport', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('dashboard'))
+            ->resize(640, 800)
+            ->click('[aria-label="Відкрити чат допомоги"]')
+            ->assertVisible('[placeholder="Напишіть питання…"]')
+            ->assertVisible('[aria-label="Надіслати повідомлення"]')
+            ->assertNoJavaScriptErrors();
+    });
+
+    it('renders the widget wider than 384px on desktop and without horizontal scroll at 640px', function (): void {
+        $this->actingAs($this->user);
+
+        $page = visit(route('dashboard'))
+            ->resize(1280, 800)
+            ->click('[aria-label="Відкрити чат допомоги"]');
+
+        $desktopWidth = $page->script(
+            "document.querySelector('[placeholder=\"Напишіть питання…\"]').closest('.fixed').getBoundingClientRect().width",
+        );
+
+        expect($desktopWidth)->toBeGreaterThan(384);
+
+        $page->resize(640, 800);
+
+        $metrics = $page->script(
+            "(() => { const r = document.querySelector('[placeholder=\"Напишіть питання…\"]').closest('.fixed').getBoundingClientRect(); return { left: r.left, overflow: document.documentElement.scrollWidth > window.innerWidth }; })()",
+        );
+
+        expect($metrics['left'])->toBeGreaterThanOrEqual(0)
+            ->and($metrics['overflow'])->toBeFalse();
+
+        $page->assertNoJavaScriptErrors();
+    });
+
+    it('keeps the quick chips hidden after closing and reopening the widget mid-session', function (): void {
+        $this->actingAs($this->user);
+
+        visit(route('dashboard'))
+            ->click('[aria-label="Відкрити чат допомоги"]')
+            ->click('Як внести показання?')
+            ->assertSee('Щоб внести показання лічильника, перейдіть у розділ')
+            ->click('[aria-expanded="true"][aria-label="Закрити чат допомоги"]')
+            ->click('[aria-expanded="false"][aria-label="Відкрити чат допомоги"]')
+            ->assertSee('Щоб внести показання лічильника, перейдіть у розділ')
+            ->assertDontSee('Керування лічильниками')
+            ->assertDontSee('Обрати провайдера')
+            ->assertDontSee('Як рахуються тарифи?')
+            ->assertNoJavaScriptErrors();
+    });
 });
