@@ -32,10 +32,10 @@ A full-screen version of the chat plus two additional cards:
 ## 8.4 Limitations
 
 - Questions are limited to 1000 characters; no more than 6 AI questions per minute and 100 per day.
-- The AI SDK stores conversation history on the server for follow-up questions during the current page session. After a reload, the visible chat starts over. Stored support conversations are removed when you delete your account.
+- The server keeps one public conversation for follow-up questions. After a reload, the visible messages start over, but an active approval card can be restored. Stored conversations are removed when you delete your account.
 - Questions and answers are sent to the configured OpenRouter AI provider. Do not enter passwords, verification codes, or payment details.
 - The paperclip (attachment) button attaches a photo of a meter (JPG, PNG, WebP, or HEIC, up to 10 MB). Photo requests are limited to 3 per minute and 20 per day.
 - The assistant can enter a meter reading from a photo for your cold water, hot water, electricity, or gas meters. It first shows a card with the meter, the value, and the date, and nothing is saved until you press Confirm. You can edit the value, date, or tariff zone before confirming, or cancel.
 - The reading date is taken from the photo when it has a shooting date; otherwise the assistant asks you for it. A date earlier than the meter's latest reading is refused.
 - Photos are stored on the server in a private location with location (GPS) and camera data removed. Only the cleaned photo is sent to the OpenRouter AI provider and attached to the saved reading. A photo you do not confirm is deleted within 24 hours.
-- Apart from entering a reading from a photo after your confirmation, the assistant does not perform actions on your behalf. For questions about using the app, it does not see your personal readings or costs.
+- KhatkoBot can also help prepare a new address, provider, or meter. It shows a summary card before creating anything; confirm or cancel the card. For questions about using the app, the support specialist does not see your personal readings or costs.

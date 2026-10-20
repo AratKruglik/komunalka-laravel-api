@@ -16,6 +16,7 @@ use Laravel\Ai\Contracts\VerifiesConversationOwnership;
 use Laravel\Ai\Exceptions\ApprovalMismatchException;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Ai\Agents\HelpAssistant;
+use Modules\Ai\Agents\MeterReadingAgent;
 use Modules\Ai\Enums\HelpTurn;
 use Modules\Ai\Models\AssistantMeterPhoto;
 use Modules\Auth\Models\User;
@@ -42,7 +43,7 @@ class ResolveHelpApproval
      * @param  array<string, mixed>  $edits
      * @return array<string, mixed>
      */
-    public function handle(User $user, string $conversationId, string $approvalId, string $action, array $edits = []): array
+    public function handle(User $user, string $conversationId, string $approvalId, string $action, array $edits = [], bool $specialized = false): array
     {
         $this->assertOwnsConversation($user, $conversationId);
 
@@ -55,7 +56,7 @@ class ResolveHelpApproval
 
             abort_if($action !== 'reject' && ($photo === null || ! $this->isActive($photo)), 409, self::STALE_MESSAGE);
 
-            $reply = $this->resume($user, $conversationId, $pending, $this->decision($action, $pending, $edits), $photo);
+            $reply = $this->resume($user, $conversationId, $pending, $this->decision($action, $pending, $edits), $photo, $specialized);
             $this->forgetWhenSettled($photo, $reply);
 
             return $reply;
@@ -65,15 +66,16 @@ class ResolveHelpApproval
     }
 
     /** @return array<string, mixed> */
-    private function resume(User $user, string $conversationId, PendingApproval $pending, Decision $decision, ?AssistantMeterPhoto $photo): array
+    private function resume(User $user, string $conversationId, PendingApproval $pending, Decision $decision, ?AssistantMeterPhoto $photo, bool $specialized): array
     {
         try {
-            $response = HelpAssistant::make(user: $user, turn: HelpTurn::ApprovalResume)
+            $agent = $specialized ? MeterReadingAgent::make(user: $user) : HelpAssistant::make(user: $user, turn: HelpTurn::ApprovalResume);
+            $response = $agent
                 ->continue($conversationId, as: $user)
                 ->prompt(
                     Decisions::from([$pending->id => $decision]),
                     provider: 'openrouter',
-                    model: (string) config('ai-support.model', 'openai/gpt-4o-mini'),
+                    model: (string) config($specialized ? 'ai-support.meter_model' : 'ai-support.model', 'openai/gpt-4o-mini'),
                     timeout: 20,
                 );
         } catch (ApprovalMismatchException) {

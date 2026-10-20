@@ -13,6 +13,7 @@ use Imagick;
 use ImagickException;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Ai\Models\AssistantMeterPhoto;
+use Modules\Ai\Models\HelpConversation;
 use Modules\Auth\Models\User;
 use Throwable;
 
@@ -32,8 +33,10 @@ class StoreAssistantMeterPhoto
 
     public function __construct(private readonly ForgetAssistantMeterPhoto $forget) {}
 
-    public function handle(User $user, UploadedFile $file, ?string $conversationId = null): AssistantMeterPhoto
+    public function handle(User $user, UploadedFile $file, ?string $conversationId = null, ?HelpConversation $helpConversation = null): AssistantMeterPhoto
     {
+        abort_if($helpConversation !== null && $helpConversation->user_id !== $user->getKey(), 403);
+
         $this->limitImagickResources();
 
         try {
@@ -48,13 +51,14 @@ class StoreAssistantMeterPhoto
         $path = 'assistant-photos/'.$user->getKey().'/'.Str::uuid().'.jpg';
         Storage::disk(AssistantMeterPhoto::DISK)->put($path, $blob);
 
-        if ($conversationId !== null) {
-            $this->discardPreviousPhotos($user, $conversationId);
+        if ($conversationId !== null || $helpConversation !== null) {
+            $this->discardPreviousPhotos($user, $conversationId, $helpConversation);
         }
 
         return AssistantMeterPhoto::query()->create([
             'user_id' => $user->getKey(),
             'conversation_id' => $conversationId,
+            'help_conversation_id' => $helpConversation?->id,
             'disk' => AssistantMeterPhoto::DISK,
             'path' => $path,
             'taken_at' => $takenAt,
@@ -91,13 +95,19 @@ class StoreAssistantMeterPhoto
         }
     }
 
-    private function discardPreviousPhotos(User $user, string $conversationId): void
+    private function discardPreviousPhotos(User $user, ?string $conversationId, ?HelpConversation $helpConversation): void
     {
-        AssistantMeterPhoto::query()
+        $query = AssistantMeterPhoto::query()
             ->where('user_id', $user->getKey())
-            ->where('conversation_id', $conversationId)
-            ->whereNull('consumed_at')
-            ->get()
+            ->whereNull('consumed_at');
+
+        if ($helpConversation !== null) {
+            $query->where('help_conversation_id', $helpConversation->id);
+        } else {
+            $query->where('conversation_id', $conversationId);
+        }
+
+        $query->get()
             ->each(fn (AssistantMeterPhoto $photo) => $this->forget->handle($photo));
     }
 

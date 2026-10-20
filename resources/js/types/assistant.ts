@@ -13,6 +13,7 @@ export interface MeterApprovalTariff {
 export interface MeterReadingApproval {
   id: string
   tool: 'record_meter_reading'
+  version?: number
   meter: {
     id: number
     name: string
@@ -39,6 +40,27 @@ export interface MeterReadingApproval {
   expires_at: string
 }
 
+export interface PropertySetupApproval {
+  id: string
+  tool: 'create_property_setup'
+  version: number
+  expires_at: string
+  address: Record<string, unknown> | null
+  provider: Record<string, unknown> | null
+  meter: Record<string, unknown> | null
+  warnings: string[]
+}
+
+export type AssistantApproval = MeterReadingApproval | PropertySetupApproval
+
+export interface PropertySetupResult {
+  status: 'applied' | 'failed' | 'rejected'
+  message: string
+  address: { id: number } | null
+  provider: { id: number } | null
+  meter: { id: number } | null
+}
+
 export type MeterReadingResultStatus = 'saved' | 'failed' | 'refused' | 'rejected'
 
 export interface SavedMeterReading {
@@ -59,8 +81,10 @@ export interface AskAssistantResponse {
   text: string
   sources: AssistantSource[]
   conversation_id: string | null
-  pending_approval: MeterReadingApproval | null
+  pending_approval: AssistantApproval | null
   reading_result: MeterReadingResult | null
+  workflow?: 'meter_reading' | 'property_setup' | 'product_support' | 'clarify' | null
+  setup_result?: PropertySetupResult | null
 }
 
 export interface HelpApprovalDecision {
@@ -69,6 +93,10 @@ export interface HelpApprovalDecision {
     reading_value?: number
     reading_date?: string
     tariff_id?: number | null
+    address_id?: number | null
+    address?: Record<string, string | number | boolean | null>
+    provider?: Record<string, unknown>
+    meter?: Record<string, string | number | boolean | null>
   }
 }
 
@@ -85,9 +113,10 @@ export interface AssistantMessage {
   text: string
   sources?: AssistantSource[]
   photo?: AssistantMessagePhoto
-  approval?: MeterReadingApproval
+  approval?: AssistantApproval
   approvalStatus?: ApprovalStatus
   readingResult?: MeterReadingResult
+  setupResult?: PropertySetupResult
 }
 
 export interface TopicShortcut {

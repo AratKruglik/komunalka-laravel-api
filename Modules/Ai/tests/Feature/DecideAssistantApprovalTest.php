@@ -5,10 +5,10 @@ declare(strict_types=1);
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Ai\Contracts\ConversationStore;
+use Modules\Ai\Actions\DecideAssistantApproval;
+use Modules\Ai\Http\Requests\DecideAssistantApprovalRequest;
 use Modules\Ai\Models\AssistantMeterPhoto;
 use Modules\Auth\Models\User;
-use Modules\Shared\Actions\DecideAssistantApproval;
-use Modules\Shared\Http\Requests\DecideAssistantApprovalRequest;
 
 mutates(DecideAssistantApproval::class, DecideAssistantApprovalRequest::class);
 

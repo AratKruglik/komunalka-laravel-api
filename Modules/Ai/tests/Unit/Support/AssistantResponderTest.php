@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Modules\Shared\Support\AssistantResponder;
+use Modules\Ai\Support\AssistantResponder;
 
 beforeEach(function (): void {
     $this->responder = new AssistantResponder;

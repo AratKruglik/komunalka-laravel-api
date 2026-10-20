@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ImageIcon, Sparkles } from 'lucide-react'
 import { tv } from 'tailwind-variants'
 import { MeterApprovalCard } from './MeterApprovalCard'
+import { PropertySetupApprovalCard } from './PropertySetupApprovalCard'
 import { ReadingResultNote } from './ReadingResultNote'
 import { SourceChip } from './SourceChip'
 import { AI_GENERATED_LABEL } from '@/constants/assistant'
@@ -112,15 +113,17 @@ export function MessageBubble({
                 <ReadingResultNote result={result} hideMessage={isResultMessageDuplicate} />
               </div>
             ) : null}
+            {message.setupResult && message.setupResult.message !== message.text ? (
+              <p className="px-4 pb-2.5 text-xs text-subtext">{message.setupResult.message}</p>
+            ) : null}
             {message.approval && message.approvalStatus && onDecide ? (
-              <MeterApprovalCard
-                approval={message.approval}
-                status={message.approvalStatus}
-                isActive={isApprovalActive}
-                errors={approvalErrors}
-                onDecide={onDecide}
-                size={size}
-              />
+              message.approval.tool === 'create_property_setup' ? (
+                <PropertySetupApprovalCard approval={message.approval} status={message.approvalStatus}
+                  isActive={isApprovalActive} errors={approvalErrors} onDecide={onDecide} />
+              ) : (
+                <MeterApprovalCard approval={message.approval} status={message.approvalStatus}
+                  isActive={isApprovalActive} errors={approvalErrors} onDecide={onDecide} size={size} />
+              )
             ) : null}
             <div className="flex items-center gap-2 border-t border-line bg-surface px-4 py-2">
               <span className="inline-flex h-[18px] items-center rounded bg-canvas px-1.5 text-[10px] font-bold text-subtext">

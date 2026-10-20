@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Shared\Support;
+namespace Modules\Ai\Support;
 
 class AssistantResponder
 {

@@ -7,6 +7,7 @@ namespace Modules\Meter\Actions;
 use Illuminate\Http\RedirectResponse;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
+use Modules\Billing\Models\ServiceProvider;
 use Modules\Meter\DTO\CreateMeterData;
 use Modules\Meter\Http\Requests\StoreMeterRequest;
 use Modules\Meter\Models\Meter;
@@ -25,6 +26,16 @@ class CreateMeter
     public function handle(int $userId, CreateMeterData $data): Meter
     {
         abort_if(! $this->userAddressRepository->userOwnsAddress($userId, $data->addressId), Response::HTTP_NOT_FOUND);
+
+        abort_if(
+            $data->serviceProviderId !== null
+            && ! ServiceProvider::query()
+                ->whereKey($data->serviceProviderId)
+                ->where('address_id', $data->addressId)
+                ->where('utility_type_id', $data->utilityTypeId)
+                ->exists(),
+            Response::HTTP_NOT_FOUND,
+        );
 
         /** @var Meter $meter */
         $meter = $this->meterRepository->create([

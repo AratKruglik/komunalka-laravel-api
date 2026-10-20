@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Modules\Ai\Actions\StoreAssistantMeterPhoto;
 use Modules\Ai\Models\AssistantMeterPhoto;
+use Modules\Ai\Models\HelpConversation;
 use Modules\Auth\Models\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 mutates(StoreAssistantMeterPhoto::class);
 
@@ -121,5 +123,27 @@ describe('StoreAssistantMeterPhoto', function (): void {
             ->and(AssistantMeterPhoto::query()->find($otherConversation->getKey()))->not->toBeNull()
             ->and(AssistantMeterPhoto::query()->find($foreignUser->getKey()))->not->toBeNull()
             ->and(AssistantMeterPhoto::query()->find($new->getKey()))->not->toBeNull();
+    });
+
+    it('uses a public conversation to replace a photo before an SDK conversation exists', function (): void {
+        $conversation = HelpConversation::factory()->for($this->user)->create();
+        $other = HelpConversation::factory()->for($this->user)->create();
+        $old = $this->action->handle($this->user, storePhotoUpload(), null, $conversation);
+        $unrelated = $this->action->handle($this->user, storePhotoUpload(), null, $other);
+
+        $new = $this->action->handle($this->user, storePhotoUpload(), null, $conversation);
+
+        expect(AssistantMeterPhoto::query()->find($old->id))->toBeNull()
+            ->and(AssistantMeterPhoto::query()->find($unrelated->id))->not->toBeNull()
+            ->and($new->help_conversation_id)->toBe($conversation->id)
+            ->and($new->conversation_id)->toBeNull();
+    });
+
+    it('rejects a conversation owned by another user before storing the file', function (): void {
+        $conversation = HelpConversation::factory()->create();
+
+        expect(fn () => $this->action->handle($this->user, storePhotoUpload(), null, $conversation))
+            ->toThrow(HttpException::class);
+        expect(AssistantMeterPhoto::query()->count())->toBe(0);
     });
 });

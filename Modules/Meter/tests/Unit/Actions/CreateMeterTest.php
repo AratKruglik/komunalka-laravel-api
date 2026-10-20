@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
+use Modules\Billing\Models\ServiceProvider;
 use Modules\Meter\Actions\CreateMeter;
 use Modules\Meter\DTO\CreateMeterData;
 use Modules\Meter\Models\Meter;
@@ -52,6 +53,54 @@ it('aborts for non-owned address', function () {
         serviceProviderId: null,
         serialNumber: 'M-TEST-002',
         name: 'Unauthorized Meter',
+        description: null,
+        modelName: null,
+        location: null,
+        installationDate: null,
+        initialReading: 0.0,
+        notes: null,
+        isActive: true,
+    );
+
+    app(CreateMeter::class)->handle($this->user->id, $data);
+})->throws(HttpException::class);
+
+it('aborts when the service provider belongs to another address', function () {
+    $serviceProvider = ServiceProvider::factory()->create([
+        'address_id' => Address::factory(),
+        'utility_type_id' => $this->utilityType->id,
+    ]);
+
+    $data = new CreateMeterData(
+        addressId: $this->address->id,
+        utilityTypeId: $this->utilityType->id,
+        serviceProviderId: $serviceProvider->id,
+        serialNumber: 'M-TEST-003',
+        name: 'Meter with mismatched provider address',
+        description: null,
+        modelName: null,
+        location: null,
+        installationDate: null,
+        initialReading: 0.0,
+        notes: null,
+        isActive: true,
+    );
+
+    app(CreateMeter::class)->handle($this->user->id, $data);
+})->throws(HttpException::class);
+
+it('aborts when the service provider has another utility type', function () {
+    $serviceProvider = ServiceProvider::factory()->create([
+        'address_id' => $this->address->id,
+        'utility_type_id' => UtilityType::factory(),
+    ]);
+
+    $data = new CreateMeterData(
+        addressId: $this->address->id,
+        utilityTypeId: $this->utilityType->id,
+        serviceProviderId: $serviceProvider->id,
+        serialNumber: 'M-TEST-004',
+        name: 'Meter with mismatched provider utility type',
         description: null,
         modelName: null,
         location: null,

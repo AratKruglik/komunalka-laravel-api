@@ -30,6 +30,7 @@ class AiServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->loadRoutesFrom(base_path('Modules/Ai/routes/web.php'));
         $this->loadMigrationsFrom(base_path('Modules/Ai/database/migrations'));
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {

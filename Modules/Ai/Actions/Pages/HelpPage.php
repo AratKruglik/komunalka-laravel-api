@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Shared\Actions\Pages;
+namespace Modules\Ai\Actions\Pages;
 
 use Inertia\Inertia;
 use Inertia\Response;

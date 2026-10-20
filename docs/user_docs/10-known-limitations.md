@@ -23,15 +23,13 @@ Three account-deletion defects found during browser testing have been **fixed an
 | History does not show the tariff name | Day/Night entries for a multi-tariff meter look identical | Distinguish them by the reading values |
 | The "Billing address" selector on the Dashboard does not filter | Statistics are always shown across all addresses | — |
 | No new primary address is set after deleting the primary one | The primary flag is not transferred to another address | Assign a new primary address manually via editing |
-| No reading recognition from photos | Photos serve only as reference confirmation | Values must be entered manually |
-| Chat history is not saved | The conversation with the assistant disappears after a page reload | — |
+| Full chat transcript is not restored | After a page reload, the conversation ID and an active approval card can be restored, but earlier visible messages are not shown again | Keep important instructions separately |
 
 ## UI Elements That Don't Work Yet
 
 - **"Export data (CSV)"** in "Settings → Account" — the button has no handler (verified: clicking does nothing); reading export (CSV/PDF) is prepared in the code, but the routes are not registered.
 - **"View tariffs"** in the Dashboard's "Quick Actions" — leads to `/tariffs`, which returns a plain "404 Not Found" page without the application layout (tariffs can be viewed on the cards in the "Providers" section).
 - **Notification bell** in the top bar — decorative (verified: clicking opens nothing).
-- **Paperclip button** in the assistant chat — attachments are not supported.
 - Footer links ("Terms of Use", "Privacy Policy", "Contacts") — placeholder `#` links.
 - **"Forgot password?"** — the link is missing on the login page; the recovery page is only accessible via the direct URL `/forgot-password`.
 

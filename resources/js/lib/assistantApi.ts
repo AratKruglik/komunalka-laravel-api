@@ -33,6 +33,7 @@ export interface AskAssistantInput {
 export interface DecideApprovalInput {
   conversationId: string
   approvalId: string
+  version?: number
   decision: HelpApprovalDecision
 }
 
@@ -170,10 +171,22 @@ export function askAssistant(input: AskAssistantInput, signal: AbortSignal): Pro
   return postForReply(route('help.ask'), body, contentType, signal, input.photo !== null)
 }
 
+export async function getHelpState(conversationId: string, signal: AbortSignal): Promise<AskAssistantResponse> {
+  const response = await fetch(`${route('help.state')}?conversation_id=${encodeURIComponent(conversationId)}`, {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: { Accept: 'application/json' },
+    signal,
+  })
+  if (!response.ok) throw await toRequestError(response, false)
+  return (await response.json()) as AskAssistantResponse
+}
+
 export function decideApproval(input: DecideApprovalInput, signal: AbortSignal): Promise<AskAssistantResponse> {
   const body = JSON.stringify({
     conversation_id: input.conversationId,
     approval_id: input.approvalId,
+    ...(input.version !== undefined ? { version: input.version } : {}),
     action: input.decision.action,
     ...(input.decision.arguments ? { arguments: input.decision.arguments } : {}),
   })

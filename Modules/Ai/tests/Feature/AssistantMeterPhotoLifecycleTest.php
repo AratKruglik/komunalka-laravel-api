@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Modules\Ai\Actions\ForgetAssistantMeterPhoto;
 use Modules\Ai\Enums\HelpTurn;
 use Modules\Ai\Models\AssistantMeterPhoto;
+use Modules\Ai\Models\HelpConversation;
 
 mutates(ForgetAssistantMeterPhoto::class);
 
@@ -22,6 +23,18 @@ describe('AssistantMeterPhoto', function (): void {
         AssistantMeterPhoto::factory()->expired()->create();
 
         expect(AssistantMeterPhoto::query()->active()->pluck('id')->all())->toBe([$active->getKey()]);
+    });
+
+    it('links a photo to a public conversation without changing its SDK conversation id', function (): void {
+        $conversation = HelpConversation::factory()->create();
+        $photo = AssistantMeterPhoto::factory()->create([
+            'user_id' => $conversation->user_id,
+            'help_conversation_id' => $conversation->id,
+            'conversation_id' => '11111111-1111-4111-8111-111111111111',
+        ]);
+
+        expect($photo->helpConversation->is($conversation))->toBeTrue()
+            ->and($photo->conversation_id)->not->toBe($conversation->id);
     });
 
     it('classifies exif status', function (): void {

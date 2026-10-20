@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { askAssistant, decideApproval, toAssistantRequestError } from '@/lib/assistantApi'
+import { askAssistant, decideApproval, getHelpState, toAssistantRequestError } from '@/lib/assistantApi'
 import type { AssistantRequestError } from '@/lib/assistantApi'
 import { THINKING_PHOTO_LABEL, THINKING_SAVE_LABEL } from '@/constants/assistant'
 import type {
@@ -24,6 +24,7 @@ interface RequestOptions {
 const FORBIDDEN_STATUS = 403
 const VALIDATION_STATUS = 422
 const STALE_STATUS = 409
+const CONVERSATION_STORAGE_KEY = 'hatkobot-conversation-id'
 
 function createMessage(role: AssistantMessage['role'], text: string, extra: Partial<AssistantMessage> = {}): AssistantMessage {
   return {
@@ -40,6 +41,7 @@ function createReplyMessage(data: AskAssistantResponse): AssistantMessage {
     approval: data.pending_approval ?? undefined,
     approvalStatus: data.pending_approval ? 'pending' : undefined,
     readingResult: data.reading_result ?? undefined,
+    setupResult: data.setup_result ?? undefined,
   })
 }
 
@@ -73,7 +75,9 @@ export function useAssistantChat(initialGreeting?: string) {
   const [messages, setMessages] = useState<AssistantMessage[]>(createInitialMessages)
   const [isThinking, setIsThinking] = useState(false)
   const [thinkingLabel, setThinkingLabel] = useState<string | null>(null)
-  const [conversationId, setConversationId] = useState<string | null>(null)
+  const [conversationId, setConversationId] = useState<string | null>(() =>
+    typeof window === 'undefined' ? null : window.localStorage.getItem(CONVERSATION_STORAGE_KEY),
+  )
   const [approvalErrors, setApprovalErrors] = useState<Record<string, string>>({})
   const activeRequest = useRef<AbortController | null>(null)
   const requestVersion = useRef(0)
@@ -91,6 +95,28 @@ export function useAssistantChat(initialGreeting?: string) {
       urls.forEach((url) => URL.revokeObjectURL(url))
       urls.clear()
     }
+  }, [])
+
+  useEffect(() => {
+    if (conversationId) window.localStorage.setItem(CONVERSATION_STORAGE_KEY, conversationId)
+    else window.localStorage.removeItem(CONVERSATION_STORAGE_KEY)
+  }, [conversationId])
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(CONVERSATION_STORAGE_KEY)
+    if (!saved) return
+    const controller = new AbortController()
+    getHelpState(saved, controller.signal)
+      .then((state) => {
+        if (state.pending_approval && requestVersion.current === 0) {
+          setMessages((previous) => [...previous, createReplyMessage({ ...state, text: 'Відновлено пропозицію для підтвердження.' })])
+        }
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return
+        if (toAssistantRequestError(error, false).status === FORBIDDEN_STATUS) setConversationId(null)
+      })
+    return () => controller.abort()
   }, [])
 
   const appendAssistantText = (text: string): void => {
@@ -189,7 +215,8 @@ export function useAssistantChat(initialGreeting?: string) {
     setApprovalErrors({})
     setMessages((previous) => setApprovalStatus(previous, approvalId, 'submitting'))
 
-    execute((signal) => decideApproval({ conversationId, approvalId, decision }, signal), {
+    const approval = messages.find((message) => message.approval?.id === approvalId)?.approval
+    execute((signal) => decideApproval({ conversationId, approvalId, version: approval?.version, decision }, signal), {
       thinkingLabel: resolveDecisionLabel(decision),
       hasPhoto: false,
       onSuccess: (data) =>

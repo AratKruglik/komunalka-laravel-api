@@ -1,7 +1,16 @@
 <?php
 
+$routerMinProbability = env('AI_ROUTER_MIN_PROBABILITY');
+$routerMinMargin = env('AI_ROUTER_MIN_MARGIN');
+
 return [
+    'router_model' => env('AI_ROUTER_MODEL', 'typesafe/jev-1.14'),
+    'meter_model' => env('AI_METER_MODEL', 'openai/gpt-4o-mini'),
+    'setup_model' => env('AI_SETUP_MODEL', 'openai/gpt-4o-mini'),
+    'support_model' => env('AI_SUPPORT_MODEL', 'openai/gpt-4o-mini'),
     'model' => env('AI_SUPPORT_MODEL', 'openai/gpt-4o-mini'),
+    'router_min_probability' => $routerMinProbability === null || $routerMinProbability === '' ? null : (float) $routerMinProbability,
+    'router_min_margin' => $routerMinMargin === null || $routerMinMargin === '' ? null : (float) $routerMinMargin,
     'min_similarity' => (float) env('AI_SUPPORT_MIN_SIMILARITY', 0.45),
     'max_chunks' => (int) env('AI_SUPPORT_MAX_CHUNKS', 5),
     'sources' => [

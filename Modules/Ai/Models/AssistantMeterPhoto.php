@@ -19,6 +19,7 @@ use Modules\Auth\Models\User;
  * @property string $id
  * @property int $user_id
  * @property string|null $conversation_id
+ * @property string|null $help_conversation_id
  * @property string $disk
  * @property string $path
  * @property CarbonImmutable|null $taken_at
@@ -38,6 +39,7 @@ class AssistantMeterPhoto extends Model
     protected $fillable = [
         'user_id',
         'conversation_id',
+        'help_conversation_id',
         'disk',
         'path',
         'taken_at',
@@ -49,6 +51,12 @@ class AssistantMeterPhoto extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** @return BelongsTo<HelpConversation, $this> */
+    public function helpConversation(): BelongsTo
+    {
+        return $this->belongsTo(HelpConversation::class);
     }
 
     /** @param Builder<self> $query */

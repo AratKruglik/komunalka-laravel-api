@@ -103,7 +103,7 @@ class PresentHelpReply
     }
 
     /** @return array<string, mixed> */
-    private function approvalCard(string $approvalId, MeterReadingProposal $proposal): array
+    public function approvalCard(string $approvalId, MeterReadingProposal $proposal): array
     {
         $meter = $proposal->meter;
 

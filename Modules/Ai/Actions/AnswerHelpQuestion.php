@@ -15,10 +15,14 @@ use Laravel\Ai\Contracts\VerifiesConversationOwnership;
 use Laravel\Ai\Files\Image;
 use Laravel\Ai\Responses\AgentResponse;
 use Modules\Ai\Agents\HelpAssistant;
+use Modules\Ai\Agents\MeterReadingAgent;
+use Modules\Ai\Agents\ProductSupportAgent;
 use Modules\Ai\Enums\HelpTurn;
+use Modules\Ai\Enums\HelpWorkflow;
 use Modules\Ai\Models\AssistantMeterPhoto;
+use Modules\Ai\Models\HelpConversation;
+use Modules\Ai\Support\AssistantResponder;
 use Modules\Auth\Models\User;
-use Modules\Shared\Support\AssistantResponder;
 use Throwable;
 
 class AnswerHelpQuestion
@@ -41,7 +45,7 @@ class AnswerHelpQuestion
     ) {}
 
     /** @return array<string, mixed> */
-    public function handle(User $user, string $question, ?UploadedFile $photo = null, ?string $conversationId = null): array
+    public function handle(User $user, string $question, ?UploadedFile $photo = null, ?string $conversationId = null, ?HelpConversation $helpConversation = null): array
     {
         $this->assertOwnsConversation($user, $conversationId);
 
@@ -59,13 +63,15 @@ class AnswerHelpQuestion
                 : $this->fallbackResponse($question, $conversationId);
         }
 
-        $lock = Cache::lock('support-ai:'.$user->getKey(), 65);
-        abort_unless($lock->get(), 429);
+        $lock = $helpConversation === null ? Cache::lock('support-ai:'.$user->getKey(), 65) : null;
+        if ($lock !== null) {
+            abort_unless($lock->get(), 429);
+        }
 
         try {
             return $photo !== null
-                ? $this->answerWithPhoto($user, $question, $photo, $conversationId)
-                : $this->answerText($user, $question, $conversationId);
+                ? $this->answerWithPhoto($user, $question, $photo, $conversationId, $helpConversation)
+                : $this->answerText($user, $question, $conversationId, $helpConversation);
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
@@ -75,29 +81,35 @@ class AnswerHelpQuestion
                 ? $this->photoFallback($conversationId)
                 : $this->fallbackResponse($question, $conversationId);
         } finally {
-            $lock->release();
+            $lock?->release();
         }
     }
 
     /** @return array<string, mixed> */
-    private function answerText(User $user, string $question, ?string $conversationId): array
+    private function answerText(User $user, string $question, ?string $conversationId, ?HelpConversation $helpConversation): array
     {
-        $livePhoto = $this->livePhoto($user, $conversationId);
+        $livePhoto = $this->livePhoto($user, $conversationId, $helpConversation);
 
         if ($livePhoto === null) {
-            return $this->answerKnowledgeQuestion($user, $question, $conversationId);
+            if ($helpConversation?->active_workflow === HelpWorkflow::MeterReading) {
+                $response = $this->prompt($user, HelpTurn::MeterFollowUp, $question, [], $conversationId, $this->specialized($helpConversation));
+
+                return $this->presentMeterReply($user, $response, $conversationId);
+            }
+
+            return $this->answerKnowledgeQuestion($user, $question, $conversationId, $helpConversation);
         }
 
         $prompt = $question."\n\n".$this->serviceBlock($livePhoto);
-        $response = $this->prompt($user, HelpTurn::MeterFollowUp, $prompt, [], $conversationId);
+        $response = $this->prompt($user, HelpTurn::MeterFollowUp, $prompt, [], $conversationId, $this->specialized($helpConversation));
 
         return $this->presentMeterReply($user, $response, $conversationId);
     }
 
     /** @return array<string, mixed> */
-    private function answerKnowledgeQuestion(User $user, string $question, ?string $conversationId): array
+    private function answerKnowledgeQuestion(User $user, string $question, ?string $conversationId, ?HelpConversation $helpConversation): array
     {
-        $response = $this->prompt($user, HelpTurn::Question, $question, [], $conversationId);
+        $response = $this->prompt($user, HelpTurn::Question, $question, [], $conversationId, $this->specialized($helpConversation));
         $sources = $this->present->sources($response);
 
         if (blank($response->text) || $sources === []) {
@@ -108,9 +120,9 @@ class AnswerHelpQuestion
     }
 
     /** @return array<string, mixed> */
-    private function answerWithPhoto(User $user, string $question, UploadedFile $photo, ?string $conversationId): array
+    private function answerWithPhoto(User $user, string $question, UploadedFile $photo, ?string $conversationId, ?HelpConversation $helpConversation): array
     {
-        $stored = $this->storePhoto->handle($user, $photo, $conversationId);
+        $stored = $this->storePhoto->handle($user, $photo, $conversationId, $helpConversation);
 
         try {
             $prompt = (trim($question) !== '' ? $question : self::DEFAULT_PHOTO_QUESTION)
@@ -121,6 +133,7 @@ class AnswerHelpQuestion
                 $prompt,
                 [Image::fromStorage($stored->path, $stored->disk)],
                 $conversationId,
+                $this->specialized($helpConversation),
             );
         } catch (Throwable $exception) {
             Log::warning('Support agent failed', ['exception' => $exception::class]);
@@ -154,15 +167,21 @@ class AnswerHelpQuestion
     }
 
     /** @param list<Image> $attachments */
-    private function prompt(User $user, HelpTurn $turn, string $prompt, array $attachments, ?string $conversationId): AgentResponse
+    private function prompt(User $user, HelpTurn $turn, string $prompt, array $attachments, ?string $conversationId, bool $specialized = false): AgentResponse
     {
-        return HelpAssistant::make(user: $user, turn: $turn)
+        $agent = $specialized
+            ? ($turn === HelpTurn::Question ? ProductSupportAgent::make() : MeterReadingAgent::make(user: $user))
+            : HelpAssistant::make(user: $user, turn: $turn);
+
+        return $agent
             ->continueOrStart($conversationId, as: $user)
             ->prompt(
                 $prompt,
                 attachments: $attachments,
                 provider: 'openrouter',
-                model: (string) config('ai-support.model', 'openai/gpt-4o-mini'),
+                model: (string) config($specialized
+                    ? ($turn === HelpTurn::Question ? 'ai-support.support_model' : 'ai-support.meter_model')
+                    : 'ai-support.model', 'openai/gpt-4o-mini'),
                 timeout: 20,
             );
     }
@@ -186,18 +205,19 @@ class AnswerHelpQuestion
         return implode("\n", $lines);
     }
 
-    private function livePhoto(User $user, ?string $conversationId): ?AssistantMeterPhoto
+    private function livePhoto(User $user, ?string $conversationId, ?HelpConversation $helpConversation): ?AssistantMeterPhoto
     {
-        if ($conversationId === null) {
+        if ($conversationId === null && $helpConversation === null) {
             return null;
         }
 
-        return AssistantMeterPhoto::query()
+        $query = AssistantMeterPhoto::query()
             ->active()
-            ->where('user_id', $user->getKey())
-            ->where('conversation_id', $conversationId)
-            ->latest()
-            ->first();
+            ->where('user_id', $user->getKey());
+
+        $query->where($helpConversation === null ? 'conversation_id' : 'help_conversation_id', $helpConversation === null ? $conversationId : $helpConversation->id);
+
+        return $query->latest()->first();
     }
 
     private function assertOwnsConversation(User $user, ?string $conversationId): void
@@ -216,6 +236,11 @@ class AnswerHelpQuestion
     private function isGreeting(string $question): bool
     {
         return preg_match('/^(привіт|вітаю|добрий день|доброго дня|добрий вечір)[\s!.?]*$/iu', trim($question)) === 1;
+    }
+
+    private function specialized(?HelpConversation $conversation): bool
+    {
+        return $conversation !== null && ($conversation->handoff_summary['legacy_sdk_conversation'] ?? false) !== true;
     }
 
     /** @return array<string, mixed> */
