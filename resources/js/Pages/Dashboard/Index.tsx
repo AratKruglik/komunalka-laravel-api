@@ -1,4 +1,5 @@
 import { Head, usePage } from '@inertiajs/react';
+import { echoIsConfigured } from '@laravel/echo-react';
 import { useState, useMemo } from 'react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { useDenormalizeCollection } from '@/lib/useDenormalize';
@@ -12,6 +13,7 @@ import { ConsumptionChart } from './Components/ConsumptionChart';
 import { ExpenseDistribution } from './Components/ExpenseDistribution';
 import { RecentReadingsTable } from './Components/RecentReadingsTable';
 import { QuickActions } from './Components/QuickActions';
+import { DashboardLiveUpdates } from './Components/DashboardLiveUpdates';
 
 interface Stats {
     addressCount: number;
@@ -81,11 +83,15 @@ export default function Index() {
         [addressList],
     );
 
+    const addressIds = useMemo(() => addressList.map((address) => address.id), [addressList]);
+    const liveUpdatesEnabled = echoIsConfigured();
+
     const userName = user?.firstName ?? user?.username ?? 'Користувач';
 
     return (
         <AuthenticatedLayout pageTitle="Дашборд">
             <Head title="Головна" />
+            {liveUpdatesEnabled && <DashboardLiveUpdates addressIds={addressIds} />}
             <div className="mx-auto max-w-7xl space-y-4 sm:space-y-5 lg:space-y-6">
                 <WelcomeHeader
                     userName={userName}

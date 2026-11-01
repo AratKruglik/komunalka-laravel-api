@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Date::use(CarbonImmutable::class);
+
+        throw_if(
+            app()->isProduction()
+                && config('broadcasting.default') === 'reverb'
+                && blank(config('broadcasting.connections.reverb.secret')),
+            RuntimeException::class,
+            'REVERB_APP_SECRET must be set when broadcasting via Reverb in production.',
+        );
 
         Gate::define('viewApiDocs', function ($user = null) {
             return in_array(app()->environment(), ['local', 'testing']);

@@ -17,6 +17,7 @@ use Modules\Billing\Models\Tariff;
 use Modules\Billing\Repositories\Contracts\TariffRepositoryInterface;
 use Modules\Meter\DTO\BatchReadingData;
 use Modules\Meter\DTO\BatchReadingResult;
+use Modules\Meter\Events\MeterReadingsChanged;
 use Modules\Meter\Http\Requests\BatchMeterReadingRequest;
 use Modules\Meter\Models\Meter;
 use Modules\Meter\Models\MeterReading;
@@ -111,6 +112,15 @@ class CreateBatchReadings
                 }
 
                 $readings[] = $meterReading;
+            }
+
+            foreach (collect($readings)->groupBy(fn (MeterReading $r) => $meters->get($r->meter_id)->address_id) as $addressId => $group) {
+                MeterReadingsChanged::dispatchSafely(
+                    (int) $addressId,
+                    'created',
+                    $group->map(fn (MeterReading $r) => (int) $r->getKey())->values()->all(),
+                    $group->map(fn (MeterReading $r) => (int) $r->meter_id)->unique()->values()->all(),
+                );
             }
 
             return new BatchReadingResult($readings, $tariffCalculations);

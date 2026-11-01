@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Validation\ValidationException;
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
@@ -10,6 +11,7 @@ use Modules\Billing\Models\Tariff;
 use Modules\Meter\Actions\CreateBatchReadings;
 use Modules\Meter\DTO\BatchReadingData;
 use Modules\Meter\DTO\CreateMeterReadingData;
+use Modules\Meter\Events\MeterReadingsChanged;
 use Modules\Meter\Models\Meter;
 use Modules\Meter\Models\MeterReading;
 use Modules\Shared\Models\Currency;
@@ -186,4 +188,60 @@ it('wraps in transaction and rolls back on failure', function () {
     }
 
     $this->assertDatabaseCount('meter_readings', 0);
+});
+
+describe('MeterReadingsChanged dispatch', function () {
+    beforeEach(function () {
+        Event::fake([MeterReadingsChanged::class]);
+    });
+
+    $data = fn (array $meters, int $value = 250) => new BatchReadingData(
+        readings: array_map(fn (Meter $m) => new CreateMeterReadingData(
+            meterId: $m->id,
+            readingValue: $value,
+            readingDate: '2026-02-01',
+            notes: null,
+            isEstimated: false,
+        ), $meters),
+        photos: [],
+    );
+
+    it('dispatches one event for a single-address batch', function () use ($data) {
+        $meters = Meter::factory()->count(2)->create([
+            'address_id' => $this->address->id,
+            'utility_type_id' => $this->utilityType->id,
+            'initial_reading' => 100,
+        ])->all();
+
+        $result = app(CreateBatchReadings::class)->handle($this->user->id, $data($meters));
+
+        Event::assertDispatchedTimes(MeterReadingsChanged::class, 1);
+        Event::assertDispatched(MeterReadingsChanged::class, fn (MeterReadingsChanged $e) => $e->addressId === $this->address->getKey()
+            && $e->action === 'created'
+            && $e->readingIds === [$result->readings[0]->getKey(), $result->readings[1]->getKey()]
+            && $e->meterIds === [$meters[0]->getKey(), $meters[1]->getKey()]);
+    });
+
+    it('dispatches one event per address', function () use ($data) {
+        $other = Address::factory()->create();
+        $this->user->addresses()->attach($other->id, ['is_primary' => false]);
+        $m1 = Meter::factory()->create(['address_id' => $this->address->id, 'utility_type_id' => $this->utilityType->id, 'initial_reading' => 100]);
+        $m2 = Meter::factory()->create(['address_id' => $other->id, 'utility_type_id' => $this->utilityType->id, 'initial_reading' => 100]);
+
+        app(CreateBatchReadings::class)->handle($this->user->id, $data([$m1, $m2]));
+
+        Event::assertDispatchedTimes(MeterReadingsChanged::class, 2);
+        Event::assertDispatched(MeterReadingsChanged::class, fn (MeterReadingsChanged $e) => $e->addressId === $other->getKey() && $e->meterIds === [$m2->getKey()]);
+    });
+
+    it('dispatches nothing when validation fails', function () use ($data) {
+        $meter = Meter::factory()->create(['address_id' => $this->address->id, 'utility_type_id' => $this->utilityType->id, 'initial_reading' => 100]);
+
+        try {
+            app(CreateBatchReadings::class)->handle($this->user->id, $data([$meter], 50));
+        } catch (ValidationException) {
+        }
+
+        Event::assertNotDispatched(MeterReadingsChanged::class);
+    });
 });

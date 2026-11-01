@@ -36,7 +36,7 @@ export interface DecideApprovalInput {
   decision: HelpApprovalDecision
 }
 
-function readXsrfToken(): string {
+export function readXsrfToken(): string {
   const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/)
   return decodeURIComponent(match?.[1] ?? '')
 }

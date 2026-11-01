@@ -11,6 +11,7 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Models\Address;
 use Modules\Address\Repositories\Contracts\AddressRepositoryInterface;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
+use Modules\Meter\Events\MeterReadingsChanged;
 
 class DeleteAddress
 {
@@ -26,6 +27,7 @@ class DeleteAddress
         DB::transaction(function () use ($userId, $address) {
             $this->userAddressRepository->detach($userId, $address->getKey());
             $this->addressRepository->delete($address);
+            MeterReadingsChanged::dispatchSafely((int) $address->getKey(), 'deleted');
         });
     }
 

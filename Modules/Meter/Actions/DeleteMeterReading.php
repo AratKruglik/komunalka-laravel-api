@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Modules\Address\Repositories\Contracts\UserAddressRepositoryInterface;
+use Modules\Meter\Events\MeterReadingsChanged;
 use Modules\Meter\Repositories\Contracts\MeterReadingRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,7 +28,13 @@ class DeleteMeterReading
         abort_if($reading === null, Response::HTTP_NOT_FOUND);
         abort_if(! $this->userAddressRepository->userOwnsAddress($userId, $reading->meter->address_id), Response::HTTP_NOT_FOUND);
 
+        $addressId = (int) $reading->meter->address_id;
+        $readingId = (int) $reading->getKey();
+        $meterId = (int) $reading->meter_id;
+
         $this->meterReadingRepository->delete($reading);
+
+        MeterReadingsChanged::dispatchSafely($addressId, 'deleted', [$readingId], [$meterId]);
     }
 
     public function asController(Request $request, string $reading): RedirectResponse

@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\JsonSchema\JsonSchemaTypeFactory;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Ai\Contracts\Approvable;
 use Laravel\Ai\Tools\Request;
@@ -11,6 +13,7 @@ use Modules\Ai\Models\AssistantMeterPhoto;
 use Modules\Ai\Tools\RecordMeterReading;
 use Modules\Auth\Models\User;
 use Modules\Meter\Actions\CreateBatchReadings;
+use Modules\Meter\Events\MeterReadingsChanged;
 use Modules\Meter\Models\Meter;
 use Modules\Meter\Models\MeterReading;
 use Modules\Shared\Models\UtilityType;
@@ -47,6 +50,28 @@ describe('RecordMeterReading tool', function (): void {
     it('is an approvable tool with a stable name', function (): void {
         expect($this->tool)->toBeInstanceOf(Approvable::class)
             ->and($this->tool->name())->toBe('record_meter_reading');
+    });
+
+    it('dispatches the changed event when the tool saves a reading', function (): void {
+        Event::fake([MeterReadingsChanged::class]);
+
+        ($this->call)();
+
+        Event::assertDispatched(MeterReadingsChanged::class, fn (MeterReadingsChanged $e): bool => $e->addressId === $this->meter->address_id && $e->action === 'created');
+    });
+
+    it('does not dispatch when the outer transaction rolls back', function (): void {
+        Event::fake([MeterReadingsChanged::class]);
+
+        try {
+            DB::transaction(function (): void {
+                ($this->call)();
+                throw new RuntimeException('rollback');
+            });
+        } catch (RuntimeException) {
+        }
+
+        Event::assertNotDispatched(MeterReadingsChanged::class);
     });
 
     it('saves the reading, attaches the photo and consumes it', function (): void {
