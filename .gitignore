@@ -5,6 +5,7 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+CLAUDE.local.md
 /.fleet
 /.idea
 /.nova
