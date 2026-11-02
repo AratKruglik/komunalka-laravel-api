@@ -32,3 +32,6 @@ http-client.private.env.json
 /.design-sync/.cache/
 /.design-sync/learnings/
 /.design-sync/node_modules
+
+/.pnpm-store
+frankenphp

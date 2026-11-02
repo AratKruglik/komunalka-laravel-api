@@ -54,6 +54,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Caddy Environment
+    |--------------------------------------------------------------------------
+    |
+    | Overrides for the variables Octane passes to the FrankenPHP Caddyfile.
+    | Production uses the extra directives to proxy Reverb WebSockets through
+    | the app's TLS endpoint instead of exposing the Reverb port publicly.
+    |
+    */
+
+    'caddy' => [
+        'env' => array_filter([
+            'CADDY_SERVER_EXTRA_DIRECTIVES' => env('OCTANE_CADDY_SERVER_EXTRA_DIRECTIVES'),
+        ]),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Octane Listeners
     |--------------------------------------------------------------------------
     |

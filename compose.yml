@@ -44,6 +44,8 @@ services:
     environment:
       COMMAND: php artisan octane:frankenphp --host=localhost --port=443 --https --http-redirect --watch
       PROCESS: app
+      # pusher-js always uses wss:// on an https page, so Reverb is reached through the app's TLS endpoint
+      OCTANE_CADDY_SERVER_EXTRA_DIRECTIVES: reverse_proxy /app/* websockets:8080
       XDEBUG_MODE: debug,coverage
     depends_on:
       db:
@@ -114,6 +116,11 @@ services:
     networks:
       - ka-db-network
       - ka-redis-network
+    healthcheck:
+      test: curl -sf http://localhost:8080/up >/dev/null || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 20
 
   redis:
     image: redis:7.2.4-alpine

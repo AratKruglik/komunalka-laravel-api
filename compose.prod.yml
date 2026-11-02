@@ -33,6 +33,7 @@ services:
     environment:
       COMMAND: php artisan octane:frankenphp --host=0.0.0.0 --port=443 --https --http-redirect --max-requests=500
       PROCESS: app
+      OCTANE_CADDY_SERVER_EXTRA_DIRECTIVES: reverse_proxy /app/* websockets:8080
     depends_on:
       db:
         condition: service_healthy
@@ -107,10 +108,13 @@ services:
       COMMAND: php artisan reverb:start --host=0.0.0.0 --port=8080
       PROCESS: reverb
     volumes: []
-    ports:
-      - '8080:8080'
+    ports: []
     healthcheck:
-      disable: true
+      test: curl -sf http://localhost:8080/up >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     deploy:
       resources:
         limits:
