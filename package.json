@@ -11,7 +11,9 @@
   "packageManager": "pnpm@10.28.0",
   "dependencies": {
     "@inertiajs/react": "3.0.0-beta.5",
+    "@laravel/echo-react": "^2.6.3",
     "lucide-react": "^0.577.0",
+    "pusher-js": "^8.6.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.72.0",
@@ -24,8 +26,9 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "laravel-echo": "^2.6.3",
     "laravel-vite-plugin": "^3.0.0",
-    "playwright": "^1.60.0",
+    "playwright": "^1.64.1",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "vite": "^8.0.1"

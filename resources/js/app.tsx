@@ -2,8 +2,11 @@ import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@/Components/theme/ThemeProvider';
 import { PersistentLayout } from '@/Layouts/PersistentLayout';
+import { configureRealtime } from '@/lib/echo';
 
 const GUEST_PAGE_PREFIX = 'Auth/';
+
+configureRealtime();
 
 createInertiaApp({
     layout: (name) => (name.startsWith(GUEST_PAGE_PREFIX) ? undefined : PersistentLayout),

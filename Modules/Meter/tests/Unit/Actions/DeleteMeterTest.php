@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Modules\Address\Models\Address;
 use Modules\Auth\Models\User;
 use Modules\Meter\Actions\DeleteMeter;
+use Modules\Meter\Events\MeterReadingsChanged;
 use Modules\Meter\Models\Meter;
 use Modules\Shared\Models\UtilityType;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 it('deletes a meter', function () {
+    Event::fake([MeterReadingsChanged::class]);
     $user = User::factory()->create();
     $address = Address::factory()->create();
     $user->addresses()->attach($address->id, ['is_primary' => true]);
@@ -23,6 +26,10 @@ it('deletes a meter', function () {
     app(DeleteMeter::class)->handle($user->id, $meter->id);
 
     $this->assertDatabaseMissing('meters', ['id' => $meter->id]);
+    Event::assertDispatched(MeterReadingsChanged::class, fn (MeterReadingsChanged $e): bool => $e->addressId === $address->getKey()
+        && $e->action === 'deleted'
+        && $e->readingIds === []
+        && $e->meterIds === [$meter->getKey()]);
 });
 
 it('aborts for non-owned meter', function () {
