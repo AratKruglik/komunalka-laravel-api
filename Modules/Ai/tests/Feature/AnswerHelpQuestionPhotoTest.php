@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Ai\Contracts\ConversationStore;
+use Laravel\Ai\Responses\Data\Meta;
+use Laravel\Ai\Responses\Data\TextUsage;
+use Laravel\Ai\Responses\TextResponse;
 use Laravel\Ai\ToolChoice;
 use Laravel\Ai\Tools\Request;
 use Modules\Address\Models\Address;
@@ -85,6 +89,47 @@ describe('AnswerHelpQuestion with a meter photo', function (): void {
             ->and($result['sources'])->toBe([['label' => 'Внести показання', 'path' => '/readings/create']])
             ->and(AssistantMeterPhoto::query()->count())->toBe(0)
             ->and(Storage::disk(AssistantMeterPhoto::DISK)->allFiles())->toBe([]);
+    });
+
+    it('logs an empty_reply warning and discards the photo when the model returns no text', function (): void {
+        config(['ai-support.model' => 'test/vision-model']);
+        Log::spy();
+        HelpAssistant::fake([new TextResponse('', new TextUsage(outputTokens: 700), new Meta('openrouter', 'test/vision-model'))]);
+
+        $result = $this->action->handle($this->user, 'Внеси показання холодної води', photoTurnUpload());
+
+        expect($result['text'])->toContain('Не вдалося обробити фото')
+            ->and($result['sources'])->toBe([['label' => 'Внести показання', 'path' => '/readings/create']])
+            ->and($result['pending_approval'])->toBeNull()
+            ->and(AssistantMeterPhoto::query()->count())->toBe(0)
+            ->and(Storage::disk(AssistantMeterPhoto::DISK)->allFiles())->toBe([]);
+
+        Log::shouldHaveReceived('warning')->withArgs(function (string $message, array $context): bool {
+            $encoded = json_encode($context, JSON_THROW_ON_ERROR);
+
+            return $message === 'Support agent failed'
+                && $context['reason'] === 'empty_reply'
+                && $context['model'] === 'test/vision-model'
+                && $context['finish_reason'] === 'stop'
+                && $context['output_tokens'] === 700
+                && ! str_contains($encoded, 'base64')
+                && ! str_contains($encoded, 'холодної води');
+        })->once();
+    });
+
+    it('logs an empty_reply warning when a photo follow-up turn returns no text', function (): void {
+        $conversation = app(ConversationStore::class)->storeConversation($this->user->getMorphClass(), $this->user->getKey(), 'x');
+        AssistantMeterPhoto::factory()->create(['user_id' => $this->user->getKey(), 'conversation_id' => $conversation]);
+        Log::spy();
+        HelpAssistant::fake([new TextResponse('', new TextUsage(outputTokens: 5), new Meta('openrouter', 'test/vision-model'))]);
+
+        $result = $this->action->handle($this->user, 'Так, внеси', null, $conversation);
+
+        expect($result['text'])->toContain('Не вдалося обробити фото');
+
+        Log::shouldHaveReceived('warning')
+            ->withArgs(fn (string $message, array $context): bool => $message === 'Support agent failed' && $context['reason'] === 'empty_reply')
+            ->once();
     });
 
     it('rejects a concurrent request for the same user', function (): void {

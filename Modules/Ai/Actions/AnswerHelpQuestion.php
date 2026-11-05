@@ -161,6 +161,13 @@ class AnswerHelpQuestion
             $this->forgetPhoto->handle($stored->refresh());
         }
 
+        Log::warning('Support agent failed', [
+            'reason' => 'empty_reply',
+            'finish_reason' => $response->steps->last()?->finishReason->value,
+            'output_tokens' => $response->usage->outputTokens,
+            'model' => config('ai-support.model'),
+        ]);
+
         return $this->photoFallback($remainingConversation);
     }
 
